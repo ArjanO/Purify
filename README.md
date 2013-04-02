@@ -18,6 +18,10 @@ A tool for automatic code refactoring.
 
 **Michiel Westerbeek**
 
++ [https://github.com/happylinks](https://github.com/happylinks)
+
+**Tim Waalewijn**
+
 + [https://github.com/timwaalewijn](https://github.com/timwaalewijn)
 
 ## MIT License
