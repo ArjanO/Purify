@@ -29,10 +29,73 @@
  */
 package nl.han.ica.ap.purify;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
+import nl.han.ica.ap.purify.language.java.JavaLexer;
+import nl.han.ica.ap.purify.language.java.JavaParser;
+import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumber;
+import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
+
 /**
- * 
+ * Example magic numbers runner. 
  */
 public class App {
+	private static final String COMMAND_LINE_PARAM_MISSING =
+			"Add at least one file as command line parameter.";
+	
 	public static void main(String[] args) {
+		if (args.length < 1) {
+			System.err.println(COMMAND_LINE_PARAM_MISSING);
+			return;
+		}
+		
+		for (int i = 0; i < args.length; i++) {
+			ANTLRInputStream input = null;
+			InputStream is = null;
+			
+			if (args[i] != null) {
+				try {
+					is = new FileInputStream(args[i]);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+					continue;
+				}
+			}
+			
+			try {
+				input = new ANTLRInputStream(is);
+			} catch (IOException e) {
+				e.printStackTrace();
+				continue;
+			}
+			
+			JavaLexer lexer = new JavaLexer(input);
+			CommonTokenStream tokens = new CommonTokenStream(lexer);
+			JavaParser parser = new JavaParser(tokens);
+			ParseTree tree = parser.compilationUnit();
+			
+			ParseTreeWalker waker = new ParseTreeWalker();
+			MagicNumberDetector magicNumberDetector = new MagicNumberDetector();
+			waker.walk(magicNumberDetector, tree);
+			
+			List<MagicNumber> magicNumbers = magicNumberDetector
+					.getMagicNumbers();
+			
+			for (MagicNumber magicNumber : magicNumbers) {
+				System.out.println(String.format(
+						"Found '%s' %d times in file '%s'", 
+						magicNumber.getLiteral(), magicNumber.size(),
+						args[i]));
+			}
+		}
 	}
 }
