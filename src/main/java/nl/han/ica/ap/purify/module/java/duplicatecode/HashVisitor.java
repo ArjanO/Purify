@@ -33,13 +33,20 @@ import java.util.TreeSet;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
 import nl.han.ica.ap.purify.language.java.JavaParser.BooleanLiteralContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.ClassOrInterfaceTypeContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionArithmeticContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionEqualToNotEqualToContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.IntegerLiteralContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.LiteralContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.ParExpressionContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.PrimaryContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.StatementContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.StatementIfContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.VariableDeclaratorIdContext;
 
 /**
@@ -238,5 +245,114 @@ public class HashVisitor extends JavaBaseVisitor<Integer> {
 		}
 		
 		return defaultResult();
+	}
+	
+	/**
+	 * Called for expression wits compare something.
+	 * 
+	 * For example:
+	 * {@code myVar == 4}
+	 */
+	@Override
+	public Integer visitExpressionEqualToNotEqualTo(
+			ExpressionEqualToNotEqualToContext ctx) {
+		int iHash = 1;
+		boolean bVisit = false;
+		
+		for (int i = ctx.getChildCount() - 1; i >= 0; i--) {
+			ParseTree item = ctx.getChild(i);
+			
+			if (item instanceof ExpressionContext) {
+				Integer result = visit(item);
+				
+				if (result != null) {
+					iHash = iHash * PRIME + result;
+					bVisit = true;
+				}
+			} else if (item.getText() != null) {
+				iHash = iHash * PRIME + item.getText().hashCode();
+				bVisit = true;
+			}
+		}
+		
+		// Don't visit children. This method handles the visit.
+		if (bVisit) {
+			return iHash;
+		} else {
+			return defaultResult();
+		}
+	}
+	
+	
+	@Override
+	public Integer visitStatementIf(StatementIfContext ctx) {
+		int iHash = 1;
+		boolean bVisit = false;
+		
+		for (int i = ctx.getChildCount() - 1; i >= 0; i--) {
+			ParseTree item = ctx.getChild(i);
+			
+			if (item instanceof StatementContext) {
+				Integer result = visit(item);
+				
+				if (result != null) {
+					iHash = iHash * PRIME + result;
+					bVisit = true;
+				}
+			} else if (item instanceof ParExpressionContext) {
+				Integer result = visit(item);
+				
+				if (result != null) {
+					iHash = iHash * PRIME + result;
+					bVisit = true;
+				}
+			} else if (item.getText() != null) {
+				// Hash the text.
+				iHash = iHash * PRIME + item.getText().hashCode();
+				bVisit = true;
+			}
+		}
+		
+		// Don't visit children. This method handles the visit.
+		if (bVisit) {
+			return iHash;
+		} else {
+			return defaultResult();
+		}
+	}
+	
+	/**
+	 * Called for calculations.
+	 * 
+	 * For example:
+	 * {@code float f = 25.0f / 3.0f;}
+	 */
+	@Override
+	public Integer visitExpressionArithmetic(ExpressionArithmeticContext ctx) {
+		int iHash = 1;
+		boolean bVisit = false;
+		
+		for (int i = ctx.getChildCount() - 1; i >= 0; i--) {
+			ParseTree item = ctx.getChild(i);
+			
+			if (item instanceof TerminalNode) {
+				bVisit = true;
+				iHash = iHash * PRIME + item.getText().hashCode();
+			} else {
+				Integer result = visit(item);
+				
+				if (result != null) {
+					iHash = iHash * PRIME + result;
+					bVisit = true;
+				}
+			}
+		}
+		
+		// Don't visit children. This method handles the visit.
+		if (bVisit) {
+			return iHash;
+		} else {
+			return defaultResult();
+		}
 	}
 }
