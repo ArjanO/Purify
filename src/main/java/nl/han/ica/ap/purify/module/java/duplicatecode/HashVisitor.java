@@ -35,6 +35,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 
 import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
+import nl.han.ica.ap.purify.language.java.JavaParser.PrimaryContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.VariableDeclaratorIdContext;
 
 /**
  * Get the hash of a parse tree. 
@@ -43,6 +45,8 @@ import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
  */
 public class HashVisitor extends JavaBaseVisitor<Integer> {
 	private static final int PRIME = 31;
+	
+	private static final int VARIABLE_HASH = 342;
 	
 	private TreeSet<String> localVariables;
 	
@@ -108,5 +112,52 @@ public class HashVisitor extends JavaBaseVisitor<Integer> {
 		}
 		
 		return defaultResult();
+	}
+	
+	/**
+	 * Called for variable declaration.
+	 * 
+	 * For example:
+	 * {@code int myVar;}
+	 */
+	@Override
+	public Integer visitVariableDeclaratorId(VariableDeclaratorIdContext ctx) {
+		if (ctx.Identifier() != null) {
+			String identifier = ctx.Identifier().getText();
+			
+			if (identifier != null) {
+				if (localVariables.contains(ctx.Identifier().getText())) {
+					return VARIABLE_HASH;
+				}
+				
+				// Unknown variable name. Hash the name.
+				return identifier.hashCode();
+			}
+		}		
+		
+		return super.visitVariableDeclaratorId(ctx);
+	}
+	
+	/**
+	 * Called if a variable or literal (number or text) is 
+	 * used in a expression.
+	 * 
+	 * For example:
+	 * {@code myVar = myVar * 2;}
+	 */
+	@Override
+	public Integer visitPrimary(PrimaryContext ctx) {
+		if (ctx.Identifier() != null && ctx.Identifier().getText() != null) {
+			String identifier = ctx.Identifier().getText();
+			
+			if (localVariables.contains(identifier)) {
+				return VARIABLE_HASH;
+			}
+			
+			// Unknown variable or it is a literal. Hash the text.
+			return identifier.hashCode();
+		}
+		
+		return super.visitPrimary(ctx);
 	}
 }
