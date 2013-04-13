@@ -505,25 +505,25 @@ variableModifiers
     ;
 
 statement
-    : block
-    |   ASSERT expression (':' expression)? ';'
-    |   'if' parExpression statement ('else' statement)?
-    |   'for' '(' forControl ')' statement
-    |   'while' parExpression statement
-    |   'do' statement 'while' parExpression ';'
-    |   'try' block
-        ( catches ('finally' block)?
-        | 'finally' block
-        )
-    |   'switch' parExpression '{' switchBlockStatementGroups '}'
-    |   'synchronized' parExpression block
-    |   'return' expression? ';'
-    |   'throw' expression ';'
-    |   'break' Identifier? ';'
-    |   'continue' Identifier? ';'
-    |   ';'
-    |   statementExpression ';'
-    |   Identifier ':' statement
+    : block																#statementBlock
+    |   ASSERT expression (':' expression)? ';'                         #statementAssert
+    |   'if' parExpression statement ('else' statement)?                #statementIf
+    |   'for' '(' forControl ')' statement                              #statementFor
+    |   'while' parExpression statement                                 #statementWhile
+    |   'do' statement 'while' parExpression ';'                        #statementDo
+    |   'try' block                                                     
+        ( catches ('finally' block)?                                    
+        | 'finally' block                                               
+        )                                                               #statementTry
+    |   'switch' parExpression '{' switchBlockStatementGroups '}'       #statementSwitch
+    |   'synchronized' parExpression block                              #statementSynchronized
+    |   'return' expression? ';'                                        #statementReturn
+    |   'throw' expression ';'                                          #statementThrow
+    |   'break' Identifier? ';'                                         #statementBreak
+    |   'continue' Identifier? ';'                                      #statementContinue
+    |   ';'                                                             #statementStatement
+    |   statementExpression ';'                                         #statementStatementExpression
+    |   Identifier ':' statement                                        #statementIdentifierStatement
     ;
 
 catches
