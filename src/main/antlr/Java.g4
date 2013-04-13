@@ -595,47 +595,47 @@ constantExpression
 //expression : expression_[0] ;
 
 expression
-    :   primary
-    |   expression '.' Identifier
-    |   expression '.' 'this'
-    |   expression '.' 'super' '(' expressionList? ')'
-    |   expression '.' 'new' Identifier '(' expressionList? ')'
-    |   expression '.' 'super' '.' Identifier arguments?
-    |   expression '.' explicitGenericInvocation
-    |   expression '[' expression ']'
-    |   expression '(' expressionList? ')'
-    |   expression ('++' | '--')
-    |   ('+'|'-'|'++'|'--') expression
-    |   ('~'|'!') expression
-    |   '(' type ')' expression
-    |   'new' creator
-    |   expression ('*'|'/'|'%') expression
-    |   expression ('+'|'-') expression
-    |   expression ('<' '<' | '>' '>' '>' | '>' '>') expression
-    |   expression ('<' '=' | '>' '=' | '>' | '<') expression
-    |   expression 'instanceof' type
-    |   expression ('==' | '!=') expression
-    |   expression '&' expression
-    |   expression '^' expression
-    |   expression '|' expression
-    |   expression '&&' expression
-    |   expression '||' expression
-    |   expression '?' expression ':' expression
-    |   expression
-    	('^='<assoc=right>
-        |'+='<assoc=right>
-        |'-='<assoc=right>
-        |'*='<assoc=right>
-        |'/='<assoc=right>
-        |'&='<assoc=right>
-        |'|='<assoc=right>
-        |'='<assoc=right>
-        |'>' '>' '='<assoc=right>
-        |'>' '>' '>' '='<assoc=right>
-        |'<' '<' '='<assoc=right>
-        |'%='<assoc=right>
-        )
-        expression
+    :   primary															#expressionPrimary
+    |   expression '.' Identifier                                       #expressionIdentifier
+    |   expression '.' 'this'                                           #expressionThis
+    |   expression '.' 'super' '(' expressionList? ')'                  #expressionSuper
+    |   expression '.' 'new' Identifier '(' expressionList? ')'         #expressionNewInnerClassInstance // http://stackoverflow.com/questions/2863157
+    |   expression '.' 'super' '.' Identifier arguments?                #expressionSuperIdentifier
+    |   expression '.' explicitGenericInvocation                        #expressionExplicitGenericInvocation
+    |   expression '[' expression ']'                                   #expressionArrayElement
+    |   expression '(' expressionList? ')'                              #expressionMethodExpressionList
+    |   expression ('++' | '--')                                        #expressionSuffix
+    |   ('+'|'-'|'++'|'--') expression                                  #expressionPrefix
+    |   ('~'|'!') expression                                            #expressionNot 	// ~ = Bitwise NOT and ! is logical negation (NOT)
+    |   '(' type ')' expression                                         #expressionCast
+    |   'new' creator                                                   #expressionNewInstance
+    |   expression ('*'|'/'|'%') expression                             #expressionArithmetic
+    |   expression ('+'|'-') expression                                 #expressionAdditionSubtraction
+    |   expression ('<' '<' | '>' '>' '>' | '>' '>') expression         #expressionBitwiseShift
+    |   expression ('<' '=' | '>' '=' | '>' | '<') expression           #expressionGreaterLessThanOrEqual
+    |   expression 'instanceof' type                                    #expressionInstanceof
+    |   expression ('==' | '!=') expression                             #expressionEqualToNotEqualTo
+    |   expression '&' expression                                       #expressionBitwiseAND
+    |   expression '^' expression                                       #expressionBitwiseXOR 
+    |   expression '|' expression                                       #expressionBitwiseOR
+    |   expression '&&' expression                                      #expressionLogicalAND
+    |   expression '||' expression                                      #expressionLogicalOR
+    |   expression '?' expression ':' expression                        #expressionTernaryConditional
+    |   expression                                                      
+    	('^='<assoc=right>                                              
+        |'+='<assoc=right>                                              
+        |'-='<assoc=right>                                              
+        |'*='<assoc=right>                                              
+        |'/='<assoc=right>                                              
+        |'&='<assoc=right>                                              
+        |'|='<assoc=right>                                              
+        |'='<assoc=right>                                               
+        |'>' '>' '='<assoc=right>                                       
+        |'>' '>' '>' '='<assoc=right>                                   
+        |'<' '<' '='<assoc=right>                                       
+        |'%='<assoc=right>                                              
+        )                                                               
+        expression                                                      #expressionCompoundAssignment
     ;
 
 primary
