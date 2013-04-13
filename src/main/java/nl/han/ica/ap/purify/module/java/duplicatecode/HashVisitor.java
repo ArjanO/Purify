@@ -31,6 +31,9 @@ package nl.han.ica.ap.purify.module.java.duplicatecode;
 
 import java.util.TreeSet;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.RuleNode;
+
 import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
 
 /**
@@ -39,6 +42,8 @@ import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
  * @author Arjan
  */
 public class HashVisitor extends JavaBaseVisitor<Integer> {
+	private static final int PRIME = 31;
+	
 	private TreeSet<String> localVariables;
 	
 	/**
@@ -48,5 +53,60 @@ public class HashVisitor extends JavaBaseVisitor<Integer> {
 	 */
 	public HashVisitor(TreeSet<String> localVariables) {
 		this.localVariables = localVariables;
+	}
+	
+	/**
+	 * The visit returns a default value if no method returns anything else.
+	 */
+	@Override
+	protected Integer defaultResult() {
+		return null;
+	}
+	
+	@Override
+	public Integer visitChildren(RuleNode arg0) {
+		int iHash = 1;
+		boolean bVisit = false;
+		
+		for (int i = arg0.getChildCount() - 1; i >= 0; i--) {
+			Integer iVisit = visit(arg0.getChild(i));
+			
+			// If the visit resulted no hash ignore the hash.
+			if (iVisit != null) {
+				iHash = iHash * PRIME + iVisit;
+				bVisit = true;
+			}
+		}
+		
+		if (bVisit) {
+			return iHash;
+		} else {
+			return defaultResult(); // No result.
+		}
+	}
+	
+	/**
+	 * Every node that is visited is seen by this method.
+	 */
+	@Override
+	public Integer visit(ParseTree tree) {
+		/*
+		 * Call for example visitVariableDeclaratorId if the type of tree is
+		 * VariableDeclaratorId.
+		 */
+		Integer result = super.visit(tree);
+		
+		if (result != null) {
+			return result;
+		}
+		
+		// There is no hash. Try to get a hash code from the ParseTree node.
+		int iHash = HashCode.getHashCode(tree);
+		
+		if (iHash != -1) {
+			return iHash;
+		}
+		
+		return defaultResult();
 	}
 }
