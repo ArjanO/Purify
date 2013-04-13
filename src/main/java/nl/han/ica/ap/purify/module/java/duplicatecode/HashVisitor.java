@@ -35,6 +35,10 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 
 import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
+import nl.han.ica.ap.purify.language.java.JavaParser.BooleanLiteralContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.ClassOrInterfaceTypeContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.IntegerLiteralContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.PrimaryContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.VariableDeclaratorIdContext;
 
@@ -47,6 +51,9 @@ public class HashVisitor extends JavaBaseVisitor<Integer> {
 	private static final int PRIME = 31;
 	
 	private static final int VARIABLE_HASH = 342;
+	
+	private static final int KEYWORD_TRUE = 800;
+	private static final int KEYWORD_FALSE = 801;
 	
 	private TreeSet<String> localVariables;
 	
@@ -159,5 +166,77 @@ public class HashVisitor extends JavaBaseVisitor<Integer> {
 		}
 		
 		return super.visitPrimary(ctx);
+	}
+	
+	/**
+	 * Called if a class or interface is used.
+	 * 
+	 * For example:
+	 * {@code MyClass myClass = null;}
+	 */
+	@Override
+	public Integer visitClassOrInterfaceType(ClassOrInterfaceTypeContext ctx) {
+		if (ctx.getText() != null) {
+			// Hash the class name.
+			return ctx.getText().hashCode();
+		}		
+		
+		return defaultResult();
+	}
+	
+	/**
+	 * Called by a integer value.
+	 * 
+	 * For example:
+	 * {@code int myVar = 2;}
+	 */
+	@Override
+	public Integer visitIntegerLiteral(IntegerLiteralContext ctx) {
+		if (ctx.getText() != null) {
+			// Use the value a the hash.
+			return Integer.parseInt(ctx.getText());
+		}
+		
+		return defaultResult();
+	}
+	
+	/**
+	 * Called by a boolean value. 
+	 * 
+	 * For example:
+	 * {@code boolean myVar = false;}
+	 */
+	@Override
+	public Integer visitBooleanLiteral(BooleanLiteralContext ctx) {
+		if (ctx.getText() != null) {
+			if (ctx.getText().equalsIgnoreCase("true")) {
+				return KEYWORD_TRUE;
+			} else if (ctx.getText().equalsIgnoreCase("false")) {
+				return KEYWORD_FALSE;
+			}
+		}
+		
+		return defaultResult();
+	}
+	
+	/**
+	 * Called when a literal is detected. A literal can be a integer, boolean 
+	 * etc.
+	 */
+	@Override
+	public Integer visitLiteral(LiteralContext ctx) {
+		// Get the result of children. For example BooleanLiteral.
+		Integer result = super.visitLiteral(ctx);
+		
+		if (result != null) {
+			return result; // Use the child's hash. 
+		}
+		
+		if (ctx.getText() != null) {
+			// Child has no hash. Create a hash of the text. 
+			return ctx.getText().hashCode();
+		}
+		
+		return defaultResult();
 	}
 }
