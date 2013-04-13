@@ -29,6 +29,8 @@
  */
 package nl.han.ica.ap.purify.module.java.duplicatecode;
 
+import java.util.TreeSet;
+
 import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
 
 /**
@@ -37,5 +39,14 @@ import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
  * @author Arjan
  */
 public class HashVisitor extends JavaBaseVisitor<Integer> {
+	private TreeSet<String> localVariables;
 	
+	/**
+	 * Get the hash of a method (subtree) parse tree.
+	 * 
+	 * @param localVariables local variables in the method.
+	 */
+	public HashVisitor(TreeSet<String> localVariables) {
+		this.localVariables = localVariables;
+	}
 }
