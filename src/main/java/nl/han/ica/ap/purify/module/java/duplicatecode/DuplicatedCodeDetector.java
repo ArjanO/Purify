@@ -29,6 +29,8 @@
  */
 package nl.han.ica.ap.purify.module.java.duplicatecode;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
 
@@ -53,5 +55,23 @@ public class DuplicatedCodeDetector extends JavaBaseVisitor<Void> {
 	@Override
 	public Void visitMethodBody(MethodBodyContext ctx) {
 		return null; // The type Void require a return. 
+	}
+	
+	/**
+	 * Get the tree mass this is the number nodes.
+	 * 
+	 * @param tree ParseTree
+	 * @return Number of nodes in the tree.
+	 */
+	private int mass(ParseTree tree) {		
+		int iChilderen = tree.getChildCount();
+		
+		if (iChilderen > 0) {
+			for (int i = tree.getChildCount() - 1; i >= 0; i--) {
+				iChilderen += mass(tree.getChild(i));
+			}
+		}
+		
+		return iChilderen;
 	}
 }
