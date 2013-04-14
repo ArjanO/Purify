@@ -45,7 +45,9 @@ import nl.han.ica.ap.purify.language.java.util.Method;
  * @author Arjan
  */
 public class DuplicatedCodeDetector extends JavaBaseVisitor<Void> {
-	private TreeSet<String> localVariables;
+	private static final int MassThreshold = 15;
+	
+	private HashVisitor hashVisitor;
 	
 	/**
 	 * Duplicated code detector.
@@ -54,12 +56,14 @@ public class DuplicatedCodeDetector extends JavaBaseVisitor<Void> {
 	}
 	
 	/**
-	 * Called when a class member is decalred this are global variables and
+	 * Called when a class member is declared this are global variables and
 	 * methods.
 	 */
 	@Override
 	public Void visitMemberDecl(MemberDeclContext ctx) {
-		localVariables = Method.getLocalVariables(ctx);
+		TreeSet<String> localVariables = Method.getLocalVariables(ctx);
+		
+		hashVisitor = new HashVisitor(localVariables);
 		
 		return super.visitMemberDecl(ctx);
 	}
@@ -70,8 +74,24 @@ public class DuplicatedCodeDetector extends JavaBaseVisitor<Void> {
 	 * {@code super.visitMethodBody(ctx);} or {@code visitChildren(ctx);}
 	 */
 	@Override
-	public Void visitMethodBody(MethodBodyContext ctx) {		
+	public Void visitMethodBody(MethodBodyContext ctx) {
+		hashSubtrees(ctx);
 		return null; // The type Void require a return. 
+	}
+	
+	/**
+	 * Hash all the subtrees and add the hash to the hash bucket.
+	 * 
+	 * @param tree Subtree to hash.
+	 */
+	private void hashSubtrees(ParseTree tree) {
+		if (mass(tree) >= MassThreshold) { // Ignores small subtrees.
+			for (int i = tree.getChildCount() - 1; i >= 0; i--) {
+				hashSubtrees(tree.getChild(i));
+			}
+			
+			int iHash = hashVisitor.visit(tree);
+		}
 	}
 	
 	/**
