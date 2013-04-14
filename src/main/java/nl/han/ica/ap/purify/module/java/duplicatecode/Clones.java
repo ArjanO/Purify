@@ -86,7 +86,7 @@ public class Clones {
 	 * @return number of clones.
 	 */
 	public int size() {
-		return 0;
+		return clones.size();
 	}
 	
 	/**
