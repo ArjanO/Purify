@@ -42,6 +42,8 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import nl.han.ica.ap.purify.language.java.JavaLexer;
 import nl.han.ica.ap.purify.language.java.JavaParser;
+import nl.han.ica.ap.purify.module.java.duplicatecode.Clones;
+import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumber;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
 
@@ -57,6 +59,8 @@ public class App {
 			System.err.println(COMMAND_LINE_PARAM_MISSING);
 			return;
 		}
+		
+		DuplicatedCodeDetector duplicatedCode = new DuplicatedCodeDetector();
 		
 		for (int i = 0; i < args.length; i++) {
 			ANTLRInputStream input = null;
@@ -87,6 +91,8 @@ public class App {
 			MagicNumberDetector magicNumberDetector = new MagicNumberDetector();
 			waker.walk(magicNumberDetector, tree);
 			
+			duplicatedCode.visit(tree);
+			
 			List<MagicNumber> magicNumbers = magicNumberDetector
 					.getMagicNumbers();
 			
@@ -96,6 +102,15 @@ public class App {
 						magicNumber.getLiteral(), magicNumber.size(),
 						args[i]));
 			}
+		}
+		
+		Clones clones = duplicatedCode.getClones();
+		
+		System.out.println(String.format(
+				"Detected %d code clones", clones.size()));
+		
+		for (int i = clones.size() - 1; i >= 0; i--) {
+			System.out.println(clones.getItem(i).get(0).getText());
 		}
 	}
 }
