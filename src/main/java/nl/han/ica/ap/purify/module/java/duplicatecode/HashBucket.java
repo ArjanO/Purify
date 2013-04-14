@@ -29,6 +29,8 @@
  */
 package nl.han.ica.ap.purify.module.java.duplicatecode;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.TreeSet;
 
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -39,6 +41,12 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * @author Arjan
  */
 public class HashBucket {
+	private HashMap<Integer, HashBucketElement> bucket;
+	
+	public HashBucket() {
+		bucket = new HashMap<Integer, HashBucketElement>();
+	}
+	
 	/**
 	 * Add a parse tree to the bucket.
 	 * 
@@ -47,7 +55,17 @@ public class HashBucket {
 	 * @param mass The mass (number of nodes) of the tree.
 	 */
 	public void put(int hash, ParseTree tree, int mass) {
+		HashBucketElement element;
 		
+		if (!bucket.containsKey(hash)) {
+			element = new HashBucketElement();
+			
+			bucket.put(hash, element);
+		} else {
+			element = bucket.get(hash);
+		}
+		
+		element.put(tree, mass);
 	}
 	
 	/**
@@ -56,6 +74,18 @@ public class HashBucket {
 	 * @return List of {@link HashBucketElement} with more than one Parse Tree.
 	 */
 	public TreeSet<HashBucketElement> getDuplicates() {
-		return null;
+		TreeSet<HashBucketElement> result = new TreeSet<HashBucketElement>();
+		
+		Iterator<Integer> it = bucket.keySet().iterator();
+		 
+	    while(it.hasNext()) {
+	    	Integer key = it.next();
+	    	
+	    	if (bucket.get(key).size() > 1) {
+	    		result.add(bucket.get(key));
+	    	}
+	    }
+	    
+	    return result;
 	}
 }

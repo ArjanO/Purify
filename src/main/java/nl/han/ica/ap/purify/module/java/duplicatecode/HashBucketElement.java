@@ -29,11 +29,65 @@
  */
 package nl.han.ica.ap.purify.module.java.duplicatecode;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.antlr.v4.runtime.tree.ParseTree;
+
 /**
  * Element of the {@link HashBucket}
  * 
  * @author Arjan
  */
-public class HashBucketElement {
+public class HashBucketElement implements Comparable<HashBucketElement> {
+	private List<ParseTree> elements;
+	private int mass;
+	
+	public HashBucketElement() {
+		elements = new ArrayList<ParseTree>();
+		mass = 0;
+	}
+	
+	/**
+	 * Add a parse tree to the element.
+	 * 
+	 * @param tree Parse tree to add.
+	 * @param mass Mass of the parse tree.
+	 */
+	public void put(ParseTree tree, int mass) {
+		elements.add(tree);
+		
+		if (mass > this.mass) {
+			this.mass = mass;
+		}
+	}
+	
+	/**
+	 * Number of parse trees in this element.
+	 * @return Number of parse trees.
+	 */
+	public int size() {
+		return elements.size();
+	}
+	
+	/**
+	 * Get the parse tree at index.
+	 * 
+	 * @param i Index.
+	 * @return Parse tree at the index.
+	 */
+	public ParseTree get(int i) {
+		return elements.get(i);
+	}
 
+	/**
+	 * Compare the HashBucketElement objects.
+	 * 
+	 * @param o other element
+	 * @return < 0 if this is smaller, 0 if equal and > 0 if this is lager.
+	 */
+	@Override
+	public int compareTo(HashBucketElement o) {
+		return this.mass - o.mass;
+	}
 }
