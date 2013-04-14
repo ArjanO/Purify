@@ -49,6 +49,9 @@ public class Method {
 	 * @return TreeSet with method variables.
 	 */
 	public static TreeSet<String> getLocalVariables(MemberDeclContext ctx) {
-		return null;
+		LocalVariableVisitor visitor = new LocalVariableVisitor();
+		visitor.visit(ctx);
+		
+		return visitor.getLocalVariables();
 	}
 }
