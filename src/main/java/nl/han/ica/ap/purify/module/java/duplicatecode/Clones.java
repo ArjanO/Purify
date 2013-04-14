@@ -29,6 +29,7 @@
  */
 package nl.han.ica.ap.purify.module.java.duplicatecode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -39,11 +40,13 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * @author Arjan
  */
 public class Clones {
+	private List<List<ParseTree>> clones; 
+	
 	/**
 	 * Stores detected clones.
 	 */
 	public Clones() {
-		
+		clones = new ArrayList<List<ParseTree>>();
 	}
 	
 	/**
@@ -54,6 +57,27 @@ public class Clones {
 	 * @param right Second subtree
 	 */
 	public void addClonePair(ParseTree left, ParseTree right) {
+		removeSubtreeClones(left, right);
+		
+		// Add to a existing pair if left or right is already in a pair.
+		for (List<ParseTree> pair : clones) {
+			for (ParseTree tree : pair) {
+				if (tree.equals(left)) {
+					pair.add(right);
+					return;
+				} else if (tree.equals(right)) {
+					pair.add(left);
+					return;
+				}
+			}
+		}
+		
+		// The clone does not exists, add a new pair.
+		List<ParseTree> clone = new ArrayList<ParseTree>();
+		clone.add(left);
+		clone.add(right);
+		
+		clones.add(clone);
 	}
 	
 	/**
@@ -73,5 +97,71 @@ public class Clones {
 	 */
 	public List<ParseTree> getItem(int index) {
 		return null;
+	}
+	
+	/**
+	 * Remove subtree clones of the subtree left and right.
+	 * 
+	 * @param left Left subtree
+	 * @param right Right subtree
+	 */
+	private void removeSubtreeClones(ParseTree left, ParseTree right) {
+		for (int i = clones.size() -1; i >= 0; i--) {
+			removeSubtreeClones(clones.get(i), left, right);
+		}
+	}
+	
+	/**
+	 * Remove subtree clones of the subtree.
+	 * 
+	 * @param items Clone pair items to test.
+	 * @param left Left subtree
+	 * @param right Right subtree
+	 */
+	private void removeSubtreeClones(List<ParseTree> items, 
+			ParseTree left, ParseTree right) {
+		ParseTree matchLeft = null;
+		ParseTree matchRight = null;
+		
+		for (int i = items.size() - 1; i >= 0; i--) {
+			if (isSubtree(left, items.get(i))) {
+				matchLeft = items.get(i);
+			} else if (isSubtree(right, items.get(i))) {
+				matchRight = items.get(i);
+			}
+		}
+		
+		if (matchLeft != null && matchRight != null) {
+			if (items.size() == 2) {
+				clones.remove(items);
+			} else {
+				/* 
+				 * There are more clones (for example 3). Remove the left so
+				 * that the other clone stile exists.
+				 */
+				items.remove(matchLeft);
+			}
+		}
+	}
+	
+	/**
+	 * Check if subtree is a subtree of tree.
+	 * 
+	 * @param tree Tree
+	 * @param subtree Tree
+	 * @return true if subtree is a subtree of tree.
+	 */
+	private boolean isSubtree(ParseTree tree, ParseTree subtree) {
+		if (tree.equals(subtree)) {
+			return true;
+		}
+		
+		for (int i = tree.getChildCount() - 1; i >= 0; i--) {
+			if (isSubtree(tree.getChild(i), subtree)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }
