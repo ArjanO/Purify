@@ -46,13 +46,40 @@ import nl.han.ica.ap.purify.language.java.util.Method;
  */
 public class DuplicatedCodeDetector extends JavaBaseVisitor<Void> {
 	private static final int MassThreshold = 15;
+	private static final float SimilarityThreshold = 0.98f;
 	
 	private HashVisitor hashVisitor;
+	private HashBucket hashBucket;
 	
 	/**
 	 * Duplicated code detector.
 	 */
 	public DuplicatedCodeDetector() {
+		hashBucket = new HashBucket();
+	}
+	
+	/**
+	 * Get the detected clones.
+	 * 
+	 * @return {@link Clones} with all the detected clones.
+	 */
+	public Clones getClones() {
+		Clones result = new Clones();
+		
+		TreeSet<HashBucketElement> candidates = hashBucket.getDuplicates();
+		
+		for (HashBucketElement candidate : candidates) {
+			for (int i = 1; i < candidate.size(); i++) {
+				ParseTreeSimilarity similarity = new ParseTreeSimilarity(
+						candidate.get(i - 1), candidate.get(i));
+				
+				if (similarity.getSimilarity() > SimilarityThreshold) {
+					result.addClonePair(candidate.get(i - 1), candidate.get(i));
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -85,12 +112,16 @@ public class DuplicatedCodeDetector extends JavaBaseVisitor<Void> {
 	 * @param tree Subtree to hash.
 	 */
 	private void hashSubtrees(ParseTree tree) {
-		if (mass(tree) >= MassThreshold) { // Ignores small subtrees.
+		int mass = mass(tree);
+		
+		if (mass >= MassThreshold) { // Ignores small subtrees.
 			for (int i = tree.getChildCount() - 1; i >= 0; i--) {
 				hashSubtrees(tree.getChild(i));
 			}
 			
 			int iHash = hashVisitor.visit(tree);
+			
+			hashBucket.put(iHash, tree, mass);
 		}
 	}
 	
