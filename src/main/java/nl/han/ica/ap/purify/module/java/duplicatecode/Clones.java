@@ -96,7 +96,7 @@ public class Clones {
 	 * @return Clone pairs at the index.
 	 */
 	public List<ParseTree> getItem(int index) {
-		return null;
+		return clones.get(index);
 	}
 	
 	/**
