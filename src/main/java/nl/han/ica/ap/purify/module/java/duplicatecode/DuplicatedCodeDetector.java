@@ -29,10 +29,14 @@
  */
 package nl.han.ica.ap.purify.module.java.duplicatecode;
 
+import java.util.TreeSet;
+
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
+import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
+import nl.han.ica.ap.purify.language.java.util.Method;
 
 /**
  * Detect duplicated code. A visitor is used because the visit is handled 
@@ -41,10 +45,23 @@ import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
  * @author Arjan
  */
 public class DuplicatedCodeDetector extends JavaBaseVisitor<Void> {
+	private TreeSet<String> localVariables;
+	
 	/**
 	 * Duplicated code detector.
 	 */
 	public DuplicatedCodeDetector() {
+	}
+	
+	/**
+	 * Called when a class member is decalred this are global variables and
+	 * methods.
+	 */
+	@Override
+	public Void visitMemberDecl(MemberDeclContext ctx) {
+		localVariables = Method.getLocalVariables(ctx);
+		
+		return super.visitMemberDecl(ctx);
 	}
 	
 	/**
@@ -53,7 +70,7 @@ public class DuplicatedCodeDetector extends JavaBaseVisitor<Void> {
 	 * {@code super.visitMethodBody(ctx);} or {@code visitChildren(ctx);}
 	 */
 	@Override
-	public Void visitMethodBody(MethodBodyContext ctx) {
+	public Void visitMethodBody(MethodBodyContext ctx) {		
 		return null; // The type Void require a return. 
 	}
 	
