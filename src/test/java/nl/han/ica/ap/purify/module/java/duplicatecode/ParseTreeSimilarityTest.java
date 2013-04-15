@@ -170,4 +170,53 @@ public class ParseTreeSimilarityTest {
 		verify(right1Child);
 		verify(right2Child);
 	}
+	
+	/**
+	 * Left tree has 1 child. Right tree has two children.
+	 * 
+	 * 0.4 			= 2 x 1 / (2 x 1 + 1 + 2)
+	 */
+	@Test
+	public void different3Test() {
+		ParseTreeSimilarity similarity;
+		
+		// Build left parse tree.
+		VariableDeclaratorIdContext left1Child = 
+				createMock(VariableDeclaratorIdContext.class);
+		
+		expect(left.getChildCount()).andReturn(1).anyTimes();
+		expect(left.getChild(0)).andReturn(left1Child);
+		
+		expect(left1Child.getChildCount()).andReturn(0).anyTimes();
+		
+		replay(left);
+		replay(left1Child);
+		
+		// Build right parse tree.
+		MemberDeclContext right1Child = 
+				createMock(MemberDeclContext.class);
+		VariableDeclaratorIdContext right2Child = 
+				createMock(VariableDeclaratorIdContext.class);
+		
+		expect(right.getChildCount()).andReturn(2).anyTimes();
+		expect(right.getChild(0)).andReturn(right1Child);
+		expect(right.getChild(1)).andReturn(right2Child);
+		
+		expect(right1Child.getChildCount()).andReturn(0).anyTimes();
+		expect(right2Child.getChildCount()).andReturn(0).anyTimes();
+		
+		replay(right);
+		replay(right1Child);
+		replay(right2Child);
+		
+		similarity = new ParseTreeSimilarity(left, right);
+		
+		assertEquals(0.4f, similarity.getSimilarity(), 0.01);
+		
+		verify(left);
+		verify(left1Child);
+		verify(right);
+		verify(right1Child);
+		verify(right2Child);
+	}
 }
