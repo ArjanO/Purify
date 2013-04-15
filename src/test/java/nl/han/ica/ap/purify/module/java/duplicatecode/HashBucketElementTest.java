@@ -67,4 +67,26 @@ public class HashBucketElementTest {
 		
 		verify(tree);
 	}
+	
+	/**
+	 * Test adding two elements.
+	 */
+	@Test
+	public void put2ElementsTest() {
+		ParseTree tree1 = createMock(ParseTree.class);
+		ParseTree tree2 = createMock(ParseTree.class);
+		
+		replay(tree1);
+		replay(tree2);
+		
+		element.put(tree1, 25);
+		element.put(tree2, 25);
+		
+		assertEquals(2, element.size());
+		assertEquals(tree1, element.get(0));
+		assertEquals(tree2, element.get(1));
+		
+		verify(tree1);
+		verify(tree2);
+	}
 }
