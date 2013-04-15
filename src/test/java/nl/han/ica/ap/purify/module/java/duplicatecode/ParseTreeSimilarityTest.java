@@ -36,6 +36,7 @@ import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.VariableDeclaratorIdContext;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Before;
@@ -101,7 +102,7 @@ public class ParseTreeSimilarityTest {
 	 * 0.66 		= 2 x 1 / (2 x 1 + 0 + 1)
 	 */
 	@Test
-	public void leftDifferentTest() {
+	public void different1Test() {
 		ParseTreeSimilarity similarity;
 		
 		// Build left parse tree.
@@ -127,5 +128,46 @@ public class ParseTreeSimilarityTest {
 		verify(left);
 		verify(right);
 		verify(rightChild);
+	}
+	
+	/**
+	 * Left tree has no children. Right tree has two children.
+	 * 
+	 * 0.5 			= 2 x 1 / (2 x 1 + 0 + 2)
+	 */
+	@Test
+	public void different2Test() {
+		ParseTreeSimilarity similarity;
+		
+		// Build left parse tree.
+		expect(left.getChildCount()).andReturn(0).anyTimes();
+		
+		replay(left);
+		
+		// Build right parse tree.
+		MemberDeclContext right1Child = 
+				createMock(MemberDeclContext.class);
+		VariableDeclaratorIdContext right2Child = 
+				createMock(VariableDeclaratorIdContext.class);
+		
+		expect(right.getChildCount()).andReturn(2).anyTimes();
+		expect(right.getChild(0)).andReturn(right1Child);
+		expect(right.getChild(1)).andReturn(right2Child);
+		
+		expect(right1Child.getChildCount()).andReturn(0).anyTimes();
+		expect(right2Child.getChildCount()).andReturn(0).anyTimes();
+		
+		replay(right);
+		replay(right1Child);
+		replay(right2Child);
+		
+		similarity = new ParseTreeSimilarity(left, right);
+		
+		assertEquals(0.5f, similarity.getSimilarity(), 0.01);
+		
+		verify(left);
+		verify(right);
+		verify(right1Child);
+		verify(right2Child);
 	}
 }
