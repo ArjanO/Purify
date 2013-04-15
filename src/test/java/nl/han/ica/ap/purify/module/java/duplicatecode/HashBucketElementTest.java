@@ -115,4 +115,31 @@ public class HashBucketElementTest {
 		verify(tree1);
 		verify(tree2);
 	}
+	
+	/**
+	 * Compare other bigger then element.
+	 */
+	@Test
+	public void compare2Test() {
+		// Build element.
+		ParseTree tree1 = createMock(ParseTree.class);
+		
+		replay(tree1);
+		
+		element.put(tree1, 10);
+		
+		// Build other element.
+		HashBucketElement other = new HashBucketElement();
+		
+		ParseTree tree2 = createMock(ParseTree.class);
+		replay(tree2);
+		
+		other.put(tree1, 11);
+		other.put(tree2, 9);
+		
+		assertEquals(-1, element.compareTo(other));
+		
+		verify(tree1);
+		verify(tree2);
+	}
 }
