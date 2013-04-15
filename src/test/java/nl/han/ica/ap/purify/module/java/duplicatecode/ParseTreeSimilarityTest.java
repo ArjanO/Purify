@@ -38,6 +38,7 @@ import static org.junit.Assert.assertEquals;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -46,6 +47,15 @@ import org.junit.Test;
  * @author Arjan
  */
 public class ParseTreeSimilarityTest {
+	private ParseTree left;
+	private ParseTree right;
+	
+	@Before
+	public void setUp() {
+		left = createMock(ParseTree.class);
+		right = createMock(ParseTree.class);
+	}
+	
 	/**
 	 * Test the similarity of a similar parse tree.
 	 */
@@ -54,7 +64,6 @@ public class ParseTreeSimilarityTest {
 		ParseTreeSimilarity similarity;
 		
 		// Build left parse tree.
-		ParseTree left = createMock(ParseTree.class);
 		MemberDeclContext leftChild = createMock(MemberDeclContext.class);
 		
 		expect(left.getChildCount()).andReturn(1).anyTimes();
@@ -66,7 +75,6 @@ public class ParseTreeSimilarityTest {
 		replay(leftChild);
 		
 		// Build right parse tree.
-		ParseTree right = createMock(ParseTree.class);
 		MemberDeclContext rightChild = createMock(MemberDeclContext.class);
 		
 		expect(right.getChildCount()).andReturn(1).anyTimes();
@@ -83,6 +91,40 @@ public class ParseTreeSimilarityTest {
 		
 		verify(left);
 		verify(leftChild);
+		verify(right);
+		verify(rightChild);
+	}
+	
+	/**
+	 * Left tree has no children. Right tree has one child.
+	 * 
+	 * 0.66 		= 2 x 1 / (2 x 1 + 0 + 1)
+	 */
+	@Test
+	public void leftDifferentTest() {
+		ParseTreeSimilarity similarity;
+		
+		// Build left parse tree.
+		expect(left.getChildCount()).andReturn(0).anyTimes();
+		
+		replay(left);
+		
+		// Build right parse tree.
+		MemberDeclContext rightChild = createMock(MemberDeclContext.class);
+		
+		expect(right.getChildCount()).andReturn(1).anyTimes();
+		expect(right.getChild(0)).andReturn(rightChild);
+		
+		expect(rightChild.getChildCount()).andReturn(0).anyTimes();
+		
+		replay(right);
+		replay(rightChild);
+		
+		similarity = new ParseTreeSimilarity(left, right);
+		
+		assertEquals(0.66f, similarity.getSimilarity(), 0.01);
+		
+		verify(left);
 		verify(right);
 		verify(rightChild);
 	}
