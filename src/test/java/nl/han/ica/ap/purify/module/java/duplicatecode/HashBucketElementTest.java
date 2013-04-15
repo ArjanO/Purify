@@ -89,4 +89,30 @@ public class HashBucketElementTest {
 		verify(tree1);
 		verify(tree2);
 	}
+	
+	/**
+	 * Compare equal instances.
+	 */
+	@Test
+	public void compare1Test() {
+		// Build element.
+		ParseTree tree1 = createMock(ParseTree.class);
+		
+		replay(tree1);
+		
+		element.put(tree1, 10);
+		
+		// Build other element.
+		HashBucketElement other = new HashBucketElement();
+		
+		ParseTree tree2 = createMock(ParseTree.class);
+		replay(tree2);
+		
+		other.put(tree2, 10);
+		
+		assertEquals(0, element.compareTo(other));
+		
+		verify(tree1);
+		verify(tree2);
+	}
 }
