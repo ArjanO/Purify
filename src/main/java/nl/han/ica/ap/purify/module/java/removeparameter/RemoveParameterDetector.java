@@ -29,10 +29,14 @@
  */
 package nl.han.ica.ap.purify.module.java.removeparameter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import nl.han.ica.ap.purify.language.java.JavaBaseListener;
 import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionPrimaryContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.MethodDeclarationContext;
 
 /**
  * Detect unused method parameters.
@@ -40,14 +44,66 @@ import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
  * @author Arjan
  */
 public class RemoveParameterDetector extends JavaBaseListener {
+	private Method currentMethod;
+	private List<Method> detected;
+	
+	/**
+	 * Detect unused method parameters.
+	 */
 	public RemoveParameterDetector() {
+		detected = new ArrayList<Method>();
+	}
+	
+	/**
+	 * Get all the methods with undetected parameters.
+	 * 
+	 * @return List with methods.
+	 */
+	public List<Method> getDetected() {
+		return detected;
 	}
 	
 	/**
 	 * When something in the class is declared this method is called.
 	 */
 	@Override
-	public void enterMemberDecl(MemberDeclContext ctx) {
+	public void enterMemberDecl(MemberDeclContext ctx) {		
+		/*
+		 * voidMethodDeclaratorRest() 
+		 * 		= void myFunc { }
+		 * 
+		 * memberDeclaration().methodDeclaration() 
+		 * 		= Object myFunc { return null; }
+		 */
+		if (ctx.voidMethodDeclaratorRest() != null) {
+			if (ctx.Identifier() != null) {
+				String name = ctx.Identifier().getText();
+			
+				currentMethod = new Method(name);
+			}
+		} else if (ctx.memberDeclaration() != null &&
+				ctx.memberDeclaration().methodDeclaration() != null) {
+			MethodDeclarationContext method;
+			
+			method = ctx.memberDeclaration().methodDeclaration();
+			
+			if (method.Identifier() != null) {
+				String name = method.Identifier().getText();
+				
+				currentMethod = new Method(name);
+			}
+		}
+	}
+	
+	/**
+	 * Called when the member declaration is node is leaved.	
+	 */
+	@Override
+	public void exitMemberDecl(MemberDeclContext ctx) {
+		if (currentMethod != null) {
+			detected.add(currentMethod);
+			currentMethod = null;
+		}
 	}
 	
 	/**
@@ -56,13 +112,28 @@ public class RemoveParameterDetector extends JavaBaseListener {
 	@Override
 	public void enterFormalParameterDeclsRest(
 			FormalParameterDeclsRestContext ctx) {
+		if (ctx.variableDeclaratorId() != null 
+				&& ctx.variableDeclaratorId().Identifier() != null) {
+			String name = ctx.variableDeclaratorId().Identifier().getText();
+			
+			if (name != null && currentMethod != null) {
+				currentMethod.addParameter(name);
+			}
+		}
 	}
 	
 	/**
-	 * Called when a candidate variable (or parameter) is used in an expression.
+	 * Called when a candidate variable (or parameter) is used in an 
+	 * expression.
 	 */
 	@Override
 	public void enterExpressionPrimary(ExpressionPrimaryContext ctx) {
-		super.enterExpressionPrimary(ctx);
+		if (ctx.primary() != null && ctx.primary().literal() == null) { 
+			String name = ctx.primary().getText();
+			
+			if (name != null && currentMethod != null) {
+				currentMethod.usedVariable(name);
+			}
+		}
 	}
 }
