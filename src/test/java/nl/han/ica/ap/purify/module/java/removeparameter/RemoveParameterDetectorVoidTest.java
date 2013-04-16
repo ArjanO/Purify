@@ -33,21 +33,13 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
 
-import java.util.List;
-
-import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionPrimaryContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.PrimaryContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.VariableDeclaratorIdContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.VoidMethodDeclaratorRestContext;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Unit test for {@link RemoveParameterDetector}
@@ -55,10 +47,8 @@ import org.junit.Test;
  * 
  * @author Arjan
  */
-public class RemoveParameterDetectorVoidTest {
-	private RemoveParameterDetector detector;
-	
-	private MemberDeclContext ctx;
+public class RemoveParameterDetectorVoidTest 
+	extends RemoveParameterDetectorBaseTest {
 	private VoidMethodDeclaratorRestContext voidCtx;
 	private TerminalNode identifier;
 	
@@ -85,104 +75,5 @@ public class RemoveParameterDetectorVoidTest {
 		verify(ctx);
 		verify(voidCtx);
 		verify(identifier);
-	}
-	
-	@Test
-	public void param1Test() {
-		detector.enterMemberDecl(ctx);
-		
-		addParamter("name");
-		
-		detector.exitMemberDecl(ctx);
-		
-		List<Method> result = detector.getDetected();
-		
-		assertEquals(1, result.size());
-		assertEquals(1, result.get(0).getUnusedPrametersSize());
-		assertEquals("name", result.get(0).getUnusedParameters().get(0));
-	}
-	
-	@Test
-	public void param2Test() {
-		detector.enterMemberDecl(ctx);
-		
-		addParamter("name");
-		callExpressionPrimary("name");
-		
-		detector.exitMemberDecl(ctx);
-		
-		List<Method> result = detector.getDetected();
-		
-		assertEquals(1, result.size());
-		assertEquals(0, result.get(0).getUnusedPrametersSize());
-	}
-	
-	@Test
-	public void param3Test() {
-		detector.enterMemberDecl(ctx);
-		
-		addParamter("name");
-		addParamter("id");
-		callExpressionPrimary("name");
-		
-		detector.exitMemberDecl(ctx);
-		
-		List<Method> result = detector.getDetected();
-		
-		assertEquals(1, result.size());
-		assertEquals(1, result.get(0).getUnusedPrametersSize());
-		assertEquals("id", result.get(0).getUnusedParameters().get(0));
-	}
-	
-	/**
-	 * Simulate a set parameter call.
-	 * 
-	 * @param name Name of the parameter.
-	 */
-	private void addParamter(String name) {
-		FormalParameterDeclsRestContext param =
-				createMock(FormalParameterDeclsRestContext.class);
-		VariableDeclaratorIdContext paramId =
-				createMock(VariableDeclaratorIdContext.class);
-		TerminalNode paramIdentifier = 
-				createMock(TerminalNode.class);
-		
-		expect(param.variableDeclaratorId()).andReturn(paramId).anyTimes();
-		expect(paramId.Identifier()).andReturn(paramIdentifier).anyTimes();
-		expect(paramIdentifier.getText()).andReturn(name).anyTimes();
-		
-		replay(param);
-		replay(paramId);
-		replay(paramIdentifier);
-		
-		detector.enterFormalParameterDeclsRest(param);
-		
-		verify(param);
-		verify(paramId);
-		verify(paramIdentifier);
-	}
-	
-	/**
-	 * Simulate a expression primary call.
-	 * 
-	 * @param literal Text in the expression.
-	 */
-	private void callExpressionPrimary(String literal) {
-		ExpressionPrimaryContext expression = 
-				createMock(ExpressionPrimaryContext.class);
-		PrimaryContext primary = 
-				createMock(PrimaryContext.class);
-		
-		expect(expression.primary()).andReturn(primary).anyTimes();
-		expect(primary.literal()).andReturn(null).anyTimes();
-		expect(primary.getText()).andReturn(literal).anyTimes();
-		
-		replay(expression);
-		replay(primary);
-		
-		detector.enterExpressionPrimary(expression);
-		
-		verify(expression);
-		verify(primary);
 	}
 }
