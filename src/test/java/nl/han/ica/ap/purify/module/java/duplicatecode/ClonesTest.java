@@ -30,9 +30,12 @@
 package nl.han.ica.ap.purify.module.java.duplicatecode;
 
 import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Before;
@@ -68,5 +71,50 @@ public class ClonesTest {
 		
 		verify(left);
 		verify(right);
+	}
+	
+	/**
+	 * Add a tree to the clone set. The clone set contains a subtree of the
+	 * tree that is added.
+	 * 
+	 * Expected: subtree is removed.
+	 */
+	@Test
+	public void addPairToSet1Test() {
+		ParseTree subLeft = createMock(ParseTree.class);
+		ParseTree subRight = createMock(ParseTree.class);
+		
+		expect(left.getChildCount()).andReturn(1).anyTimes();
+		expect(left.getChild(0)).andReturn(subLeft).anyTimes();
+		
+		expect(right.getChildCount()).andReturn(1).anyTimes();
+		expect(right.getChild(0)).andReturn(subRight).anyTimes();
+		
+		expect(subLeft.getChildCount()).andReturn(0).anyTimes();
+		expect(subRight.getChildCount()).andReturn(0).anyTimes();
+		
+		replay(left);
+		replay(subLeft);
+		replay(right);
+		replay(subRight);
+		
+		clones.addClonePair(subLeft, subRight);
+		
+		assertEquals(1, clones.size());
+		
+		clones.addClonePair(left, right);
+		
+		assertEquals(1, clones.size());
+		
+		assertTrue(clones.getItem(0).contains(left));
+		assertTrue(clones.getItem(0).contains(right));
+		
+		assertFalse(clones.getItem(0).contains(subLeft));
+		assertFalse(clones.getItem(0).contains(subRight));
+		
+		verify(left);
+		verify(subLeft);
+		verify(right);
+		verify(subRight);
 	}
 }
