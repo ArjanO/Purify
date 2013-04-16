@@ -36,6 +36,7 @@ import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Before;
@@ -164,5 +165,77 @@ public class ClonesTest {
 		verify(subLeft);
 		verify(right);
 		verify(subRight);
+		verify(otherTree);
+	}
+	
+	/**
+	 * Add a tree to the clone set. The clone set contains a subtree of the
+	 * tree that is added. The subtree is also a clone of two other trees.
+	 * 
+	 * Expected: subtree left and right is removed.
+	 */
+	@Test
+	public void addPairToSet3Test() {
+		ParseTree subLeft = createMock(ParseTree.class);
+		ParseTree subRight = createMock(ParseTree.class);
+		
+		ParseTree other1Tree = createMock(ParseTree.class);
+		ParseTree other2Tree = createMock(ParseTree.class);
+		
+		expect(left.getChildCount()).andReturn(1).anyTimes();
+		expect(left.getChild(0)).andReturn(subLeft).anyTimes();
+		
+		expect(right.getChildCount()).andReturn(1).anyTimes();
+		expect(right.getChild(0)).andReturn(subRight).anyTimes();
+		
+		expect(subLeft.getChildCount()).andReturn(0).anyTimes();
+		expect(subRight.getChildCount()).andReturn(0).anyTimes();
+		
+		expect(other1Tree.getChildCount()).andReturn(0).anyTimes();
+		expect(other2Tree.getChildCount()).andReturn(0).anyTimes();
+		
+		replay(left);
+		replay(subLeft);
+		replay(right);
+		replay(subRight);
+		replay(other1Tree);
+		replay(other2Tree);
+		
+		clones.addClonePair(subLeft, subRight);
+		clones.addClonePair(subRight, other1Tree);
+		clones.addClonePair(other1Tree, other2Tree);
+		
+		assertEquals(1, clones.size());
+		assertEquals(4, clones.getItem(0).size());
+		
+		clones.addClonePair(left, right);
+		
+		assertEquals(2, clones.size());
+		
+		assertEquals(2, clones.getItem(0).size());
+		assertEquals(2, clones.getItem(1).size());
+		
+		if (clones.getItem(0).contains(left)) {
+			assertTrue(clones.getItem(0).contains(left));
+			assertTrue(clones.getItem(0).contains(right));
+		} else if (clones.getItem(0).contains(other1Tree)) {
+			assertTrue(clones.getItem(0).contains(other1Tree));
+			assertTrue(clones.getItem(0).contains(other2Tree));
+		} else if (clones.getItem(1).contains(left)) {
+			assertTrue(clones.getItem(1).contains(left));
+			assertTrue(clones.getItem(1).contains(right));
+		} else if (clones.getItem(1).contains(other1Tree)) {
+			assertTrue(clones.getItem(1).contains(other1Tree));
+			assertTrue(clones.getItem(1).contains(other2Tree));
+		} else {
+			fail("Clones does not contains trees");
+		}
+		
+		verify(left);
+		verify(subLeft);
+		verify(right);
+		verify(subRight);
+		verify(other1Tree);
+		verify(other2Tree);
 	}
 }
