@@ -117,4 +117,52 @@ public class ClonesTest {
 		verify(right);
 		verify(subRight);
 	}
+	
+	/**
+	 * Add a tree to the clone set. The clone set contains a subtree of the
+	 * tree that is added. The subtree is also a clone of a other tree.
+	 * 
+	 * Expected: subtree left is removed.
+	 */
+	@Test
+	public void addPairToSet2Test() {
+		ParseTree subLeft = createMock(ParseTree.class);
+		ParseTree subRight = createMock(ParseTree.class);
+		
+		ParseTree otherTree = createMock(ParseTree.class);
+		
+		expect(left.getChildCount()).andReturn(1).anyTimes();
+		expect(left.getChild(0)).andReturn(subLeft).anyTimes();
+		
+		expect(right.getChildCount()).andReturn(1).anyTimes();
+		expect(right.getChild(0)).andReturn(subRight).anyTimes();
+		
+		expect(subLeft.getChildCount()).andReturn(0).anyTimes();
+		expect(subRight.getChildCount()).andReturn(0).anyTimes();
+		
+		expect(otherTree.getChildCount()).andReturn(0).anyTimes();
+		
+		replay(left);
+		replay(subLeft);
+		replay(right);
+		replay(subRight);
+		replay(otherTree);
+		
+		clones.addClonePair(subLeft, subRight);
+		clones.addClonePair(subRight, otherTree);
+		
+		assertEquals(1, clones.size());
+		
+		clones.addClonePair(left, right);
+		
+		assertEquals(2, clones.size());
+		
+		assertEquals(2, clones.getItem(0).size());
+		assertEquals(2, clones.getItem(1).size());
+		
+		verify(left);
+		verify(subLeft);
+		verify(right);
+		verify(subRight);
+	}
 }
