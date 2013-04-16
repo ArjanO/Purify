@@ -29,7 +29,10 @@
  */
 package nl.han.ica.ap.purify.module.java.removeparameter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * Store method data.
@@ -37,12 +40,17 @@ import java.util.List;
  * @author Arjan
  */
 public class Method {
+	private String name;
+	private HashMap<String, Boolean> parameters;
+	
 	/**
 	 * Store method data.
 	 * 
 	 * @param name Name of the method.
 	 */
 	public Method(String name) {
+		this.name = name;
+		this.parameters = new HashMap<String, Boolean>();
 	}
 	
 	/**
@@ -51,7 +59,7 @@ public class Method {
 	 * @return Name of the method.
 	 */
 	public String getName() {
-		return null;
+		return this.name;
 	}
 	
 	/**
@@ -60,6 +68,9 @@ public class Method {
 	 * @param name Name of the parameter.
 	 */
 	public void addParameter(String name) {
+		if (!parameters.containsKey(name)) {
+			parameters.put(name, false);
+		}
 	}
 	
 	/**
@@ -68,7 +79,9 @@ public class Method {
 	 * @param name Name of the variable.
 	 */
 	public void usedVariable(String name) {
-		
+		if (parameters.containsKey(name)) {
+			parameters.put(name, true);
+		}
 	}
 	
 	/**
@@ -78,7 +91,15 @@ public class Method {
 	 * @return List of parameters that ar'nt used.
 	 */
 	public List<String> getUnusedParameters() {
-		return null;
+		List<String> result = new ArrayList<String>();
+		
+		for (Entry<String, Boolean> item : parameters.entrySet()) { 
+			if (item.getValue() == false) {
+				result.add(item.getKey());
+			}
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -87,6 +108,14 @@ public class Method {
 	 * @return Number of unused parameters.
 	 */
 	public int getUnusedPrametersSize() {
-		return 0;
+		int unused = 0;
+		
+		for(Boolean value : parameters.values()) {
+			if (!value) {
+				unused++;
+			}
+		}
+		
+		return unused;
 	}
 }
