@@ -134,6 +134,13 @@ public class Clones {
 		if (matchLeft != null && matchRight != null) {
 			if (items.size() == 2) {
 				clones.remove(items);
+			} else if (items.size() > 3) {
+				/*
+				 * There are more clones (for example 4). The remove of left
+				 * and right keep the other clones.
+				 */
+				items.remove(matchLeft);
+				items.remove(matchRight);
 			} else {
 				/* 
 				 * There are more clones (for example 3). Remove the left so
