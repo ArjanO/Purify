@@ -46,6 +46,8 @@ import nl.han.ica.ap.purify.module.java.duplicatecode.Clones;
 import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumber;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
+import nl.han.ica.ap.purify.module.java.removeparameter.Method;
+import nl.han.ica.ap.purify.module.java.removeparameter.RemoveParameterDetector;
 
 /**
  * Example magic numbers runner. 
@@ -60,6 +62,7 @@ public class App {
 			return;
 		}
 		
+		RemoveParameterDetector removeParameter = new RemoveParameterDetector();
 		DuplicatedCodeDetector duplicatedCode = new DuplicatedCodeDetector();
 		
 		for (int i = 0; i < args.length; i++) {
@@ -90,6 +93,7 @@ public class App {
 			ParseTreeWalker waker = new ParseTreeWalker();
 			MagicNumberDetector magicNumberDetector = new MagicNumberDetector();
 			waker.walk(magicNumberDetector, tree);
+			waker.walk(removeParameter, tree);
 			
 			duplicatedCode.visit(tree);
 			
@@ -104,6 +108,17 @@ public class App {
 			}
 		}
 		
+		// Remove parameter.
+		List<Method> methods = removeParameter.getDetected();
+		
+		for (Method method : methods) {
+			for (String name : method.getUnusedParameters()) {
+				System.out.println(String.format("%s in method %s is unused.",
+						name, method.getName()));
+			}
+		}
+		
+		// Clones
 		Clones clones = duplicatedCode.getClones();
 		
 		System.out.println(String.format(
