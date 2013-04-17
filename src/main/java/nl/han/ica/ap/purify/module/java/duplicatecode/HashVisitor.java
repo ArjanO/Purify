@@ -36,17 +36,22 @@ import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
+import nl.han.ica.ap.purify.language.java.JavaParser.BoolLiteralContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.BooleanLiteralContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.CharLiteralContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.ClassOrInterfaceTypeContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionArithmeticContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionEqualToNotEqualToContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.FloatLiteralContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.IntLiteralContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.IntegerLiteralContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.LiteralContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.NullLiteralContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.ParExpressionContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.PrimaryContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.PrimaryIdentifierContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.StatementContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.StatementIfContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.StringLiteralContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.VariableDeclaratorIdContext;
 
 /**
@@ -160,19 +165,19 @@ public class HashVisitor extends JavaBaseVisitor<Integer> {
 	 * {@code myVar = myVar * 2;}
 	 */
 	@Override
-	public Integer visitPrimary(PrimaryContext ctx) {
-		if (ctx.Identifier() != null && ctx.Identifier().getText() != null) {
-			String identifier = ctx.Identifier().getText();
-			
-			if (localVariables.contains(identifier)) {
-				return VARIABLE_HASH;
-			}
-			
-			// Unknown variable or it is a literal. Hash the text.
-			return identifier.hashCode();
+	public Integer visitPrimaryIdentifier(PrimaryIdentifierContext ctx) {
+		String identifier = ctx.Identifier().getText();
+		
+		if (identifier == null) {
+			return defaultResult();
 		}
 		
-		return super.visitPrimary(ctx);
+		if (localVariables.contains(identifier)) {
+			return VARIABLE_HASH;
+		}
+		
+		// Unknown variable or it is a literal. Hash the text.
+		return identifier.hashCode();
 	}
 	
 	/**
@@ -227,23 +232,122 @@ public class HashVisitor extends JavaBaseVisitor<Integer> {
 	}
 	
 	/**
-	 * Called when a literal is detected. A literal can be a integer, boolean 
-	 * etc.
+	 * Called when a Integer literal is detected. 
 	 */
 	@Override
-	public Integer visitLiteral(LiteralContext ctx) {
-		// Get the result of children. For example BooleanLiteral.
-		Integer result = super.visitLiteral(ctx);
+	public Integer visitIntLiteral(IntLiteralContext ctx) {
+		// Get result of this literal.
+		Integer result = super.visitIntLiteral(ctx);
 		
 		if (result != null) {
-			return result; // Use the child's hash. 
+			return result; // Use found hash. 
 		}
 		
 		if (ctx.getText() != null) {
-			// Child has no hash. Create a hash of the text. 
+			// No hash found. Create a hash of the text. 
 			return ctx.getText().hashCode();
 		}
 		
+		return defaultResult();
+	}
+	
+	/**
+	 * Called when a float literal is detected. 
+	 */
+	@Override
+	public Integer visitFloatLiteral(FloatLiteralContext ctx) {
+		// Get result of this literal.
+		Integer result = super.visitFloatLiteral(ctx);
+		
+		if (result != null) {
+			return result; // Use found hash. 
+		}
+				
+		if (ctx.getText() != null) {
+			// No hash found. Create a hash of the text. 
+			return ctx.getText().hashCode();
+		}
+				
+		return defaultResult();
+	}
+	
+	/**
+	 * Called when a char literal is detected. 
+	 */
+	@Override
+	public Integer visitCharLiteral(CharLiteralContext ctx) {
+		// Get result of this literal.
+		Integer result = super.visitCharLiteral(ctx);
+		
+		if (result != null) {
+			return result; // Use found hash. 
+		}
+				
+		if (ctx.getText() != null) {
+			// No hash found. Create a hash of the text. 
+			return ctx.getText().hashCode();
+		}
+				
+		return defaultResult();
+	}
+	
+	/**
+	 * Called when a string literal is detected. 
+	 */
+	@Override
+	public Integer visitStringLiteral(StringLiteralContext ctx) {
+		// Get result of this literal.
+		Integer result = super.visitStringLiteral(ctx);
+		
+		if (result != null) {
+			return result; // Use found hash. 
+		}
+				
+		if (ctx.getText() != null) {
+			// No hash found. Create a hash of the text. 
+			return ctx.getText().hashCode();
+		}
+				
+		return defaultResult();
+	}
+	
+	/**
+	 * Called when a boolean literal is detected. 
+	 */
+	@Override
+	public Integer visitBoolLiteral(BoolLiteralContext ctx) {
+		// Get result of this literal.
+		Integer result = super.visitBoolLiteral(ctx);
+		
+		if (result != null) {
+			return result; // Use found hash. 
+		}
+				
+		if (ctx.getText() != null) {
+			// No hash found. Create a hash of the text. 
+			return ctx.getText().hashCode();
+		}
+				
+		return defaultResult();
+	}
+	
+	/**
+	 * Called when a null literal is detected. 
+	 */
+	@Override
+	public Integer visitNullLiteral(NullLiteralContext ctx) {
+		// Get result of this literal.
+		Integer result = super.visitNullLiteral(ctx);
+		
+		if (result != null) {
+			return result; // Use found hash. 
+		}
+				
+		if (ctx.getText() != null) {
+			// No hash found. Create a hash of the text. 
+			return ctx.getText().hashCode();
+		}
+				
 		return defaultResult();
 	}
 	
