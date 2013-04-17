@@ -39,7 +39,9 @@ import static org.junit.Assert.*;
 
 import java.util.TreeSet;
 
+import nl.han.ica.ap.purify.language.java.JavaParser.BlockContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.VariableDeclaratorIdContext;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -52,6 +54,27 @@ import org.junit.Test;
  * @author Arjan
  */
 public class MethodTest {
+	/**
+	 * Test with a method. Expected: ParseTree is method.
+	 */
+	@Test
+	public void isParseTreeMethodBodyTest() {
+		MethodBodyContext methodBody = 
+				createMock(MethodBodyContext.class);
+		BlockContext block = 
+				createMock(BlockContext.class);
+		
+		block.parent = methodBody;
+		
+		replay(block);
+		replay(methodBody);
+		
+		assertTrue(Method.isParseTreeMethodBody(block));
+		
+		verify(block);
+		verify(methodBody);
+	}
+	
 	/**
 	 * Test if variable id's are returned.
 	 */
