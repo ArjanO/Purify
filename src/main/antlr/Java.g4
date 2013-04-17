@@ -639,13 +639,13 @@ expression
     ;
 
 primary
-	: '(' expression ')'    #primaryExpression
-    | 'this'                #primaryThis
-    | 'super'               #primarySuper
-    | literal               #primaryLiteral
-    | Identifier            #primaryIdentifier
-    | type '.' 'class'      #primaryTypeClass
-    | 'void' '.' 'class'    #primaryVoidClass
+	: '(' expression ')'    											#primaryExpression
+    | 'this'                											#primaryThis
+    | 'super'               											#primarySuper
+    | literal               											#primaryLiteral
+    | Identifier            											#primaryIdentifier
+    | type '.' 'class'      											#primaryTypeClass
+    | 'void' '.' 'class'    											#primaryVoidClass
     ;
     
 creator
