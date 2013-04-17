@@ -35,7 +35,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import nl.han.ica.ap.purify.language.java.JavaBaseListener;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralBooleanContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralCharacterContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.LiteralContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralFloatContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralIntegerContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralStringContext;
 
 /**
  * Detect magic numbers. Note: This detector is build for only one source file!
@@ -72,11 +77,54 @@ public class MagicNumberDetector extends JavaBaseListener {
 	}
 	
 	/**
+	 * enterLiteralBoolean is called every time the tree waker finds boolean.
+	 */
+	@Override
+	public void enterLiteralBoolean(LiteralBooleanContext ctx) {
+		enterLiteral(ctx);
+	}
+	
+	/**
+	 * enterLiteralFloat is called every time the tree waker finds floating 
+	 * point. For example 25.0 or -2.0.
+	 */
+	@Override
+	public void enterLiteralFloat(LiteralFloatContext ctx) {
+		enterLiteral(ctx);
+	}
+	
+	/**
+	 * enterLiteralCharacter is called every time the tree waker finds 
+	 * a character For example 'A'.
+	 */
+	@Override
+	public void enterLiteralCharacter(LiteralCharacterContext ctx) {
+		enterLiteral(ctx);
+	}
+	
+	/**
+	 * enterLiteralInteger is called every time the tree waker finds 
+	 * a integer for example 15.
+	 */
+	@Override
+	public void enterLiteralInteger(LiteralIntegerContext ctx) {
+		enterLiteral(ctx);
+	}
+
+	/**
+	 * enterLiteralNull is called every time the tree waker finds a string. 
+	 * For example "test".
+	 */
+	@Override
+	public void enterLiteralString(LiteralStringContext ctx) {
+		enterLiteral(ctx);
+	}
+	
+	/**
 	 * enterLiteral is called every time the tree waker finds literals.
 	 * Example of literals: 25, "test", 2.5.
 	 */
-	@Override
-	public void enterLiteral(LiteralContext ctx) {
+	private void enterLiteral(LiteralContext ctx) {
 		if (ctx != null && ctx.getText() != null) {
 			MagicNumber magicNumber;
 			
