@@ -36,22 +36,22 @@ import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
-import nl.han.ica.ap.purify.language.java.JavaParser.BoolLiteralContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.BooleanLiteralContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.CharLiteralContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.ClassOrInterfaceTypeContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionArithmeticContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionEqualToNotEqualToContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.FloatLiteralContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.IntLiteralContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.IntegerLiteralContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.NullLiteralContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralBooleanContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralCharacterContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralFloatContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralIntegerContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralNullContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralStringContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.ParExpressionContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.PrimaryIdentifierContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.StatementContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.StatementIfContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.StringLiteralContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.VariableDeclaratorIdContext;
 
 /**
@@ -235,9 +235,9 @@ public class HashVisitor extends JavaBaseVisitor<Integer> {
 	 * Called when a Integer literal is detected. 
 	 */
 	@Override
-	public Integer visitIntLiteral(IntLiteralContext ctx) {
+	public Integer visitLiteralInteger(LiteralIntegerContext ctx) {
 		// Get result of this literal.
-		Integer result = super.visitIntLiteral(ctx);
+		Integer result = super.visitLiteralInteger(ctx);
 		
 		if (result != null) {
 			return result; // Use found hash. 
@@ -255,9 +255,9 @@ public class HashVisitor extends JavaBaseVisitor<Integer> {
 	 * Called when a float literal is detected. 
 	 */
 	@Override
-	public Integer visitFloatLiteral(FloatLiteralContext ctx) {
+	public Integer visitLiteralFloat(LiteralFloatContext ctx) {
 		// Get result of this literal.
-		Integer result = super.visitFloatLiteral(ctx);
+		Integer result = super.visitLiteralFloat(ctx);
 		
 		if (result != null) {
 			return result; // Use found hash. 
@@ -275,9 +275,9 @@ public class HashVisitor extends JavaBaseVisitor<Integer> {
 	 * Called when a char literal is detected. 
 	 */
 	@Override
-	public Integer visitCharLiteral(CharLiteralContext ctx) {
+	public Integer visitLiteralCharacter(LiteralCharacterContext ctx) {
 		// Get result of this literal.
-		Integer result = super.visitCharLiteral(ctx);
+		Integer result = super.visitLiteralCharacter(ctx);
 		
 		if (result != null) {
 			return result; // Use found hash. 
@@ -295,9 +295,9 @@ public class HashVisitor extends JavaBaseVisitor<Integer> {
 	 * Called when a string literal is detected. 
 	 */
 	@Override
-	public Integer visitStringLiteral(StringLiteralContext ctx) {
+	public Integer visitLiteralString(LiteralStringContext ctx) {
 		// Get result of this literal.
-		Integer result = super.visitStringLiteral(ctx);
+		Integer result = super.visitLiteralString(ctx);
 		
 		if (result != null) {
 			return result; // Use found hash. 
@@ -315,9 +315,9 @@ public class HashVisitor extends JavaBaseVisitor<Integer> {
 	 * Called when a boolean literal is detected. 
 	 */
 	@Override
-	public Integer visitBoolLiteral(BoolLiteralContext ctx) {
+	public Integer visitLiteralBoolean(LiteralBooleanContext ctx) {
 		// Get result of this literal.
-		Integer result = super.visitBoolLiteral(ctx);
+		Integer result = super.visitLiteralBoolean(ctx);
 		
 		if (result != null) {
 			return result; // Use found hash. 
@@ -331,13 +331,10 @@ public class HashVisitor extends JavaBaseVisitor<Integer> {
 		return defaultResult();
 	}
 	
-	/**
-	 * Called when a null literal is detected. 
-	 */
 	@Override
-	public Integer visitNullLiteral(NullLiteralContext ctx) {
+	public Integer visitLiteralNull(LiteralNullContext ctx) {
 		// Get result of this literal.
-		Integer result = super.visitNullLiteral(ctx);
+		Integer result = super.visitLiteralNull(ctx);
 		
 		if (result != null) {
 			return result; // Use found hash. 
