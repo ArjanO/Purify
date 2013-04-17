@@ -31,7 +31,8 @@ package nl.han.ica.ap.purify.module.java.magicnumber;
 
 import java.util.List;
 
-import nl.han.ica.ap.purify.language.java.JavaParser.LiteralContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralIntegerContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralNullContext;
 
 import static org.easymock.EasyMock.*;
 
@@ -46,40 +47,44 @@ import static org.junit.Assert.*;
  */
 public class MagicNumberDetectorTest {
 	private MagicNumberDetector detector;
-	private LiteralContext literalMock;
 	
 	@Before
 	public void setUp() {
-		literalMock = createMock(LiteralContext.class);
 		detector = new MagicNumberDetector();
 	}
 	
 	@Test
 	public void enterLiteralTest() {
+		LiteralIntegerContext literalMock = 
+				createMock(LiteralIntegerContext.class);
+		
 		expect(literalMock.getText()).andReturn("25").anyTimes();
 		replay(literalMock);
 		
-		detector.enterLiteral(literalMock);
+		detector.enterLiteralInteger(literalMock);
 		
 		verify(literalMock);
 	}
 	
 	@Test
 	public void enterLiteralNullTest() {
-		expect(literalMock.getText()).andReturn(null);
-		
+		LiteralNullContext literalMock = 
+				createMock(LiteralNullContext.class);
 		replay(literalMock);
 		
-		detector.enterLiteral(literalMock);
+		detector.enterLiteralNull(literalMock);
 		
 		verify(literalMock);
 	}
 	
 	@Test
 	public void addTreeLiterals() {
-		LiteralContext literal1Mock = createMock(LiteralContext.class);
-		LiteralContext literal2Mock = createMock(LiteralContext.class);
-		LiteralContext literal3Mock = createMock(LiteralContext.class);
+		LiteralIntegerContext literal1Mock = 
+				createMock(LiteralIntegerContext.class);
+		LiteralIntegerContext literal2Mock = 
+				createMock(LiteralIntegerContext.class);
+		LiteralIntegerContext literal3Mock = 
+				createMock(LiteralIntegerContext.class);
 		
 		expect(literal1Mock.getText()).andReturn("25").anyTimes();
 		expect(literal2Mock.getText()).andReturn("10").anyTimes();
@@ -89,9 +94,9 @@ public class MagicNumberDetectorTest {
 		replay(literal2Mock);
 		replay(literal3Mock);
 		
-		detector.enterLiteral(literal1Mock);
-		detector.enterLiteral(literal2Mock);
-		detector.enterLiteral(literal3Mock);
+		detector.enterLiteralInteger(literal1Mock);
+		detector.enterLiteralInteger(literal2Mock);
+		detector.enterLiteralInteger(literal3Mock);
 		
 		verify(literal1Mock);
 		verify(literal2Mock);
