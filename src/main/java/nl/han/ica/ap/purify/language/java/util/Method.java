@@ -31,6 +31,8 @@ package nl.han.ica.ap.purify.language.java.util;
 
 import java.util.TreeSet;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 
 /**
@@ -53,5 +55,15 @@ public class Method {
 		visitor.visit(ctx);
 		
 		return visitor.getLocalVariables();
+	}
+	
+	/**
+	 * Check if the parse tree is a method body.
+	 * 
+	 * @param tree Parse tree
+	 * @return true if the parse tree is a method body.
+	 */
+	public static boolean isParseTreeMethodBody(ParseTree tree) {
+		return false;
 	}
 }
