@@ -74,7 +74,7 @@ public class CallGraph {
 	 * @param classID The name of the ClassNode you want to find.
 	 * @return Returns the ClassNode with the specified name or null if it doesn't exist.
 	 */
-	private ClassNode getNode(String classID) {
+	public ClassNode getNode(String classID) {
 		for(ClassNode n : nodes) {
 			if(n.getClassID().equals(classID)) {
 				return n;

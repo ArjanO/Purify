@@ -45,7 +45,6 @@ public class ClassNode {
 	private ArrayList<MethodNode> methods;
 	
 	/** globalvariables is a HashMap containing all global variables of this class. */
-	private HashMap<String,String> globalvariables;
 	
 	/**
 	 * Creates a ClassNode with the specified name;
@@ -54,7 +53,6 @@ public class ClassNode {
 	public ClassNode(String classID) {
 		this.classID = classID;
 		methods = new ArrayList<MethodNode>();
-		globalvariables = new HashMap<String,String>();
 	}
 	
 	/**
@@ -102,12 +100,9 @@ public class ClassNode {
 	 */
 	public void mapVariables(HashMap<String, HashMap<String, String>> variables) {
 		for(String scope : variables.keySet()) {
-			if(scope.equalsIgnoreCase("this")) {
-				globalvariables = variables.get(scope);
-			} else {
+			
 				MethodNode mn = getMethod(scope);
 				mn.setVariables(variables.get(scope));
-			}
 		}
 	}
 	
@@ -125,6 +120,10 @@ public class ClassNode {
 				}
 			}
 		}
-		return globalvariables.get(variableID);
+		return null;
+	}
+	
+	public HashMap<String, String> getGlobalVariables() {
+		return getMethod("this").getVariables();
 	}
 }

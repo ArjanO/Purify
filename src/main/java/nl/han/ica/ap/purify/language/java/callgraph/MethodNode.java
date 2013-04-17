@@ -127,4 +127,8 @@ public class MethodNode {
 	public void setVariables(HashMap<String, String> variables) {
 		localvariables = variables;
 	}
+	
+	public HashMap<String, String> getVariables() {
+		return localvariables;
+	}
 }
