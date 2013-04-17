@@ -392,12 +392,12 @@ qualifiedName
     ;
 
 literal
-    :   integerLiteral
-    |   FloatingPointLiteral
-    |   CharacterLiteral
-    |   StringLiteral
-    |   booleanLiteral
-    |   'null'
+    : integerLiteral        #intLiteral
+    | FloatingPointLiteral  #floatLiteral 
+    | CharacterLiteral      #charLiteral 
+    | StringLiteral         #stringLiteral
+    | booleanLiteral        #boolLiteral
+    | 'null'                #nullLiteral
     ;
 
 integerLiteral
@@ -639,13 +639,13 @@ expression
     ;
 
 primary
-	:	'(' expression ')'
-    |   'this' 
-    |   'super'
-    |   literal
-    |   Identifier
-    |   type '.' 'class'
-    |   'void' '.' 'class'
+	: '(' expression ')'    #primaryExpression
+    | 'this'                #primaryThis
+    | 'super'               #primarySuper
+    | literal               #primaryLiteral
+    | Identifier            #primaryIdentifier
+    | type '.' 'class'      #primaryTypeClass
+    | 'void' '.' 'class'    #primaryVoidClass
     ;
     
 creator
