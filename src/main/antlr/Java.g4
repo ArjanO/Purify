@@ -392,12 +392,12 @@ qualifiedName
     ;
 
 literal
-    : integerLiteral        #intLiteral
-    | FloatingPointLiteral  #floatLiteral 
-    | CharacterLiteral      #charLiteral 
-    | StringLiteral         #stringLiteral
-    | booleanLiteral        #boolLiteral
-    | 'null'                #nullLiteral
+    : integerLiteral        											#literalInteger
+    | FloatingPointLiteral  											#literalFloat
+    | CharacterLiteral      											#literalCharacter
+    | StringLiteral         											#literalString
+    | booleanLiteral        											#literalBoolean
+    | 'null'                											#literalNull
     ;
 
 integerLiteral
