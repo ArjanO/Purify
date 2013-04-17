@@ -92,6 +92,7 @@ public class ClassNodeListener extends JavaBaseListener {
 		methodfound = false;
 		typefound = false;
 		classID = null;
+		methodID = null;
 	}
 	
 	/**
@@ -101,8 +102,10 @@ public class ClassNodeListener extends JavaBaseListener {
 	 */
 	@Override
 	public void exitCompilationUnit(JavaParser.CompilationUnitContext ctx) {
-		graph.addNode(classID, methods);
-		graph.mapVariables(classID, variables);
+		if(classID != null) {
+			graph.addNode(classID, methods);
+			graph.mapVariables(classID, variables);
+		}
 	}
 	
 	/**
