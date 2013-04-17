@@ -33,7 +33,9 @@ import java.util.TreeSet;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import nl.han.ica.ap.purify.language.java.JavaParser.BlockContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
 
 /**
  * Method tools.
@@ -64,6 +66,19 @@ public class Method {
 	 * @return true if the parse tree is a method body.
 	 */
 	public static boolean isParseTreeMethodBody(ParseTree tree) {
+		if (tree == null) {
+			throw new NullPointerException();
+		}
+		
+		if (tree instanceof BlockContext) {
+			BlockContext block = (BlockContext)tree;
+			
+			if (block.parent != null && 
+					block.parent instanceof MethodBodyContext) {
+				return true;
+			}
+		}
+		
 		return false;
 	}
 }
