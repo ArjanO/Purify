@@ -144,7 +144,6 @@ public abstract class RemoveParameterDetectorBaseTest {
 				createMock(PrimaryContext.class);
 		
 		expect(expression.primary()).andReturn(primary).anyTimes();
-		expect(primary.literal()).andReturn(null).anyTimes();
 		expect(primary.getText()).andReturn(literal).anyTimes();
 		
 		replay(expression);

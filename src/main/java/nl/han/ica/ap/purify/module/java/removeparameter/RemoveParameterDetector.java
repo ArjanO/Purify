@@ -37,6 +37,7 @@ import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionPrimaryContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodDeclarationContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.PrimaryContext;
 
 /**
  * Detect unused method parameters.
@@ -128,7 +129,8 @@ public class RemoveParameterDetector extends JavaBaseListener {
 	 */
 	@Override
 	public void enterExpressionPrimary(ExpressionPrimaryContext ctx) {
-		if (ctx.primary() != null && ctx.primary().literal() == null) { 
+		if (ctx.primary() != null && 
+				ctx.primary() instanceof PrimaryContext) { 
 			String name = ctx.primary().getText();
 			
 			if (name != null && currentMethod != null) {
