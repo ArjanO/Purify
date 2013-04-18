@@ -44,10 +44,10 @@ import java.util.HashMap;
  */
 public class CallGraph {
 	/** nodes is an ArrayList containing all ClassNodes of this graph */
-	ArrayList<ClassNode> nodes;
+	private ArrayList<ClassNode> nodes;
 	
 	/** edges is an ArrayList containing all Edges of this graph */
-	ArrayList<Edge> edges;
+	private ArrayList<Edge> edges;
 	
 	public CallGraph() {
 		nodes = new ArrayList<ClassNode>();
@@ -126,6 +126,10 @@ public class CallGraph {
 			throw new RuntimeException("Could not find ClassNode: " + trgClass);
 		}
 		edges.add(new Edge(src.getMethod(srcMethod),trg.getMethod(trgMethod)));
+	}
+	
+	public ArrayList<Edge> getEdges() {
+		return edges;
 	}
 	
 	/**
