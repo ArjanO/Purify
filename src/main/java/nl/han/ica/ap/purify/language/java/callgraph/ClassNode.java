@@ -84,6 +84,7 @@ public class ClassNode {
 	
 	/**
 	 * Adds a new MethodNode to this class.
+	 * 
 	 * @param methodID The name of the method.
 	 * @param modifiers The list with modifiers of the method.
 	 */
@@ -123,7 +124,16 @@ public class ClassNode {
 		return null;
 	}
 	
+	/**
+	 * Gets variables from MethodNode 'this' if it exists.
+	 * 
+	 * @return HashMap<String,String> with variables of MethodNode 'this'.
+	 */
 	public HashMap<String, String> getGlobalVariables() {
-		return getMethod("this").getVariables();
+		MethodNode m = getMethod("this");
+		if(m != null) {
+			return m.getVariables();
+		}
+		return null;
 	}
 }

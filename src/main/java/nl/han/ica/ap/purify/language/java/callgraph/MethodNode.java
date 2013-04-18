@@ -58,6 +58,7 @@ public class MethodNode {
 	
 	/**
 	 * Creates a new MethodNode.
+	 * 
 	 * @param classID The name of class this method is in.
 	 * @param methodID The name of the method.
 	 * @param modifiers The modifiers of the method.
@@ -108,6 +109,7 @@ public class MethodNode {
 	
 	/**
 	 * Method to get the type of a variable.
+	 * 
 	 * @param variableID Name of the variable you want the type of.
 	 * @return Returns the type of the specified variable as a String or null if not found.
 	 */
@@ -122,6 +124,7 @@ public class MethodNode {
 	
 	/**
 	 * Add local variable map to method.
+	 * 
 	 * @param variables HashMap with the variables of this method.
 	 */
 	public void setVariables(HashMap<String, String> variables) {
