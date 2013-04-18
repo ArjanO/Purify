@@ -82,4 +82,20 @@ public class SourceFileTest {
 	public void getParseTree() {
 		assertEquals(parseTree, file.getParseTree());
 	}
+	
+	@Test
+	public void addIssue() {
+		IIssue issue = createMock(IIssue.class);
+		
+		replay(issue);
+		
+		assertEquals(0, file.getIssuesSize());
+		
+		file.addIssue(issue);
+		
+		assertEquals(1, file.getIssuesSize());
+		assertEquals(issue, file.getIssue(0));
+		
+		verify(issue);
+	}
 }
