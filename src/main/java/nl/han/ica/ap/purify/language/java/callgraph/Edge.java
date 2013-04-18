@@ -45,5 +45,6 @@ public class Edge {
 	public Edge(MethodNode src, MethodNode target) {
 		this.src = src;
 		this.target = target;
+		this.target.called = true;
 	}
 }
