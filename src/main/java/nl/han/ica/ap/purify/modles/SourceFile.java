@@ -29,6 +29,9 @@
  */
 package nl.han.ica.ap.purify.modles;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -43,6 +46,8 @@ public class SourceFile {
 	private CommonTokenStream tokens;
 	private ParseTree parseTree;
 	
+	private List<IIssue> issues;
+	
 	/**
 	 * Create a new file.
 	 * 
@@ -54,6 +59,8 @@ public class SourceFile {
 		this.path = path;
 		this.tokens = tokens;
 		this.parseTree = tree;
+		
+		this.issues = new ArrayList<IIssue>();
 	}
 	
 	/**
@@ -81,5 +88,33 @@ public class SourceFile {
 	 */
 	public ParseTree getParseTree() {
 		return parseTree;
+	}
+	
+	/**
+	 * Get the issue at index.
+	 * 
+	 * @param index Index.
+	 * @return Issue
+	 */
+	public IIssue getIssue(int index) {
+		return issues.get(index);
+	}
+	
+	/**
+	 * Add a new issue.
+	 * 
+	 * @param issue
+	 */
+	public void addIssue(IIssue issue) {
+		issues.add(issue);
+	}
+	
+	/**
+	 * Get the number of issues.
+	 * 
+	 * @return Number of issues.
+	 */
+	public int getIssuesSize() {
+		return issues.size();
 	}
 }
