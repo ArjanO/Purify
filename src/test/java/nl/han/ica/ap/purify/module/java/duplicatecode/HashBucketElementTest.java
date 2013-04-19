@@ -34,7 +34,6 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -56,38 +55,38 @@ public class HashBucketElementTest {
 	 */
 	@Test
 	public void putElementTest() {
-		ParseTree tree = createMock(ParseTree.class);
+		Clone candidate = createMock(Clone.class);
 		
-		replay(tree);
+		replay(candidate);
 		
-		element.put(tree, 25);
+		element.put(candidate, 25);
 		
 		assertEquals(1, element.size());
-		assertEquals(tree, element.get(0));
+		assertEquals(candidate, element.get(0));
 		
-		verify(tree);
+		verify(candidate);
 	}
 	
 	/**
 	 * Test adding two elements.
 	 */
 	@Test
-	public void put2ElementsTest() {
-		ParseTree tree1 = createMock(ParseTree.class);
-		ParseTree tree2 = createMock(ParseTree.class);
+	public void put2ElementsTest() {		
+		Clone candidate1 = createMock(Clone.class);
+		Clone candidate2 = createMock(Clone.class);
 		
-		replay(tree1);
-		replay(tree2);
+		replay(candidate1);
+		replay(candidate2);
 		
-		element.put(tree1, 25);
-		element.put(tree2, 25);
+		element.put(candidate1, 25);
+		element.put(candidate2, 25);
 		
 		assertEquals(2, element.size());
-		assertEquals(tree1, element.get(0));
-		assertEquals(tree2, element.get(1));
+		assertEquals(candidate1, element.get(0));
+		assertEquals(candidate2, element.get(1));
 		
-		verify(tree1);
-		verify(tree2);
+		verify(candidate1);
+		verify(candidate2);
 	}
 	
 	/**
@@ -96,24 +95,24 @@ public class HashBucketElementTest {
 	@Test
 	public void compare1Test() {
 		// Build element.
-		ParseTree tree1 = createMock(ParseTree.class);
+		Clone candidate1 = createMock(Clone.class);
 		
-		replay(tree1);
+		replay(candidate1);
 		
-		element.put(tree1, 10);
+		element.put(candidate1, 10);
 		
 		// Build other element.
 		HashBucketElement other = new HashBucketElement();
 		
-		ParseTree tree2 = createMock(ParseTree.class);
-		replay(tree2);
+		Clone candidate2 = createMock(Clone.class);
+		replay(candidate2);
 		
-		other.put(tree2, 10);
+		other.put(candidate2, 10);
 		
 		assertEquals(0, element.compareTo(other));
 		
-		verify(tree1);
-		verify(tree2);
+		verify(candidate1);
+		verify(candidate2);
 	}
 	
 	/**
@@ -122,24 +121,24 @@ public class HashBucketElementTest {
 	@Test
 	public void compare2Test() {
 		// Build element.
-		ParseTree tree1 = createMock(ParseTree.class);
+		Clone candidate1 = createMock(Clone.class);
 		
-		replay(tree1);
+		replay(candidate1);
 		
-		element.put(tree1, 10);
+		element.put(candidate1, 10);
 		
 		// Build other element.
 		HashBucketElement other = new HashBucketElement();
 		
-		ParseTree tree2 = createMock(ParseTree.class);
-		replay(tree2);
+		Clone candidate2 = createMock(Clone.class);
+		replay(candidate2);
 		
-		other.put(tree1, 11);
-		other.put(tree2, 9);
+		other.put(candidate1, 11);
+		other.put(candidate2, 9);
 		
 		assertEquals(-1, element.compareTo(other));
 		
-		verify(tree1);
-		verify(tree2);
+		verify(candidate1);
+		verify(candidate2);
 	}
 }

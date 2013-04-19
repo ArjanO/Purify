@@ -37,6 +37,7 @@ import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
 import nl.han.ica.ap.purify.language.java.util.Method;
+import nl.han.ica.ap.purify.modles.SourceFile;
 
 /**
  * Detect duplicated code. A visitor is used because the visit is handled 
@@ -51,11 +52,17 @@ public class DuplicatedCodeDetector extends JavaBaseVisitor<Void> {
 	private HashVisitor hashVisitor;
 	private HashBucket hashBucket;
 	
+	private SourceFile sourceFile;
+	
 	/**
 	 * Duplicated code detector.
 	 */
 	public DuplicatedCodeDetector() {
 		hashBucket = new HashBucket();
+	}
+	
+	public void setSourceFile(SourceFile sourceFile) {
+		this.sourceFile = sourceFile;
 	}
 	
 	/**
@@ -70,8 +77,11 @@ public class DuplicatedCodeDetector extends JavaBaseVisitor<Void> {
 		
 		for (HashBucketElement candidate : candidates) {
 			for (int i = 1; i < candidate.size(); i++) {
+				ParseTree left = candidate.get(i - 1).getParseTree();
+				ParseTree right = candidate.get(i).getParseTree();
+				
 				ParseTreeSimilarity similarity = new ParseTreeSimilarity(
-						candidate.get(i - 1), candidate.get(i));
+						left, right);
 				
 				if (similarity.getSimilarity() > SimilarityThreshold) {
 					result.addClonePair(candidate.get(i - 1), candidate.get(i));
@@ -121,7 +131,8 @@ public class DuplicatedCodeDetector extends JavaBaseVisitor<Void> {
 			
 			int iHash = hashVisitor.visit(tree);
 			
-			hashBucket.put(iHash, tree, mass);
+			Clone candidate = new Clone(sourceFile, tree);
+			hashBucket.put(iHash, candidate, mass);
 		}
 	}
 	

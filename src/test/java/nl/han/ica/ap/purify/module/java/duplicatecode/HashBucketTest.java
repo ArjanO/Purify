@@ -34,7 +34,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.TreeSet;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,13 +52,13 @@ public class HashBucketTest {
 	
 	@Test
 	public void putTest() {
-		ParseTree tree1 = createMock(ParseTree.class);
-		ParseTree tree2 = createMock(ParseTree.class);
-		ParseTree tree3 = createMock(ParseTree.class);
+		Clone candidate1 = createMock(Clone.class);
+		Clone candidate2 = createMock(Clone.class);
+		Clone candidate3 = createMock(Clone.class);
 		
-		bucket.put(102, tree1, 5);
-		bucket.put(103, tree2, 5);
-		bucket.put(102, tree3, 5);
+		bucket.put(102, candidate1, 5);
+		bucket.put(103, candidate2, 5);
+		bucket.put(102, candidate3, 5);
 		
 		TreeSet<HashBucketElement> result = bucket.getDuplicates();
 		

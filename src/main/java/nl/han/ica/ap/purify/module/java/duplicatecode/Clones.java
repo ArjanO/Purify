@@ -40,13 +40,13 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * @author Arjan
  */
 public class Clones {
-	private List<List<ParseTree>> clones; 
+	private List<List<Clone>> clones; 
 	
 	/**
 	 * Stores detected clones.
 	 */
 	public Clones() {
-		clones = new ArrayList<List<ParseTree>>();
+		clones = new ArrayList<List<Clone>>();
 	}
 	
 	/**
@@ -56,16 +56,17 @@ public class Clones {
 	 * @param left First subtree
 	 * @param right Second subtree
 	 */
-	public void addClonePair(ParseTree left, ParseTree right) {
+	public void addClonePair(Clone left, Clone right) {
 		removeSubtreeClones(left, right);
 		
 		// Add to a existing pair if left or right is already in a pair.
-		for (List<ParseTree> pair : clones) {
-			for (ParseTree tree : pair) {
-				if (tree.equals(left)) {
+		for (List<Clone> pair : clones) {
+			for (Clone cloneItem : pair) {
+				if (cloneItem.getParseTree().equals(left.getParseTree())) {
 					pair.add(right);
 					return;
-				} else if (tree.equals(right)) {
+				} else if (cloneItem.getParseTree().equals(
+						right.getParseTree())) {
 					pair.add(left);
 					return;
 				}
@@ -73,7 +74,7 @@ public class Clones {
 		}
 		
 		// The clone does not exists, add a new pair.
-		List<ParseTree> clone = new ArrayList<ParseTree>();
+		List<Clone> clone = new ArrayList<Clone>();
 		clone.add(left);
 		clone.add(right);
 		
@@ -95,7 +96,7 @@ public class Clones {
 	 * @param index Index
 	 * @return Clone pairs at the index.
 	 */
-	public List<ParseTree> getItem(int index) {
+	public List<Clone> getItem(int index) {
 		return clones.get(index);
 	}
 	
@@ -105,7 +106,7 @@ public class Clones {
 	 * @param left Left subtree
 	 * @param right Right subtree
 	 */
-	private void removeSubtreeClones(ParseTree left, ParseTree right) {
+	private void removeSubtreeClones(Clone left, Clone right) {
 		for (int i = clones.size() -1; i >= 0; i--) {
 			removeSubtreeClones(clones.get(i), left, right);
 		}
@@ -118,15 +119,16 @@ public class Clones {
 	 * @param left Left subtree
 	 * @param right Right subtree
 	 */
-	private void removeSubtreeClones(List<ParseTree> items, 
-			ParseTree left, ParseTree right) {
-		ParseTree matchLeft = null;
-		ParseTree matchRight = null;
+	private void removeSubtreeClones(List<Clone> items, 
+			Clone left, Clone right) {
+		Clone matchLeft = null;
+		Clone matchRight = null;
 		
 		for (int i = items.size() - 1; i >= 0; i--) {
-			if (isSubtree(left, items.get(i))) {
+			if (isSubtree(left.getParseTree(), items.get(i).getParseTree())) {
 				matchLeft = items.get(i);
-			} else if (isSubtree(right, items.get(i))) {
+			} else if (isSubtree(right.getParseTree(), 
+					items.get(i).getParseTree())) {
 				matchRight = items.get(i);
 			}
 		}
@@ -158,7 +160,7 @@ public class Clones {
 	 * @param subtree Tree
 	 * @return true if subtree is a subtree of tree.
 	 */
-	private boolean isSubtree(ParseTree tree, ParseTree subtree) {
+	private boolean isSubtree(ParseTree tree, ParseTree subtree) {		
 		if (tree.equals(subtree)) {
 			return true;
 		}

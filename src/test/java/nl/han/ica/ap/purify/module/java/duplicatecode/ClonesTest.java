@@ -50,15 +50,24 @@ import org.junit.Test;
 public class ClonesTest {	
 	private Clones clones;
 	
-	private ParseTree left;
-	private ParseTree right;
+	private ParseTree leftTree;
+	private ParseTree rightTree;
+	
+	private Clone left;
+	private Clone right;
 	
 	@Before
 	public void setUp() {
 		clones = new Clones();
 		
-		left = createMock(ParseTree.class);
-		right = createMock(ParseTree.class);
+		left = createMock(Clone.class);
+		right = createMock(Clone.class);
+		
+		leftTree = createMock(ParseTree.class);
+		rightTree = createMock(ParseTree.class);
+		
+		expect(left.getParseTree()).andReturn(leftTree).anyTimes();
+		expect(right.getParseTree()).andReturn(rightTree).anyTimes();
 	}
 	
 	@Test
@@ -68,10 +77,16 @@ public class ClonesTest {
 		replay(left);
 		replay(right);
 		
+		replay(leftTree);
+		replay(rightTree);
+		
 		assertEquals(1, clones.size());
 		
 		verify(left);
 		verify(right);
+		
+		verify(leftTree);
+		verify(rightTree);
 	}
 	
 	/**
@@ -82,22 +97,32 @@ public class ClonesTest {
 	 */
 	@Test
 	public void addPairToSet1Test() {
-		ParseTree subLeft = createMock(ParseTree.class);
-		ParseTree subRight = createMock(ParseTree.class);
+		Clone subLeft = createMock(Clone.class);
+		Clone subRight = createMock(Clone.class);
 		
-		expect(left.getChildCount()).andReturn(1).anyTimes();
-		expect(left.getChild(0)).andReturn(subLeft).anyTimes();
+		ParseTree subLeftTree = createMock(ParseTree.class);
+		ParseTree subRightTree = createMock(ParseTree.class);
 		
-		expect(right.getChildCount()).andReturn(1).anyTimes();
-		expect(right.getChild(0)).andReturn(subRight).anyTimes();
+		expect(subLeft.getParseTree()).andReturn(subLeftTree).anyTimes();
+		expect(subRight.getParseTree()).andReturn(subRightTree).anyTimes();
 		
-		expect(subLeft.getChildCount()).andReturn(0).anyTimes();
-		expect(subRight.getChildCount()).andReturn(0).anyTimes();
+		expect(leftTree.getChildCount()).andReturn(1).anyTimes();
+		expect(leftTree.getChild(0)).andReturn(subLeftTree).anyTimes();
+		
+		expect(rightTree.getChildCount()).andReturn(1).anyTimes();
+		expect(rightTree.getChild(0)).andReturn(subRightTree).anyTimes();
+		
+		expect(subLeftTree.getChildCount()).andReturn(0).anyTimes();
+		expect(subRightTree.getChildCount()).andReturn(0).anyTimes();
 		
 		replay(left);
+		replay(leftTree);
 		replay(subLeft);
+		replay(subLeftTree);
 		replay(right);
+		replay(rightTree);
 		replay(subRight);
+		replay(subRightTree);
 		
 		clones.addClonePair(subLeft, subRight);
 		
@@ -110,12 +135,16 @@ public class ClonesTest {
 		assertTrue(clones.getItem(0).contains(left));
 		assertTrue(clones.getItem(0).contains(right));
 		
-		assertFalse(clones.getItem(0).contains(subLeft));
-		assertFalse(clones.getItem(0).contains(subRight));
+		assertFalse(clones.getItem(0).contains(subLeftTree));
+		assertFalse(clones.getItem(0).contains(subRightTree));
 		
 		verify(left);
+		verify(leftTree);
+		verify(subLeftTree);
 		verify(subLeft);
 		verify(right);
+		verify(rightTree);
+		verify(subRightTree);
 		verify(subRight);
 	}
 	
@@ -127,30 +156,43 @@ public class ClonesTest {
 	 */
 	@Test
 	public void addPairToSet2Test() {
-		ParseTree subLeft = createMock(ParseTree.class);
-		ParseTree subRight = createMock(ParseTree.class);
+		Clone subLeft = createMock(Clone.class);
+		Clone subRight = createMock(Clone.class);
 		
+		ParseTree subLeftTree = createMock(ParseTree.class);
+		ParseTree subRightTree = createMock(ParseTree.class);
+		
+		Clone other = createMock(Clone.class);
 		ParseTree otherTree = createMock(ParseTree.class);
 		
-		expect(left.getChildCount()).andReturn(1).anyTimes();
-		expect(left.getChild(0)).andReturn(subLeft).anyTimes();
+		expect(subLeft.getParseTree()).andReturn(subLeftTree).anyTimes();
+		expect(subRight.getParseTree()).andReturn(subRightTree).anyTimes();
+		expect(other.getParseTree()).andReturn(otherTree).anyTimes();
 		
-		expect(right.getChildCount()).andReturn(1).anyTimes();
-		expect(right.getChild(0)).andReturn(subRight).anyTimes();
+		expect(leftTree.getChildCount()).andReturn(1).anyTimes();
+		expect(leftTree.getChild(0)).andReturn(subLeftTree).anyTimes();
 		
-		expect(subLeft.getChildCount()).andReturn(0).anyTimes();
-		expect(subRight.getChildCount()).andReturn(0).anyTimes();
+		expect(rightTree.getChildCount()).andReturn(1).anyTimes();
+		expect(rightTree.getChild(0)).andReturn(subRightTree).anyTimes();
+		
+		expect(subLeftTree.getChildCount()).andReturn(0).anyTimes();
+		expect(subRightTree.getChildCount()).andReturn(0).anyTimes();
 		
 		expect(otherTree.getChildCount()).andReturn(0).anyTimes();
 		
 		replay(left);
+		replay(leftTree);
 		replay(subLeft);
+		replay(subLeftTree);
 		replay(right);
+		replay(rightTree);
 		replay(subRight);
+		replay(subRightTree);
+		replay(other);
 		replay(otherTree);
 		
 		clones.addClonePair(subLeft, subRight);
-		clones.addClonePair(subRight, otherTree);
+		clones.addClonePair(subRight, other);
 		
 		assertEquals(1, clones.size());
 		
@@ -162,9 +204,14 @@ public class ClonesTest {
 		assertEquals(2, clones.getItem(1).size());
 		
 		verify(left);
+		verify(leftTree);
 		verify(subLeft);
+		verify(subLeftTree);
 		verify(right);
+		verify(rightTree);
 		verify(subRight);
+		verify(subRightTree);
+		verify(other);
 		verify(otherTree);
 	}
 	
@@ -176,34 +223,52 @@ public class ClonesTest {
 	 */
 	@Test
 	public void addPairToSet3Test() {
-		ParseTree subLeft = createMock(ParseTree.class);
-		ParseTree subRight = createMock(ParseTree.class);
+		Clone subLeft = createMock(Clone.class);
+		Clone subRight = createMock(Clone.class);
+		
+		ParseTree subLeftTree = createMock(ParseTree.class);
+		ParseTree subRightTree = createMock(ParseTree.class);
+		
+		Clone other1 = createMock(Clone.class);
+		Clone other2 = createMock(Clone.class);
 		
 		ParseTree other1Tree = createMock(ParseTree.class);
 		ParseTree other2Tree = createMock(ParseTree.class);
 		
-		expect(left.getChildCount()).andReturn(1).anyTimes();
-		expect(left.getChild(0)).andReturn(subLeft).anyTimes();
+		expect(subLeft.getParseTree()).andReturn(subLeftTree).anyTimes();
+		expect(subRight.getParseTree()).andReturn(subRightTree).anyTimes();
 		
-		expect(right.getChildCount()).andReturn(1).anyTimes();
-		expect(right.getChild(0)).andReturn(subRight).anyTimes();
+		expect(other1.getParseTree()).andReturn(other1Tree).anyTimes();
+		expect(other2.getParseTree()).andReturn(other2Tree).anyTimes();
 		
-		expect(subLeft.getChildCount()).andReturn(0).anyTimes();
-		expect(subRight.getChildCount()).andReturn(0).anyTimes();
+		expect(leftTree.getChildCount()).andReturn(1).anyTimes();
+		expect(leftTree.getChild(0)).andReturn(subLeftTree).anyTimes();
+		
+		expect(rightTree.getChildCount()).andReturn(1).anyTimes();
+		expect(rightTree.getChild(0)).andReturn(subRightTree).anyTimes();
+		
+		expect(subLeftTree.getChildCount()).andReturn(0).anyTimes();
+		expect(subRightTree.getChildCount()).andReturn(0).anyTimes();
 		
 		expect(other1Tree.getChildCount()).andReturn(0).anyTimes();
 		expect(other2Tree.getChildCount()).andReturn(0).anyTimes();
 		
 		replay(left);
+		replay(leftTree);
 		replay(subLeft);
+		replay(subLeftTree);
 		replay(right);
+		replay(rightTree);
 		replay(subRight);
+		replay(subRightTree);
+		replay(other1);
 		replay(other1Tree);
+		replay(other2);
 		replay(other2Tree);
 		
 		clones.addClonePair(subLeft, subRight);
-		clones.addClonePair(subRight, other1Tree);
-		clones.addClonePair(other1Tree, other2Tree);
+		clones.addClonePair(subRight, other1);
+		clones.addClonePair(other1, other2);
 		
 		assertEquals(1, clones.size());
 		assertEquals(4, clones.getItem(0).size());
@@ -232,10 +297,16 @@ public class ClonesTest {
 		}
 		
 		verify(left);
+		verify(leftTree);
 		verify(subLeft);
+		verify(subLeftTree);
 		verify(right);
+		verify(rightTree);
 		verify(subRight);
+		verify(subRightTree);
+		verify(other1);
 		verify(other1Tree);
+		verify(other2);
 		verify(other2Tree);
 	}
 }

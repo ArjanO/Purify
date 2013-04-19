@@ -42,6 +42,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import nl.han.ica.ap.purify.language.java.JavaLexer;
 import nl.han.ica.ap.purify.language.java.JavaParser;
+import nl.han.ica.ap.purify.modles.SourceFile;
 import nl.han.ica.ap.purify.module.java.duplicatecode.Clones;
 import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumber;
@@ -95,6 +96,9 @@ public class App {
 			waker.walk(magicNumberDetector, tree);
 			waker.walk(removeParameter, tree);
 			
+			SourceFile file = new SourceFile(args[i], tokens, tree);
+			
+			duplicatedCode.setSourceFile(file);
 			duplicatedCode.visit(tree);
 			
 			List<MagicNumber> magicNumbers = magicNumberDetector
@@ -125,7 +129,8 @@ public class App {
 				"Detected %d code clones", clones.size()));
 		
 		for (int i = clones.size() - 1; i >= 0; i--) {
-			System.out.println(clones.getItem(i).get(0).getText());
+			System.out.println(clones.getItem(i).get(0)
+					.getParseTree().getText());
 		}
 	}
 }
