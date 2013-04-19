@@ -33,8 +33,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.antlr.v4.runtime.tree.ParseTree;
-
 /**
  * Hash bucket contains hashes and parse trees that match this hash.
  * 
@@ -51,10 +49,10 @@ public class HashBucket {
 	 * Add a parse tree to the bucket.
 	 * 
 	 * @param hash Hash of the parse tree.
-	 * @param tree Parse tree.
+	 * @param candidate Candidate clone.
 	 * @param mass The mass (number of nodes) of the tree.
 	 */
-	public void put(int hash, ParseTree tree, int mass) {
+	public void put(int hash, Clone candidate, int mass) {
 		HashBucketElement element;
 		
 		if (!bucket.containsKey(hash)) {
@@ -65,7 +63,7 @@ public class HashBucket {
 			element = bucket.get(hash);
 		}
 		
-		element.put(tree, mass);
+		element.put(candidate, mass);
 	}
 	
 	/**
