@@ -44,8 +44,6 @@ public interface IDetector {
 	
 	/**
 	 * Detect all the issues and add them to file.
-	 * 
-	 * @param file File
 	 */
-	void detect(SourceFile file);
+	void detect();
 }
