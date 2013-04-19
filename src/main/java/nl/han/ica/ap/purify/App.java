@@ -44,7 +44,7 @@ import nl.han.ica.ap.purify.language.java.JavaLexer;
 import nl.han.ica.ap.purify.language.java.JavaParser;
 import nl.han.ica.ap.purify.modles.SourceFile;
 import nl.han.ica.ap.purify.module.java.duplicatecode.Clones;
-import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
+import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetectorVisitor;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumber;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
 import nl.han.ica.ap.purify.module.java.removeparameter.Method;
@@ -64,7 +64,8 @@ public class App {
 		}
 		
 		RemoveParameterDetector removeParameter = new RemoveParameterDetector();
-		DuplicatedCodeDetector duplicatedCode = new DuplicatedCodeDetector();
+		DuplicatedCodeDetectorVisitor duplicatedCode = 
+				new DuplicatedCodeDetectorVisitor();
 		
 		for (int i = 0; i < args.length; i++) {
 			ANTLRInputStream input = null;

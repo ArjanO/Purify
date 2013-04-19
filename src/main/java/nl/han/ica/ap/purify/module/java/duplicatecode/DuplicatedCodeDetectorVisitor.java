@@ -45,7 +45,7 @@ import nl.han.ica.ap.purify.modles.SourceFile;
  * 
  * @author Arjan
  */
-public class DuplicatedCodeDetector extends JavaBaseVisitor<Void> {
+public class DuplicatedCodeDetectorVisitor extends JavaBaseVisitor<Void> {
 	private static final int MassThreshold = 15;
 	private static final float SimilarityThreshold = 0.98f;
 	
@@ -57,7 +57,7 @@ public class DuplicatedCodeDetector extends JavaBaseVisitor<Void> {
 	/**
 	 * Duplicated code detector.
 	 */
-	public DuplicatedCodeDetector() {
+	public DuplicatedCodeDetectorVisitor() {
 		hashBucket = new HashBucket();
 	}
 	
