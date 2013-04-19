@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -43,8 +44,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import nl.han.ica.ap.purify.language.java.JavaLexer;
 import nl.han.ica.ap.purify.language.java.JavaParser;
 import nl.han.ica.ap.purify.modles.SourceFile;
-import nl.han.ica.ap.purify.module.java.duplicatecode.Clones;
-import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetectorVisitor;
+import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumber;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
 import nl.han.ica.ap.purify.module.java.removeparameter.Method;
@@ -63,9 +63,10 @@ public class App {
 			return;
 		}
 		
+		List<SourceFile> sourceFiles = new ArrayList<SourceFile>();
+		
 		RemoveParameterDetector removeParameter = new RemoveParameterDetector();
-		DuplicatedCodeDetectorVisitor duplicatedCode = 
-				new DuplicatedCodeDetectorVisitor();
+		DuplicatedCodeDetector duplicatedCode = new DuplicatedCodeDetector();
 		
 		for (int i = 0; i < args.length; i++) {
 			ANTLRInputStream input = null;
@@ -99,8 +100,9 @@ public class App {
 			
 			SourceFile file = new SourceFile(args[i], tokens, tree);
 			
-			duplicatedCode.setSourceFile(file);
-			duplicatedCode.visit(tree);
+			sourceFiles.add(file);
+			
+			duplicatedCode.analyze(file);
 			
 			List<MagicNumber> magicNumbers = magicNumberDetector
 					.getMagicNumbers();
@@ -113,6 +115,8 @@ public class App {
 			}
 		}
 		
+		duplicatedCode.detect();
+		
 		// Remove parameter.
 		List<Method> methods = removeParameter.getDetected();
 		
@@ -123,15 +127,13 @@ public class App {
 			}
 		}
 		
-		// Clones
-		Clones clones = duplicatedCode.getClones();
-		
-		System.out.println(String.format(
-				"Detected %d code clones", clones.size()));
-		
-		for (int i = clones.size() - 1; i >= 0; i--) {
-			System.out.println(clones.getItem(i).get(0)
-					.getParseTree().getText());
+		for (SourceFile file : sourceFiles) {
+			System.out.println("--------- FILE: " + file.getPath() + 
+					" ---------");
+			
+			for (int i = file.getIssuesSize() -1; i >= 0; i--) {
+				System.out.println(file.getIssue(i));
+			}
 		}
 	}
 }
