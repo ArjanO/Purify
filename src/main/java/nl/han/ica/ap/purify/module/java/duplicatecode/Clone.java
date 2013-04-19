@@ -39,14 +39,23 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * @author Arjan
  */
 public class Clone {
+	private SourceFile file;
+	private ParseTree tree;
+	
 	/**
 	 * Create a new store for a detected clone.
 	 * 
 	 * @param file Source file.
 	 * @param tree ParseTree that is a clone.
+	 * @throws NullPointerException if file or tree is null.
 	 */
 	public Clone(SourceFile file, ParseTree tree) {
+		if (file == null || tree == null) {
+			throw new NullPointerException();
+		}
 		
+		this.file = file;
+		this.tree = tree;
 	}
 	
 	/**
@@ -55,7 +64,7 @@ public class Clone {
 	 * @return Source file.
 	 */
 	public SourceFile getSourceFile() {
-		return null;
+		return file;
 	}
 	
 	/**
@@ -64,6 +73,6 @@ public class Clone {
 	 * @return Parse tree that is a clone.
 	 */
 	public ParseTree getParseTree() {
-		return null;
+		return tree;
 	}
 }
