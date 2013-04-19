@@ -29,6 +29,8 @@
  */
 package nl.han.ica.ap.purify.module.java.duplicatecode;
 
+import java.util.List;
+
 import nl.han.ica.ap.purify.modles.IDetector;
 import nl.han.ica.ap.purify.modles.SourceFile;
 
@@ -38,6 +40,12 @@ import nl.han.ica.ap.purify.modles.SourceFile;
  * @author Arjan
  */
 public class DuplicatedCodeDetector implements IDetector {
+	private DuplicatedCodeDetectorVisitor detector;
+	
+	public DuplicatedCodeDetector() {
+		detector = new DuplicatedCodeDetectorVisitor();
+	}
+	
 	/**
 	 * Collect information but don't create issues.
 	 * 
@@ -45,14 +53,34 @@ public class DuplicatedCodeDetector implements IDetector {
 	 */
 	@Override
 	public void analyze(SourceFile file) {
+		detector.setSourceFile(file);
+		detector.visit(file.getParseTree());
 	}
 
 	/**
 	 * Detect all the issues and add them to file.
-	 * 
-	 * @param file File
 	 */
 	@Override
-	public void detect(SourceFile file) {
+	public void detect() {
+		Clones clones = detector.getClones();
+		
+		for (int i = clones.size() - 1; i >= 0; i--) {
+			addIssues(clones.getItem(i));
+		}
+	}
+	
+	/**
+	 * Assign clones to files that contains the clones.
+	 * 
+	 * @param clones Clones to add to the files.
+	 */
+	private void addIssues(List<Clone> clones) {
+		DuplicatedCodeIssue issue = new DuplicatedCodeIssue(clones);
+		
+		for (int i = clones.size() - 1; i >= 0; i--) {
+			SourceFile file = clones.get(i).getSourceFile();
+			
+			file.addIssue(issue);
+		}
 	}
 }
