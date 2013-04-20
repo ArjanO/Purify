@@ -56,6 +56,15 @@ class DuplicatedCodeIssue implements IIssue {
 	}
 	
 	/**
+	 * Get all the clones.
+	 * 
+	 * @return Clones.
+	 */
+	public List<Clone> getClones() {
+		return clones;
+	}
+	
+	/**
 	 * ToString method for the {@link App}. In the future reporting of issues
 	 * is needed.
 	 */
