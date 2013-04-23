@@ -41,7 +41,7 @@ public class Demo2 {
 		new Demo1();
 	}
 	
-	public Integer dummymethod() {
+	public Demo3 dummymethod() {
 		return null;
 	}
 }
