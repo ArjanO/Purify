@@ -136,4 +136,18 @@ public class ClassNode {
 		}
 		return null;
 	}
+
+	/**
+	 * Gets the return type of the specified method.
+	 * 
+	 * @param currentCall the name of the method.
+	 * @return Returns the return type of the specified method.
+	 */
+	public String getMethodReturnType(String currentCall) {
+		MethodNode m = getMethod(currentCall);
+		if(m != null) {
+			return m.getReturnType();
+		}
+		return null;
+	}
 }

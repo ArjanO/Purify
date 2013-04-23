@@ -106,7 +106,10 @@ public class CallGraph {
 	 */
 	public String getVariableType(String classID, String scope, String variableID) {
 		ClassNode n = getNode(classID);
-		return n.getVariableType(scope, variableID);
+		if(n != null) {
+			return n.getVariableType(scope, variableID);
+		}
+		return null;
 	}
 	
 	/**
@@ -121,9 +124,11 @@ public class CallGraph {
 		ClassNode src = getNode(srcClass);
 		ClassNode trg = getNode(trgClass);
 		if(src == null) {
-			throw new RuntimeException("Could not find ClassNode: " + srcClass);
+			return;
+			//throw new RuntimeException("Could not find ClassNode: " + srcClass);
 		} else if (trg == null) {
-			throw new RuntimeException("Could not find ClassNode: " + trgClass);
+			return;
+			//throw new RuntimeException("Could not find ClassNode: " + trgClass);
 		}
 		edges.add(new Edge(src.getMethod(srcMethod),trg.getMethod(trgMethod)));
 	}
@@ -163,5 +168,20 @@ public class CallGraph {
 			}
 		}
 		return allnodes;
+	}
+
+	/**
+	 * Gets the return type of a method.
+	 * 
+	 * @param currentCallClass The class of the specified method.
+	 * @param currentCall The specified method.
+	 * @return Returns the return type of the specified method.
+	 */
+	public String getMethodReturnType(String currentCallClass, String currentCall) {
+		ClassNode n = getNode(currentCallClass);
+		if(n != null) {
+			return n.getMethodReturnType(currentCall);
+		}
+		return null;
 	}
 }
