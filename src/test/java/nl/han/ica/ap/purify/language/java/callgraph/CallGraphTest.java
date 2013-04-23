@@ -92,20 +92,6 @@ public class CallGraphTest {
 	}
 	
 	/**
-	 * Tests if exception is thrown when one of the Edge MethodNodes cannot be found.
-	 */
-	@Test(expected = RuntimeException.class)
-	public void addEdgeFailTest() {
-		HashMap<String,ArrayList<String>> methods = new HashMap<String, ArrayList<String>>();
-		ArrayList<String> modifiers = new ArrayList<String>();
-		modifiers.add("void");
-		modifiers.add("private");
-		methods.put("testmethod", modifiers);
-		graph.addNode("testclass", methods);
-		graph.addEdge("testclass", "testmethod", "testclass2", "testmethod");
-	}
-	
-	/**
 	 * Tests if getMethodsWithModifier(String modifier) returns all MethodNodes with specified modifier.
 	 */
 	@Test

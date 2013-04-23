@@ -49,8 +49,8 @@ public class Demo1 {
 	public String test2(String s) {
 		Demo2 d = new Demo2("");
 		char c;
-		test1();
-		d.dummymethod();
+		test1(4);
+		d.dummymethod().getDemo().toString();
 		return null;
 	}
 }

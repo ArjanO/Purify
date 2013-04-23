@@ -161,7 +161,7 @@ public class ClassNodeListenerTest {
 		
 		m = n.getMethod("dummymethod( )");
 		assertFalse(m == null);
-		assertTrue(m.getReturnType().equals("Integer"));
+		assertTrue(m.getReturnType().equals("Demo3"));
 		assertTrue(m.hasModifier("public"));
 		assertEquals(variables,m.getVariables());
 		variables.clear();

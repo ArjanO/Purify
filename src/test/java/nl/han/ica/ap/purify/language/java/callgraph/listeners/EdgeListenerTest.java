@@ -45,6 +45,7 @@ import org.junit.Test;
 public class EdgeListenerTest {
 	private static final String FILE1 = "/callgraph/Demo1.java";
 	private static final String FILE2 = "/callgraph/Demo2.java";
+	private static final String FILE3 = "/callgraph/Demo3.java";
 	private CallGraph graph;
 	private ClassNodeListener classNodelistener;
 	private EdgeListener edgelistener;
@@ -63,10 +64,16 @@ public class EdgeListenerTest {
 		tree = ParserTools.getParseTree(FILE2);
 		walker.walk(classNodelistener, tree);
 		
+		tree = ParserTools.getParseTree(FILE3);
+		walker.walk(classNodelistener, tree);
+		
 		tree = ParserTools.getParseTree(FILE1);
 		walker.walk(edgelistener, tree);
 		
 		tree = ParserTools.getParseTree(FILE2);
+		walker.walk(edgelistener, tree);
+		
+		tree = ParserTools.getParseTree(FILE3);
 		walker.walk(edgelistener, tree);
 	}
 	
@@ -75,7 +82,7 @@ public class EdgeListenerTest {
 	 */
 	@Test
 	public void EdgeTest() {
-		assertEquals(8,graph.getEdges().size());
+		assertEquals(9,graph.getEdges().size());
 	}
 
 }
