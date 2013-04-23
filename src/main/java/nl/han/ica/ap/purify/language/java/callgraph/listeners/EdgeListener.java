@@ -53,6 +53,12 @@ public class EdgeListener extends JavaBaseListener {
 	/** The current call. */
 	private String currentCall;
 	
+	/** Stores the previous call when in a callchain */
+	private String prevCall;
+	
+	/** Stores the previous call class when in a callchain */
+	private String prevCallClass;
+	
 	/** The CallGraph that is used. */
 	private CallGraph graph;
 	
@@ -159,29 +165,36 @@ public class EdgeListener extends JavaBaseListener {
 	
 	/**
 	 * Called when entering a call.
-	 * Trims parameter block for processing.
-	 * Only handles singular calls for now (call1()/String.hashcode()).
+	 * Add beginning of parameter here in case there is no ExpressionList.
 	 */
 	@Override
 	public void enterExpressionMethodExpressionList(JavaParser.ExpressionMethodExpressionListContext ctx) {
-		String[] ss = ctx.getText().split("\\.");
-		if(ss.length == 1) {
-			currentCallClass = classID;
-			currentCall = ss[0].replaceAll("\\(.*\\)", "");
-		} else {
-			currentCallClass = getVariableType(ss[ss.length-2]);
-			currentCall = ss[ss.length-1].replaceAll("\\(.*\\)", "");
-		}
-		currentCall = currentCall + "(";
+		currentCall = "(";
 	}
 	
 	/**
 	 * Called when exiting a call.
+	 * Formats the currentCall and gets the proper callClass.
 	 * Adds current call to the CallGraph.
+	 * Sets prevCall and prevCallClass in case of a callchain.
 	 */
 	public void exitExpressionMethodExpressionList(JavaParser.ExpressionMethodExpressionListContext ctx) {
+		String[] ss = ctx.getText().split("\\.");
 		currentCall = currentCall + " )";
+		if(ss.length == 1) {
+			currentCallClass = classID;
+			currentCall = ss[0].replaceAll("\\(.*\\)", "") + currentCall;
+		} else {
+			currentCallClass = getVariableType(ss[ss.length-2]);
+			if(currentCallClass == null) {
+				currentCallClass = getCurrentCallClassType(prevCallClass, prevCall);
+				currentCall = currentCall.replace(prevCall, "(");
+			}
+			currentCall = ss[ss.length-1].replaceAll("\\(.*\\)", "") + currentCall;
+		}
 		graph.addEdge(classID, methodID, currentCallClass, currentCall);
+		prevCall = currentCall;
+		prevCallClass = currentCallClass;
 	}
 	
 	/**
@@ -301,6 +314,24 @@ public class EdgeListener extends JavaBaseListener {
 	 * @return Type of the variable in a String.
 	 */
 	private String getVariableType(String variableID) {
-		return graph.getVariableType(classID, methodID, variableID);
+		String type = graph.getVariableType(classID, methodID, variableID);
+		if(type != null) {
+			return type;
+		}
+		return null;	
+	}
+	
+	/**
+	 * Gets the type of the specified variable name from the CallGraph.
+	 * 
+	 * @param variableID Name of the variable to get the type of.
+	 * @return Type of the variable in a String.
+	 */
+	private String getCurrentCallClassType(String classID, String methodID) {
+		String type = graph.getMethodReturnType(classID, methodID);
+		if(type != null) {
+			return type;
+		}
+		return null;	
 	}
 }
