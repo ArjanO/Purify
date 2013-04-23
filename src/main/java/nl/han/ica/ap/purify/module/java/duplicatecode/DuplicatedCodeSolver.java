@@ -29,6 +29,9 @@
  */
 package nl.han.ica.ap.purify.module.java.duplicatecode;
 
+import java.util.List;
+
+import nl.han.ica.ap.purify.language.java.util.Method;
 import nl.han.ica.ap.purify.modles.ISolver;
 import nl.han.ica.ap.purify.modles.SourceFile;
 
@@ -45,5 +48,44 @@ public class DuplicatedCodeSolver implements ISolver {
 	 */
 	@Override
 	public void solve(SourceFile file) {
+		if (file == null) {
+			throw new NullPointerException();
+		}
+		
+		for (int i = file.getIssuesSize() - 1; i >= 0; i++) {
+			if (file.getIssue(i) instanceof DuplicatedCodeIssue) {
+				solve((DuplicatedCodeIssue)file.getIssue(i));
+			}
+		}
+	}
+	
+	private void solve(DuplicatedCodeIssue issue) {
+		int methodNumber = numberOfMethodClones(issue.getClones());
+		
+		if (methodNumber == 0) {
+			// No methods so create a new method.
+		} else if (methodNumber == 1) {
+			// One method. So let the other code call that method.
+		} else {
+			// More methods. Remove one of the methods.
+		}
+	}
+	
+	/**
+	 * Get the number of methods that is a clone.
+	 * 
+	 * @param clones Clones.
+	 * @return Number of methods that are a clone.
+	 */
+	private int numberOfMethodClones(List<Clone> clones) {
+		int count = 0;
+		
+		for (Clone c : clones) {
+			if (Method.isParseTreeMethodBody(c.getParseTree())) {
+				count++;
+			}
+		}
+		
+		return count;
 	}
 }
