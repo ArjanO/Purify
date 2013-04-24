@@ -44,6 +44,7 @@ import nl.han.ica.ap.purify.language.java.JavaLexer;
 import nl.han.ica.ap.purify.language.java.JavaParser;
 import nl.han.ica.ap.purify.module.java.duplicatecode.Clones;
 import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
+import nl.han.ica.ap.purify.module.java.extractmethod.StatementVisitor;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumber;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
 import nl.han.ica.ap.purify.module.java.removeparameter.Method;
@@ -65,7 +66,14 @@ public class App {
 		RemoveParameterDetector removeParameter = new RemoveParameterDetector();
 		DuplicatedCodeDetector duplicatedCode = new DuplicatedCodeDetector();
 		
+		boolean testExtractMethod = false;
+		
 		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals("-test:extractmethod")) {
+				testExtractMethod = true;
+				continue;
+			}
+			
 			ANTLRInputStream input = null;
 			InputStream is = null;
 			
@@ -90,42 +98,49 @@ public class App {
 			JavaParser parser = new JavaParser(tokens);
 			ParseTree tree = parser.compilationUnit();
 			
-			ParseTreeWalker waker = new ParseTreeWalker();
-			MagicNumberDetector magicNumberDetector = new MagicNumberDetector();
-			waker.walk(magicNumberDetector, tree);
-			waker.walk(removeParameter, tree);
-			
-			duplicatedCode.visit(tree);
-			
-			List<MagicNumber> magicNumbers = magicNumberDetector
-					.getMagicNumbers();
-			
-			for (MagicNumber magicNumber : magicNumbers) {
-				System.out.println(String.format(
-						"Found '%s' %d times in file '%s'", 
-						magicNumber.getLiteral(), magicNumber.size(),
-						args[i]));
+			if (testExtractMethod) {
+				StatementVisitor statement = new StatementVisitor();
+				statement.visit(tree);
+			} else {
+				ParseTreeWalker waker = new ParseTreeWalker();
+				MagicNumberDetector magicNumberDetector = new MagicNumberDetector();
+				waker.walk(magicNumberDetector, tree);
+				waker.walk(removeParameter, tree);
+				
+				duplicatedCode.visit(tree);
+				
+				List<MagicNumber> magicNumbers = magicNumberDetector
+						.getMagicNumbers();
+				
+				for (MagicNumber magicNumber : magicNumbers) {
+					System.out.println(String.format(
+							"Found '%s' %d times in file '%s'", 
+							magicNumber.getLiteral(), magicNumber.size(),
+							args[i]));
+				}
 			}
 		}
 		
-		// Remove parameter.
-		List<Method> methods = removeParameter.getDetected();
-		
-		for (Method method : methods) {
-			for (String name : method.getUnusedParameters()) {
-				System.out.println(String.format("%s in method %s is unused.",
-						name, method.getName()));
+		if (!testExtractMethod) {
+			// Remove parameter.
+			List<Method> methods = removeParameter.getDetected();
+			
+			for (Method method : methods) {
+				for (String name : method.getUnusedParameters()) {
+					System.out.println(String.format("%s in method %s is unused.",
+							name, method.getName()));
+				}
 			}
-		}
-		
-		// Clones
-		Clones clones = duplicatedCode.getClones();
-		
-		System.out.println(String.format(
-				"Detected %d code clones", clones.size()));
-		
-		for (int i = clones.size() - 1; i >= 0; i--) {
-			System.out.println(clones.getItem(i).get(0).getText());
+			
+			// Clones
+			Clones clones = duplicatedCode.getClones();
+			
+			System.out.println(String.format(
+					"Detected %d code clones", clones.size()));
+			
+			for (int i = clones.size() - 1; i >= 0; i--) {
+				System.out.println(clones.getItem(i).get(0).getText());
+			}
 		}
 	}
 }
