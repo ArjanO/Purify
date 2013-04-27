@@ -42,12 +42,16 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public class Node {
 	private List<Node> parents;
 	private List<Node> childeren;
+	private List<Node> flowBack;
+	
 	private ParseTree parseTreeNode;
 	private String name;
 	
 	public Node(ParseTree parseNode) {
 		parents = new ArrayList<Node>();
 		childeren = new ArrayList<Node>();
+		flowBack = new ArrayList<Node>();
+		
 		parseTreeNode = parseNode;
 	}
 	
@@ -61,6 +65,17 @@ public class Node {
 			childeren.add(child);
 			
 			child.addParent(this);
+		}
+	}
+	
+	/**
+	 * Add a new flow back node. This is a node with a while or for.
+	 * 
+	 * @param node Node to allow the flow to.
+	 */
+	public void addFlowBack(Node node) {
+		if (!flowBack.contains(node)) {
+			flowBack.add(node);
 		}
 	}
 	
@@ -107,6 +122,16 @@ public class Node {
 	 */
 	public List<Node> getChilderen() {
 		return childeren;
+	}
+	
+	/**
+	 * Get all the nodes that this node return to.
+	 * This node is the last of a while loop.
+	 * 
+	 * @return Back nodes.
+	 */
+	public List<Node> getFlowBack() {
+		return flowBack;
 	}
 	
 	/**
