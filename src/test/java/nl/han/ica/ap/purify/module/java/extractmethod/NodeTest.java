@@ -109,4 +109,18 @@ public class NodeTest {
 		assertEquals(0, child.getParents().size());
 		assertEquals(0, child.getChilderen().size());
 	}
+	
+	@Test
+	public void addFlowBackSameTest() {
+		assertEquals(0, node.getChilderen().size());
+		
+		Node child = new Node(parseTree);
+		
+		node.addFlowBack(child);
+		node.addFlowBack(child);
+		
+		assertEquals(1, node.getFlowBack().size());
+		assertEquals(0, child.getParents().size());
+		assertEquals(0, child.getChilderen().size());
+	}
 }
