@@ -75,6 +75,15 @@ public class StatementVisitor extends JavaBaseVisitor<Void> {
 		join = null;
 	}
 	
+	/**
+	 * Get the builded graph.
+	 * 
+	 * @return Builded graph (start node).
+	 */
+	public Node getGraph() {
+		return firstNode;
+	}
+	
 	@Override
 	public Void visitMethodBody(MethodBodyContext ctx) {
 		nodeNr = 1;
