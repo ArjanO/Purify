@@ -31,13 +31,18 @@ package nl.han.ica.ap.purify.module.java.extractmethod;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.getCurrentArguments;
+import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import nl.han.ica.ap.purify.language.java.JavaParser.LocalVariableDeclarationStatementContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.StatementIfContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.StatementStatementExpressionContext;
 
+import org.easymock.IAnswer;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -107,5 +112,77 @@ public class ControlFlowGraphVisitorTest {
 		assertEquals(localVarNode.getParseTree(), ctx);
 		
 		verify(ctx);
+	}
+	
+	/**
+	 * Test if with 2 statements.
+	 */
+	@Test
+	public void visitStatementIfTest() {
+		StatementIfContext ifCtx;
+		StatementStatementExpressionContext statement1Ctx;
+		StatementStatementExpressionContext statement2Ctx;
+		
+		ifCtx = createMock(StatementIfContext.class);
+		
+		statement1Ctx = createMock(StatementStatementExpressionContext.class);
+		statement2Ctx = createMock(StatementStatementExpressionContext.class);
+		
+		expect(ifCtx.getChildCount()).andReturn(2).anyTimes();
+		expect(ifCtx.getChild(0)).andReturn(statement1Ctx).anyTimes();
+		expect(ifCtx.getChild(1)).andReturn(statement2Ctx).anyTimes();
+		
+		expect(statement1Ctx.getChildCount()).andReturn(0).anyTimes();
+		expect(statement2Ctx.getChildCount()).andReturn(0).anyTimes();
+		
+		expectAccept(statement1Ctx);
+		expectAccept(statement2Ctx);
+		
+		replay(ifCtx);
+		replay(statement1Ctx);
+		replay(statement2Ctx);
+		
+		visitor.visitStatementIf(ifCtx);
+		
+		Node startNode = visitor.getGraph();
+		
+		assertNotNull(startNode);
+		assertEquals(1, startNode.getChilderen().size());
+		
+		Node ifNode = startNode.getChilderen().get(0);
+		
+		assertEquals(2, ifNode.getChilderen().size());
+		
+		Node statement1Node = ifNode.getChilderen().get(0);
+		Node statement2Node = ifNode.getChilderen().get(1);
+		
+		assertEquals(0, statement1Node.getChilderen().size());
+		assertEquals(0, statement2Node.getChilderen().size());
+		
+		assertEquals(statement1Ctx, statement1Node.getParseTree());
+		assertEquals(statement2Ctx, statement2Node.getParseTree());
+		
+		verify(ifCtx);
+		verify(statement1Ctx);
+		verify(statement2Ctx);		
+	}
+	
+	/**
+	 * ControlFlowGraphVisitor calls accept. This method class the visit 
+	 * method.
+	 * 
+	 * @param mock Context instance (mocked).
+	 */
+	private void expectAccept(final StatementStatementExpressionContext mock) {
+		expect(mock.accept(isA(ControlFlowGraphVisitor.class))).andAnswer(
+				new IAnswer<Void>() {
+					@Override
+					public Void answer() throws Throwable {
+						ControlFlowGraphVisitor visitor = 
+							(ControlFlowGraphVisitor)getCurrentArguments()[0];
+		
+						return visitor.visitStatementStatementExpression(mock);
+					}
+				}).anyTimes();
 	}
 }
