@@ -35,6 +35,7 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import nl.han.ica.ap.purify.language.java.JavaParser.LocalVariableDeclarationStatementContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
 
 import org.junit.Before;
@@ -81,5 +82,30 @@ public class ControlFlowGraphVisitorTest {
 		assertEquals(0, startNode.getChilderen().size());
 		assertEquals(0, startNode.getParents().size());
 		assertEquals(0, startNode.getFlowBack().size());
+	}
+	
+	/**
+	 * Test for the method visitLocalVariableDeclarationStatement.
+	 */
+	@Test
+	public void localVariableDeclarationStatementTest() {
+		LocalVariableDeclarationStatementContext ctx;
+		
+		ctx = createMock(LocalVariableDeclarationStatementContext.class);
+		expect(ctx.getChildCount()).andReturn(0).anyTimes();
+		
+		replay(ctx);
+		
+		visitor.visitLocalVariableDeclarationStatement(ctx);
+		Node startNode = visitor.getGraph();
+		
+		assertNotNull(startNode);
+		assertEquals(1, startNode.getChilderen().size());
+		
+		Node localVarNode = startNode.getChilderen().get(0);
+		assertEquals(0, localVarNode.getChilderen().size());
+		assertEquals(localVarNode.getParseTree(), ctx);
+		
+		verify(ctx);
 	}
 }
