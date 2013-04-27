@@ -92,9 +92,6 @@ public class StatementVisitor extends JavaBaseVisitor<Void> {
 		
 		super.visitMethodBody(ctx);
 		
-		printNode(firstNode, null);
-		printDOTGraph(firstNode);
-		
 		return null;
 	}
 	
@@ -283,59 +280,5 @@ public class StatementVisitor extends JavaBaseVisitor<Void> {
 		}
 		
 		return node;
-	}
-	
-	/**
-	 * Print the node and all its child.
-	 * 
-	 * @param n Node
-	 * @param parent Parent of the node.
-	 */
-	private void printNode(Node n, Node parent) {		
-		if (parent != null) {
-			System.out.println(parent.getName() + " => " + 
-					n.getName() + " : " + n.getParseTree().getText());
-		} else {
-			System.out.println(n.getName() + " : " + 
-					n.getParseTree().getText());
-		}
-		
-		for (Node child : n.getChilderen()) {
-			printNode(child, n);
-		}
-	}
-	
-	private List<Node> seen;
-	
-	private void printDOTGraph(Node n) {
-		System.out.println("digraph G {");
-		
-		seen = new ArrayList<Node>();
-		
-		printDOTGraph(n, null);
-		
-		System.out.println("}");
-	}
-	
-	private void printDOTGraph(Node n, Node parent) {		
-		if (parent != null) {
-			System.out.println(parent.getName() + " -> " + n.getName() + ";");
-		} else {
-			System.out.println(n.getName() + ";");
-		}
-		
-		if (seen.contains(n)) {
-			return;
-		} else {
-			seen.add(n);
-		}
-		
-		for (Node child : n.getChilderen()) {
-			printDOTGraph(child, n);
-		}
-		
-		for (Node flow : n.getFlowBack()) {
-			System.out.println(n.getName() + " -> " + flow.getName() + ";");
-		}
 	}
 }
