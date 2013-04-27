@@ -68,4 +68,16 @@ public class NodeTest {
 		
 		assertEquals("test", node.getName());
 	}
+	
+	@Test
+	public void addChildTest() {
+		assertEquals(0, node.getChilderen().size());
+		
+		Node child = new Node(parseTree);
+		
+		node.addChild(child);
+		
+		assertEquals(1, node.getChilderen().size());
+		assertEquals(1, child.getParents().size());
+	}
 }
