@@ -57,9 +57,11 @@ public class Node {
 	 * @param child Child to add.
 	 */
 	public void addChild(Node child) {
-		childeren.add(child);
-		
-		child.addParent(this);
+		if (!childeren.contains(child)) { // Don't add a child twice.
+			childeren.add(child);
+			
+			child.addParent(this);
+		}
 	}
 	
 	/**
@@ -113,6 +115,8 @@ public class Node {
 	 * @param parent Parent to add.
 	 */
 	private void addParent(Node parent) {
-		parents.add(parent);
+		if (!parents.contains(parent)) { // Don't add parent twice.
+			parents.add(parent);
+		}
 	}
 }
