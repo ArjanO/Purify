@@ -242,6 +242,9 @@ public class StatementVisitor extends JavaBaseVisitor<Void> {
 		
 		super.visitStatementWhile(ctx);
 		
+		if (lastNode != null) {
+			lastNode.addFlowBack(backUp);
+		}
 		lastNode = backUp;
 		return null;
 	}
@@ -320,6 +323,10 @@ public class StatementVisitor extends JavaBaseVisitor<Void> {
 		
 		for (Node child : n.getChilderen()) {
 			printDOTGraph(child, n);
+		}
+		
+		for (Node flow : n.getFlowBack()) {
+			System.out.println(n.getName() + " -> " + flow.getName() + ";");
 		}
 	}
 }
