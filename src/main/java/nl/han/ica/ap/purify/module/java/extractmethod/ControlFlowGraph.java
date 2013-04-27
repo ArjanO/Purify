@@ -29,6 +29,9 @@
  */
 package nl.han.ica.ap.purify.module.java.extractmethod;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
@@ -52,5 +55,47 @@ public class ControlFlowGraph {
 		cfgVisitor.visit(tree);
 		
 		return cfgVisitor.getGraph();
+	}
+	
+	/**
+	 * Build a DOT graph. The generated string allows to generate a DOT image.
+	 * 
+	 * @param n Start node of the CFG. 
+	 * @return In DOT format a graph.
+	 */
+	public static String toDOTGraph(Node n) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("digraph G {\n");
+		
+		List<Node> seen = new ArrayList<Node>();
+		
+		buildDOTGraph(n, null, sb, seen);
+		
+		sb.append("}");
+		
+		return sb.toString();
+	}
+	
+	private static void buildDOTGraph(Node n, Node parent, 
+			StringBuilder sb, List<Node> seen) {		
+		if (parent != null) {
+			sb.append("\t" + parent.getName() + " -> " + n.getName() + ";\n");
+		} else {
+			sb.append("\t" + n.getName() + ";\n");
+		}
+		
+		if (seen.contains(n)) {
+			return;
+		} else {
+			seen.add(n);
+		}
+		
+		for (Node child : n.getChilderen()) {
+			buildDOTGraph(child, n, sb, seen);
+		}
+		
+		for (Node flow : n.getFlowBack()) {
+			sb.append("\t" + n.getName() + " -> " + flow.getName() + ";\n");
+		}
 	}
 }
