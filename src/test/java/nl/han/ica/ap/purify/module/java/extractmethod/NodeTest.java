@@ -80,4 +80,17 @@ public class NodeTest {
 		assertEquals(1, node.getChilderen().size());
 		assertEquals(1, child.getParents().size());
 	}
+	
+	@Test
+	public void addSamneChildTest() {
+		assertEquals(0, node.getChilderen().size());
+		
+		Node child = new Node(parseTree);
+		
+		node.addChild(child);
+		node.addChild(child);
+		
+		assertEquals(1, node.getChilderen().size());
+		assertEquals(1, child.getParents().size());
+	}
 }
