@@ -60,7 +60,7 @@ import nl.han.ica.ap.purify.language.java.JavaParser.StatementWhileContext;
  * 
  * @author Arjan
  */
-public class StatementVisitor extends JavaBaseVisitor<Void> {
+class ControlFlowGraphVisitor extends JavaBaseVisitor<Void> {
 	private int nodeNr;
 	
 	private Node firstNode;
@@ -68,7 +68,7 @@ public class StatementVisitor extends JavaBaseVisitor<Void> {
 	
 	private List<Node> join;
 	
-	public StatementVisitor() {
+	public ControlFlowGraphVisitor() {
 		firstNode = null;
 		lastNode = null;
 		

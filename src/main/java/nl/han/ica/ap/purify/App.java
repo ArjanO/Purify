@@ -44,7 +44,8 @@ import nl.han.ica.ap.purify.language.java.JavaLexer;
 import nl.han.ica.ap.purify.language.java.JavaParser;
 import nl.han.ica.ap.purify.module.java.duplicatecode.Clones;
 import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
-import nl.han.ica.ap.purify.module.java.extractmethod.StatementVisitor;
+import nl.han.ica.ap.purify.module.java.extractmethod.ControlFlowGraph;
+import nl.han.ica.ap.purify.module.java.extractmethod.Node;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumber;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
 import nl.han.ica.ap.purify.module.java.removeparameter.Method;
@@ -99,8 +100,9 @@ public class App {
 			ParseTree tree = parser.compilationUnit();
 			
 			if (testExtractMethod) {
-				StatementVisitor statement = new StatementVisitor();
-				statement.visit(tree);
+				Node n = ControlFlowGraph.buildGraph(tree);
+				
+				System.out.println(ControlFlowGraph.toDOTGraph(n));
 			} else {
 				ParseTreeWalker waker = new ParseTreeWalker();
 				MagicNumberDetector magicNumberDetector = new MagicNumberDetector();

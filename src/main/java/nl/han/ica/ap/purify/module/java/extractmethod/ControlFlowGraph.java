@@ -50,7 +50,7 @@ public class ControlFlowGraph {
 	 * @return Start node of the CFG.
 	 */
 	public static Node buildGraph(ParseTree tree) {
-		StatementVisitor cfgVisitor = new StatementVisitor();
+		ControlFlowGraphVisitor cfgVisitor = new ControlFlowGraphVisitor();
 		
 		cfgVisitor.visit(tree);
 		
