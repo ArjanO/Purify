@@ -29,6 +29,9 @@
  */
 package nl.han.ica.ap.purify.module.java.extractmethod;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
@@ -63,9 +66,13 @@ public class StatementVisitor extends JavaBaseVisitor<Void> {
 	private Node firstNode;
 	private Node lastNode;
 	
+	private List<Node> join;
+	
 	public StatementVisitor() {
 		firstNode = null;
 		lastNode = null;
+		
+		join = null;
 	}
 	
 	@Override
@@ -151,11 +158,15 @@ public class StatementVisitor extends JavaBaseVisitor<Void> {
 		Node ifNode = createNode(ctx);
 		Node backUp = null;
 		
+		List<Node> branch = new ArrayList<Node>();
+		
 		for (int i = 0; i < ctx.getChildCount(); i++) {
 			if (ctx.getChild(i) instanceof StatementContext) {
 				lastNode = ifNode;
 				
 				super.visit(ctx.getChild(i));
+				
+				branch.add(lastNode);
 				
 				if (backUp == null) {
 					backUp = lastNode;
@@ -167,6 +178,7 @@ public class StatementVisitor extends JavaBaseVisitor<Void> {
 			lastNode = backUp;
 		}
 
+		join = branch;
 		return null;
 	}
 	
@@ -250,6 +262,13 @@ public class StatementVisitor extends JavaBaseVisitor<Void> {
 		
 		lastNode = node;
 		
+		if (join != null) { // There are branches to join.
+			for (Node joinNode : join) {
+				joinNode.addChild(node); // Join the branch.
+			}
+			join = null; // Reset the join nodes.
+		}
+		
 		return node;
 	}
 	
@@ -259,7 +278,7 @@ public class StatementVisitor extends JavaBaseVisitor<Void> {
 	 * @param n Node
 	 * @param parent Parent of the node.
 	 */
-	private void printNode(Node n, Node parent) {
+	private void printNode(Node n, Node parent) {		
 		if (parent != null) {
 			System.out.println(parent.getName() + " => " + 
 					n.getName() + " : " + n.getParseTree().getText());
