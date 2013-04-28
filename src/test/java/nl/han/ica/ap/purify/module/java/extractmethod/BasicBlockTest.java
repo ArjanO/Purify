@@ -73,4 +73,19 @@ public class BasicBlockTest {
 		
 		verify(node);
 	}
+	
+	@Test
+	public void addSameNodeBlockTest() {
+		Node node = createMock(Node.class);
+		
+		replay(node);
+		
+		block.add(node);
+		block.add(node);
+		
+		assertEquals(1, block.size());
+		assertEquals(node, block.get(0));
+		
+		verify(node);
+	}
 }
