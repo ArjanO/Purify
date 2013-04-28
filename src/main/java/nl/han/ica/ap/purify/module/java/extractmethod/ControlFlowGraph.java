@@ -125,8 +125,31 @@ public class ControlFlowGraph {
 	 * @return In DOT format a graph.
 	 */
 	public static String toDOTGraph(Node n) {
+		return toDOTGraph(n, null);
+	}
+	
+	/**
+	 * Build a DOT graph. The generated string allows to generate a DOT image.
+	 * 
+	 * @param n Start node of the CFG. 
+	 * @param blocks Block to display.
+	 * @return In DOT format a graph.
+	 */
+	public static String toDOTGraph(Node n, List<BasicBlock> blocks) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("digraph G {\n");
+		
+		if (blocks != null) {
+			int nr = 0;
+			for (BasicBlock b : blocks) {
+				nr += 1;
+				sb.append(String.format("\tsubgraph cluster%d {\n", nr));
+				for (int i = b.size() - 1; i >= 0; i--) {
+					sb.append(String.format("\t\t%s;\n", b.get(i).getName()));
+				}
+				sb.append("\t}\n");
+			}
+		}
 		
 		List<Node> seen = new ArrayList<Node>();
 		
