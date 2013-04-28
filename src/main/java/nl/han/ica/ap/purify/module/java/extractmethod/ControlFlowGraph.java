@@ -58,6 +58,67 @@ public class ControlFlowGraph {
 	}
 	
 	/**
+	 * Get basic blocks from a control flow graph (CFG).  
+	 * 
+	 * @param startNode CFG start node.
+	 * @return List with BasicBlocks.
+	 */
+	public static List<BasicBlock> getBasicBlocks(Node startNode) {
+		List<BasicBlock> blocks = new ArrayList<BasicBlock>();
+		List<Node> seen = new ArrayList<Node>();
+		
+		for (Node child : startNode.getChilderen()) {
+			BasicBlock block = new BasicBlock();
+			blocks.add(block);
+			basicBlock(child, block, blocks, seen);
+		}
+		
+		return blocks;
+	}
+	
+	/**
+	 * Detect basic blocks
+	 * 
+	 * @param n Node to check
+	 * @param block Current basic block
+	 * @param blocks Founded basic blocks
+	 * @param seen Nodes that are seen by this method.
+	 */
+	private static void basicBlock(Node n, BasicBlock block, 
+			List<BasicBlock> blocks, List<Node> seen) {
+		seen.add(n);
+		
+		BasicBlock nBlock = block;
+		
+		if (n.getParents().size() > 1 || n.getFlowTo().size() > 0) {
+			// Node n is a join node. Node n gets a new block.
+			nBlock = new BasicBlock();
+			blocks.add(nBlock);
+		}
+		
+		nBlock.add(n);
+		
+		if (n.getChilderen().size() > 1) {
+			// If n has more than one child the child nodes are leaders 
+			// of a new block.
+			for (Node child : n.getChilderen()) {
+				if (!seen.contains(child)) {
+					BasicBlock childBlock = new BasicBlock();
+					blocks.add(childBlock);
+				
+					basicBlock(child, childBlock, blocks, seen);
+				}
+			}
+		} else {
+			for (Node child : n.getChilderen()) {
+				if (!seen.contains(child)) {
+					basicBlock(child, nBlock, blocks, seen);
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Build a DOT graph. The generated string allows to generate a DOT image.
 	 * 
 	 * @param n Start node of the CFG. 
