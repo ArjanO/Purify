@@ -102,7 +102,8 @@ public class App {
 			if (testExtractMethod) {
 				Node n = ControlFlowGraph.buildGraph(tree);
 				
-				System.out.println(ControlFlowGraph.toDOTGraph(n));
+				System.out.println(ControlFlowGraph.toDOTGraph(n,
+						ControlFlowGraph.getBasicBlocks(n)));
 			} else {
 				ParseTreeWalker waker = new ParseTreeWalker();
 				MagicNumberDetector magicNumberDetector = new MagicNumberDetector();
