@@ -108,6 +108,9 @@ public class NodeTest {
 		assertEquals(1, node.getFlowBack().size());
 		assertEquals(0, child.getParents().size());
 		assertEquals(0, child.getChilderen().size());
+		
+		assertEquals(1, child.getFlowTo().size());
+		assertEquals(node, child.getFlowTo().get(0));
 	}
 	
 	@Test
