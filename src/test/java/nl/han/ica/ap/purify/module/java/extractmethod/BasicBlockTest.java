@@ -29,6 +29,9 @@
  */
 package nl.han.ica.ap.purify.module.java.extractmethod;
 
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
@@ -55,5 +58,19 @@ public class BasicBlockTest {
 	@Test
 	public void emptyBlockTest() {
 		assertEquals(0, block.size());
+	}
+	
+	@Test
+	public void addBlockTest() {
+		Node node = createMock(Node.class);
+		
+		replay(node);
+		
+		block.add(node);
+		
+		assertEquals(1, block.size());
+		assertEquals(node, block.get(0));
+		
+		verify(node);
 	}
 }
