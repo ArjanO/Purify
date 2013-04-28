@@ -43,6 +43,7 @@ public class Node {
 	private List<Node> parents;
 	private List<Node> childeren;
 	private List<Node> flowBack;
+	private List<Node> flowTo;
 	
 	private ParseTree parseTreeNode;
 	private String name;
@@ -51,6 +52,7 @@ public class Node {
 		parents = new ArrayList<Node>();
 		childeren = new ArrayList<Node>();
 		flowBack = new ArrayList<Node>();
+		flowTo = new ArrayList<Node>();
 		
 		parseTreeNode = parseNode;
 	}
@@ -76,6 +78,10 @@ public class Node {
 	public void addFlowBack(Node node) {
 		if (!flowBack.contains(node)) {
 			flowBack.add(node);
+			
+			if (!node.flowTo.contains(this)) {
+				node.flowTo.add(this);
+			}
 		}
 	}
 	
@@ -132,6 +138,15 @@ public class Node {
 	 */
 	public List<Node> getFlowBack() {
 		return flowBack;
+	}
+	
+	/**
+	 * Get all the nodes that flow back to this node.
+	 * 
+	 * @return Nodes that flow back to this node.
+	 */
+	public List<Node> getFlowTo() {
+		return flowTo;
 	}
 	
 	/**
