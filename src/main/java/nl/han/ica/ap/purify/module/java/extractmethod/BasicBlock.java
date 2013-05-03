@@ -43,6 +43,7 @@ import java.util.List;
  */
 public class BasicBlock {
 	private List<Node> nodes;
+	private Node leader;
 	
 	/**
 	 * Basic block
@@ -79,5 +80,23 @@ public class BasicBlock {
 	 */
 	public Node get(int index) {
 		return nodes.get(index);
+	}
+	
+	/**
+	 * Set the leader node of this basic block.
+	 * 
+	 * @param leader Leader node.
+	 */
+	public void setLeader(Node leader) {
+		this.leader = leader;
+	}
+	
+	/**
+	 * Get the leader node of this basic block.
+	 * 
+	 * @return Leader node of this basic block.
+	 */
+	public Node getLeader() {
+		return this.leader;
 	}
 }
