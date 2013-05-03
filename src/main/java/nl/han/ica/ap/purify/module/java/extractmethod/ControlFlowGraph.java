@@ -69,6 +69,7 @@ public class ControlFlowGraph {
 		
 		for (Node child : startNode.getChilderen()) {
 			BasicBlock block = new BasicBlock();
+			block.setLeader(child);
 			blocks.add(block);
 			basicBlock(child, block, blocks, seen);
 		}
@@ -93,6 +94,7 @@ public class ControlFlowGraph {
 		if (n.getParents().size() > 1 || n.getFlowTo().size() > 0) {
 			// Node n is a join node. Node n gets a new block.
 			nBlock = new BasicBlock();
+			nBlock.setLeader(n);
 			blocks.add(nBlock);
 		}
 		
@@ -104,6 +106,7 @@ public class ControlFlowGraph {
 			for (Node child : n.getChilderen()) {
 				if (!seen.contains(child)) {
 					BasicBlock childBlock = new BasicBlock();
+					childBlock.setLeader(child);
 					blocks.add(childBlock);
 				
 					basicBlock(child, childBlock, blocks, seen);
@@ -145,7 +148,14 @@ public class ControlFlowGraph {
 				nr += 1;
 				sb.append(String.format("\tsubgraph cluster%d {\n", nr));
 				for (int i = b.size() - 1; i >= 0; i--) {
-					sb.append(String.format("\t\t%s;\n", b.get(i).getName()));
+					String style = "";
+					
+					if (b.getLeader() == b.get(i)) {
+						style = "[style=filled]";
+					}
+					
+					sb.append(String.format("\t\t%s%s;\n", 
+							b.get(i).getName(), style));
 				}
 				sb.append("\t}\n");
 			}
