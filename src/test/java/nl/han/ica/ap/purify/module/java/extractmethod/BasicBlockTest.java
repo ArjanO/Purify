@@ -88,4 +88,18 @@ public class BasicBlockTest {
 		
 		verify(node);
 	}
+	
+	@Test
+	public void setLeaderTest() {
+		Node node = createMock(Node.class);
+		
+		replay(node);
+		
+		block.setLeader(node);
+		
+		assertEquals(0, block.size());
+		assertEquals(node, block.getLeader());
+		
+		verify(node);
+	}
 }
