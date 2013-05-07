@@ -121,6 +121,15 @@ public class ClassNode {
 				}
 			}
 		}
+		
+		for(MethodNode mn : methods) {
+			if(mn.getMethodID().equals("this")) {
+				String temp = mn.getLocalVariable(variableID);
+				if(temp != null) {
+					return temp;
+				}
+			}
+		}
 		return null;
 	}
 	
