@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
 import nl.han.ica.ap.purify.language.java.JavaParser.LocalVariableDeclarationStatementContext;
@@ -163,7 +164,8 @@ class ControlFlowGraphVisitor extends JavaBaseVisitor<Void> {
 	@Override
 	public Void visitStatementIf(StatementIfContext ctx) {
 		Node ifNode = createNode(ctx);
-		Node backUp = null;
+		Node backup = null;
+		boolean elseDetected = false;
 		
 		List<Node> branch = new ArrayList<Node>();
 		
@@ -175,14 +177,19 @@ class ControlFlowGraphVisitor extends JavaBaseVisitor<Void> {
 				
 				branch.add(lastNode);
 				
-				if (backUp == null) {
-					backUp = lastNode;
+				if (backup == null) {
+					backup = lastNode;
 				}
+			} else if (ctx.getChild(i) instanceof TerminalNode &&
+					ctx.getChild(i).getText().equals("else")) {
+				elseDetected = true;
 			}
 		}
 		
-		if (backUp != null) {
-			lastNode = backUp;
+		if (elseDetected) {
+			lastNode = backup;
+		} else {
+			lastNode = ifNode;
 		}
 
 		join = branch;
