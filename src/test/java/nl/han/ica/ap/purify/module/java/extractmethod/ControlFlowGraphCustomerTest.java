@@ -29,6 +29,7 @@
  */
 package nl.han.ica.ap.purify.module.java.extractmethod;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
@@ -88,6 +89,28 @@ public class ControlFlowGraphCustomerTest {
 		
 		for (BasicBlock b : blcoks) {
 			assertTrue(reachB1.contains(b));
+		}
+	}
+	
+	/**
+	 * Reach(B2) = {B2, B3, B4, B5, B6, B7}
+	 */
+	@Test
+	public void reachB2Test() {
+		List<BasicBlock> blocks = cfg.getBasicBlocks();
+		List<BasicBlock> noReach = new ArrayList<BasicBlock>();
+		noReach.add(blocks.get(0)); // B1
+		
+		BasicBlock b2 = blocks.get(1);
+		
+		List<BasicBlock> reachB2 = cfg.reach(b2);
+		
+		assertEquals(blocks.size() - noReach.size(), reachB2.size());
+		
+		for (BasicBlock b : blocks) {
+			if (!noReach.contains(b)) {
+				assertTrue(reachB2.contains(b));
+			}
 		}
 	}
 }
