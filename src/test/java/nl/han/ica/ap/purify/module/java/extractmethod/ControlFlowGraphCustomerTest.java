@@ -41,6 +41,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Unit test for {@link ControlFlowGraph}
@@ -162,5 +163,53 @@ public class ControlFlowGraphCustomerTest {
 				assertTrue(reachB4.contains(b));
 			}
 		}
+	}
+	
+	/**
+	 * Reach(B5) = {B5, B6}
+	 */
+	@Test
+	public void reachB5Test() {
+		List<BasicBlock> blocks = cfg.getBasicBlocks();
+		List<BasicBlock> noReach = new ArrayList<BasicBlock>();
+		noReach.add(getBasicBlockOfNode(blocks, "2")); // B1
+		noReach.add(getBasicBlockOfNode(blocks, "6")); // B2
+		noReach.add(getBasicBlockOfNode(blocks, "8")); // B3
+		noReach.add(getBasicBlockOfNode(blocks, "10")); // B4
+		noReach.add(getBasicBlockOfNode(blocks, "14")); // B7
+		
+		assertFalse(noReach.contains(null));
+		
+		BasicBlock b5 = getBasicBlockOfNode(blocks, "11"); // B5
+		
+		List<BasicBlock> reachB5 = cfg.reach(b5);
+		
+		assertEquals(blocks.size() - noReach.size(), reachB5.size());
+		
+		for (BasicBlock b : blocks) {
+			if (!noReach.contains(b)) {
+				assertTrue(reachB5.contains(b));
+			}
+		}
+	}
+	
+	/**
+	 * Get the basic block of a node
+	 *  
+	 * @param blocks Basic blocks. 
+	 * @param name Name of the node.
+	 * @return Basic block of the node.
+	 */
+	private BasicBlock getBasicBlockOfNode(List<BasicBlock> blocks, 
+			String name) {
+		for (BasicBlock b : blocks) {
+			for (int i = b.size() - 1; i >= 0; i--) {
+				if (b.get(i).getName().equals(name)) {
+					return b;
+				}
+			}
+		}
+		
+		return null;
 	}
 }
