@@ -137,4 +137,30 @@ public class ControlFlowGraphCustomerTest {
 			}
 		}
 	}
+	
+	/**
+	 * Reach(B4) = {B4, B6}
+	 */
+	@Test
+	public void reachB4Test() {
+		List<BasicBlock> blocks = cfg.getBasicBlocks();
+		List<BasicBlock> noReach = new ArrayList<BasicBlock>();
+		noReach.add(blocks.get(0)); // B1
+		noReach.add(blocks.get(1)); // B2
+		noReach.add(blocks.get(2)); // B3
+		noReach.add(blocks.get(5)); // B5
+		noReach.add(blocks.get(6)); // B7
+		
+		BasicBlock b4 = blocks.get(3); // B4
+		
+		List<BasicBlock> reachB4 = cfg.reach(b4);
+		
+		assertEquals(blocks.size() - noReach.size(), reachB4.size());
+		
+		for (BasicBlock b : blocks) {
+			if (!noReach.contains(b)) {
+				assertTrue(reachB4.contains(b));
+			}
+		}
+	}
 }
