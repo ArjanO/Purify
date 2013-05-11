@@ -194,6 +194,21 @@ public class ControlFlowGraphCustomerTest {
 	}
 	
 	/**
+	 * Reach(B6) = {B6}
+	 */
+	@Test
+	public void reachB6Test() {
+		List<BasicBlock> blocks = cfg.getBasicBlocks();
+		
+		BasicBlock b6 = getBasicBlockOfNode(blocks, "12"); // B6
+		
+		List<BasicBlock> reach = cfg.reach(b6);
+		
+		assertEquals(1, reach.size());
+		assertTrue(reach.contains(b6));
+	}
+	
+	/**
 	 * Get the basic block of a node
 	 *  
 	 * @param blocks Basic blocks. 
