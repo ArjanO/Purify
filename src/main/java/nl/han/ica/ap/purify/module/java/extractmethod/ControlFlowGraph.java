@@ -89,12 +89,53 @@ public class ControlFlowGraph {
 	}
 	
 	/**
+	 * Get the set of basic blocks that b reaches. 
+	 * 
+	 * @param b Start block.
+	 * @return Basic blocks that reach b.
+	 * @throws IllegalArgumentException if b is null.
+	 */
+	public List<BasicBlock> reach(BasicBlock b) {
+		if (b == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		List<BasicBlock> result = new ArrayList<BasicBlock>();
+		result.add(b);
+		
+		for (int i = b.size() - 1; i >= 0; i--) {
+			reachLoop(b.get(i), b, result);
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * Build a DOT graph. The generated string allows to generate a DOT image.
 	 * 
 	 * @return String in the DOT format.
 	 */
 	public String toDOTGraph() {
 		return toDOTGraph(entryNode, basicBlocks);
+	}
+	
+	/**
+	 * Loop for finding reachable basic blocks.
+	 * 
+	 * @param n Current node.
+	 * @param b Current basic block
+	 * @param blocks Current found blocks.
+	 */
+	private void reachLoop(Node n, BasicBlock b, List<BasicBlock> blocks) {
+		for (Node child : n.getChilderen()) {
+			BasicBlock childBasicBlock = child.getBasicBlock();
+			
+			if (childBasicBlock != b && !blocks.contains(childBasicBlock)) {
+				blocks.add(childBasicBlock);
+			}
+			
+			reachLoop(child, child.getBasicBlock(), blocks);
+		}
 	}
 	
 	/**
