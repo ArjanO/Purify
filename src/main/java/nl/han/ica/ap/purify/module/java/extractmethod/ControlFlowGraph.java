@@ -98,20 +98,6 @@ public class ControlFlowGraph {
 	}
 	
 	/**
-	 * Build a control flow graph (CFG) from the ParseTree).
-	 * 
-	 * @param tree Method parse tree.
-	 * @return Start node of the CFG.
-	 */
-	public static Node buildGraph(ParseTree tree) {
-		ControlFlowGraphVisitor cfgVisitor = new ControlFlowGraphVisitor();
-		
-		cfgVisitor.visit(tree);
-		
-		return cfgVisitor.getGraph();
-	}
-	
-	/**
 	 * Detect the basic blocks in this control flow graph (CFG).  
 	 * 
 	 * @return List with BasicBlocks.
@@ -138,7 +124,7 @@ public class ControlFlowGraph {
 	 * @param blocks Founded basic blocks
 	 * @param seen Nodes that are seen by this method.
 	 */
-	private static void basicBlock(Node n, BasicBlock block, 
+	private void basicBlock(Node n, BasicBlock block, 
 			List<BasicBlock> blocks, List<Node> seen) {
 		seen.add(n);
 		
@@ -178,20 +164,10 @@ public class ControlFlowGraph {
 	 * Build a DOT graph. The generated string allows to generate a DOT image.
 	 * 
 	 * @param n Start node of the CFG. 
-	 * @return In DOT format a graph.
-	 */
-	public static String toDOTGraph(Node n) {
-		return toDOTGraph(n, null);
-	}
-	
-	/**
-	 * Build a DOT graph. The generated string allows to generate a DOT image.
-	 * 
-	 * @param n Start node of the CFG. 
 	 * @param blocks Block to display.
 	 * @return In DOT format a graph.
 	 */
-	public static String toDOTGraph(Node n, List<BasicBlock> blocks) {
+	private String toDOTGraph(Node n, List<BasicBlock> blocks) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("digraph G {\n");
 		
@@ -223,7 +199,7 @@ public class ControlFlowGraph {
 		return sb.toString();
 	}
 	
-	private static void buildDOTGraph(Node n, Node parent, 
+	private void buildDOTGraph(Node n, Node parent, 
 			StringBuilder sb, List<Node> seen) {		
 		if (parent != null) {
 			sb.append("\t" + parent.getName() + " -> " + n.getName() + ";\n");
