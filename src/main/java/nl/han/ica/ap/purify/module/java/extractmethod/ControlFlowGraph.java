@@ -40,7 +40,45 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * @author Arjan
  */
 public class ControlFlowGraph {
-	private ControlFlowGraph() {
+	/**
+	 * Method as node is the start node of the CFG.
+	 */
+	private Node entryNode;
+	
+	/**
+	 * Build a control flow graph (CFG) from the ParseTree. 
+	 * 
+	 * @param tree Method parse tree.
+	 * @throws IllegalArgumentException if tree is null.
+	 */
+	public ControlFlowGraph(ParseTree tree) {
+		if (tree == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		ControlFlowGraphVisitor cfgVisitor = new ControlFlowGraphVisitor();
+		
+		cfgVisitor.visit(tree);
+		
+		entryNode = cfgVisitor.getGraph();
+	}
+	
+	/**
+	 * Get the entry node of the CFG.
+	 * 
+	 * @return Entry node.
+	 */
+	public Node getEntryNode() {
+		return entryNode;
+	}
+	
+	/**
+	 * Build a DOT graph. The generated string allows to generate a DOT image.
+	 * 
+	 * @return String in the DOT format.
+	 */
+	public String toDOTGraph() {
+		return toDOTGraph(entryNode, null);
 	}
 	
 	/**
