@@ -69,6 +69,8 @@ public class BasicBlock {
 	public void add(Node node) {
 		if (!nodes.contains(node)) {
 			nodes.add(node);
+			
+			node.setBasicBlock(this);
 		}
 	}
 	

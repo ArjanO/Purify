@@ -34,6 +34,7 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 
+import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +64,7 @@ public class BasicBlockTest {
 	@Test
 	public void addBlockTest() {
 		Node node = createMock(Node.class);
+		node.setBasicBlock(EasyMock.eq(block));
 		
 		replay(node);
 		
@@ -77,6 +79,8 @@ public class BasicBlockTest {
 	@Test
 	public void addSameNodeBlockTest() {
 		Node node = createMock(Node.class);
+		
+		node.setBasicBlock(EasyMock.eq(block));
 		
 		replay(node);
 		
