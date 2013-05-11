@@ -80,6 +80,22 @@ public class ControlFlowGraphTest {
 	}
 	
 	/**
+	 * Test with empty method and basic blocks.
+	 */
+	@Test
+	public void emptyMethodBasicBlocksTest() {
+		expect(methodCtx.getChildCount()).andReturn(0).anyTimes();
+		
+		replay(methodCtx);
+		
+		ControlFlowGraph cfg = new ControlFlowGraph(methodCtx);
+		
+		assertNotNull(cfg.getEntryNode());
+		assertEquals(0, cfg.getBasicBlocks().size());
+		assertEquals(methodCtx, cfg.getEntryNode().getParseTree());
+	}
+	
+	/**
 	 * ControlFlowGraphVisitor calls accept. This method class the visit 
 	 * method.
 	 * 
