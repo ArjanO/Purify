@@ -46,6 +46,11 @@ public class ControlFlowGraph {
 	private Node entryNode;
 	
 	/**
+	 * Basic blocks in this CFG graph.
+	 */
+	private List<BasicBlock> basicBlocks;
+	
+	/**
 	 * Build a control flow graph (CFG) from the ParseTree. 
 	 * 
 	 * @param tree Method parse tree.
@@ -61,6 +66,8 @@ public class ControlFlowGraph {
 		cfgVisitor.visit(tree);
 		
 		entryNode = cfgVisitor.getGraph();
+		
+		basicBlocks = detectBasicBlocks();
 	}
 	
 	/**
@@ -70,6 +77,15 @@ public class ControlFlowGraph {
 	 */
 	public Node getEntryNode() {
 		return entryNode;
+	}
+	
+	/**
+	 * Get the detected basic blocks.
+	 * 
+	 * @return Detected basic blocks.
+	 */
+	public List<BasicBlock> getBasicBlocks() {
+		return basicBlocks;
 	}
 	
 	/**
@@ -96,16 +112,15 @@ public class ControlFlowGraph {
 	}
 	
 	/**
-	 * Get basic blocks from a control flow graph (CFG).  
+	 * Detect the basic blocks in this control flow graph (CFG).  
 	 * 
-	 * @param startNode CFG start node.
 	 * @return List with BasicBlocks.
 	 */
-	public static List<BasicBlock> getBasicBlocks(Node startNode) {
+	private List<BasicBlock> detectBasicBlocks() {
 		List<BasicBlock> blocks = new ArrayList<BasicBlock>();
 		List<Node> seen = new ArrayList<Node>();
 		
-		for (Node child : startNode.getChilderen()) {
+		for (Node child : entryNode.getChilderen()) {
 			BasicBlock block = new BasicBlock();
 			block.setLeader(child);
 			blocks.add(block);
