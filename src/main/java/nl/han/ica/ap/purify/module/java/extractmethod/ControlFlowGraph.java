@@ -94,7 +94,7 @@ public class ControlFlowGraph {
 	 * @return String in the DOT format.
 	 */
 	public String toDOTGraph() {
-		return toDOTGraph(entryNode, null);
+		return toDOTGraph(entryNode, basicBlocks);
 	}
 	
 	/**
