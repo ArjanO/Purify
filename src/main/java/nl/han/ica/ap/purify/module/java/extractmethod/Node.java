@@ -46,6 +46,7 @@ public class Node {
 	private List<Node> flowTo;
 	
 	private ParseTree parseTreeNode;
+	private BasicBlock basicBlock;
 	private String name;
 	
 	public Node(ParseTree parseNode) {
@@ -54,6 +55,7 @@ public class Node {
 		flowBack = new ArrayList<Node>();
 		flowTo = new ArrayList<Node>();
 		
+		basicBlock = null;
 		parseTreeNode = parseNode;
 	}
 	
@@ -83,6 +85,24 @@ public class Node {
 				node.flowTo.add(this);
 			}
 		}
+	}
+	
+	/**
+	 * Set the basic block of this node.
+	 * 
+	 * @param b Basic block of this node.
+	 */
+	public void setBasicBlock(BasicBlock b) {
+		this.basicBlock = b;
+	}
+	
+	/**
+	 * Get the basic block of this node.
+	 * 
+	 * @return Basic block of this node.
+	 */
+	public BasicBlock getBasicBlock() {
+		return this.basicBlock;
 	}
 	
 	/**
