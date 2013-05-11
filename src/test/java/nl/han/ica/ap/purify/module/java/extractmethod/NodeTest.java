@@ -126,4 +126,16 @@ public class NodeTest {
 		assertEquals(0, child.getParents().size());
 		assertEquals(0, child.getChilderen().size());
 	}
+	
+	@Test
+	public void getSetBasicBlockTest() {
+		BasicBlock basicBlock = createMock(BasicBlock.class);
+		
+		replay(basicBlock);
+		
+		node.setBasicBlock(basicBlock);
+		assertEquals(basicBlock, node.getBasicBlock());
+		
+		verify(basicBlock);
+	}
 }
