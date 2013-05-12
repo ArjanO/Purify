@@ -40,6 +40,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * @author Arjan
  */
 public class PDGNode {
+	private String name;
 	private List<PDGNode> controlDependencies;
 	private ParseTree parseTree;
 	
@@ -52,6 +53,24 @@ public class PDGNode {
 		this.parseTree = parseTree;
 		
 		controlDependencies = new ArrayList<PDGNode>();
+	}
+	
+	/**
+	 * Set the name of the node.
+	 * 
+	 * @param name Name of the node.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	/**
+	 * Get the name of the node.
+	 * 
+	 * @return Name of the node.
+	 */
+	public String getName() {
+		return this.name;
 	}
 	
 	/**
