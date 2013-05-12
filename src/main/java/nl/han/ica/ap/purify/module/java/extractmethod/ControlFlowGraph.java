@@ -111,12 +111,45 @@ public class ControlFlowGraph {
 	}
 	
 	/**
+	 * Get the node assisted with statement (parse tree).
+	 * 
+	 * @param statement Parse tree node of the statement
+	 * @return Node that is assisted with the statement.
+	 */
+	public Node getNodeByStatement(ParseTree statement) {
+		return searchNodeByStatement(entryNode, statement);
+	}
+	
+	/**
 	 * Build a DOT graph. The generated string allows to generate a DOT image.
 	 * 
 	 * @return String in the DOT format.
 	 */
 	public String toDOTGraph() {
 		return toDOTGraph(entryNode, basicBlocks);
+	}
+	
+	/**
+	 * Search for the node assisted with statement (parse tree).
+	 * 
+	 * @param node Node
+	 * @param statement Statement
+	 * @return Node with the statement or null if not found.
+	 */
+	private Node searchNodeByStatement(Node node, ParseTree statement) {
+		if (node.getParseTree() == statement) {
+			return node; // Found!
+		}
+		
+		for (Node child : node.getChilderen()) {
+			Node result = searchNodeByStatement(child, statement);
+			
+			if (result != null) {
+				return result;
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
