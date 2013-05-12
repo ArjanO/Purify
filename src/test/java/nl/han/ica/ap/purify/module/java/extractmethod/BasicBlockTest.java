@@ -106,4 +106,11 @@ public class BasicBlockTest {
 		
 		verify(node);
 	}
+	
+	@Test
+	public void nameTest() {
+		block.setName("test");
+		
+		assertEquals("test", block.getName());
+	}
 }
