@@ -141,9 +141,13 @@ class ProgramDependenceGraphVisitor extends JavaBaseVisitor<Void> {
 	
 	@Override
 	public Void visitStatementIf(StatementIfContext ctx) {
-		createNode(ctx);
+		PDGNode controlBackup = control;
 		
-		return super.visitStatementIf(ctx);
+		control = createNode(ctx);
+		super.visitStatementIf(ctx);
+		control = controlBackup;
+		
+		return null;
 	}
 	
 	@Override
