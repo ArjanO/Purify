@@ -45,6 +45,7 @@ import nl.han.ica.ap.purify.language.java.JavaParser;
 import nl.han.ica.ap.purify.module.java.duplicatecode.Clones;
 import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
 import nl.han.ica.ap.purify.module.java.extractmethod.ControlFlowGraph;
+import nl.han.ica.ap.purify.module.java.extractmethod.ProgramDependenceGraph;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumber;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
 import nl.han.ica.ap.purify.module.java.removeparameter.Method;
@@ -102,6 +103,11 @@ public class App {
 				ControlFlowGraph cfg = new ControlFlowGraph(tree);
 				
 				System.out.println(cfg.toDOTGraph());
+				
+				System.out.println("--------- PDG ---------");
+				
+				ProgramDependenceGraph pdg = new ProgramDependenceGraph(tree);
+				System.out.println(pdg.toDOTGraph());
 			} else {
 				ParseTreeWalker waker = new ParseTreeWalker();
 				MagicNumberDetector magicNumberDetector = new MagicNumberDetector();
