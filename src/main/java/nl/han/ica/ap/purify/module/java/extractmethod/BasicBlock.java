@@ -42,6 +42,7 @@ import java.util.List;
  * @author Arjan
  */
 public class BasicBlock {
+	private String name;
 	private List<Node> nodes;
 	private Node leader;
 	
@@ -50,6 +51,25 @@ public class BasicBlock {
 	 */
 	public BasicBlock() {
 		nodes = new ArrayList<Node>();
+	}
+	
+	/**
+	 * Set the name of this basic block. 
+	 * Note the name if only used in diagrams.
+	 * 
+	 * @param name New name.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	/**
+	 * Get the name of this basic block.
+	 * 
+	 * @return Name of the basic block.
+	 */
+	public String getName() {
+		return name;
 	}
 	
 	/**
