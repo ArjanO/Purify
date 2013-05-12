@@ -184,6 +184,7 @@ public class ControlFlowGraph {
 			BasicBlock block = new BasicBlock();
 			block.setLeader(child);
 			blocks.add(block);
+			block.setName(String.format("B%d", blocks.indexOf(block) + 1));
 			basicBlock(child, block, blocks, seen);
 		}
 		
@@ -209,6 +210,7 @@ public class ControlFlowGraph {
 			nBlock = new BasicBlock();
 			nBlock.setLeader(n);
 			blocks.add(nBlock);
+			nBlock.setName(String.format("B%d", blocks.indexOf(nBlock) + 1));
 		}
 		
 		nBlock.add(n);
@@ -221,6 +223,8 @@ public class ControlFlowGraph {
 					BasicBlock childBlock = new BasicBlock();
 					childBlock.setLeader(child);
 					blocks.add(childBlock);
+					childBlock.setName(String.format("B%d", 
+							blocks.indexOf(childBlock) + 1));
 				
 					basicBlock(child, childBlock, blocks, seen);
 				}
