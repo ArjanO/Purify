@@ -70,7 +70,7 @@ public class PDGNodeTest {
 	}
 	
 	@Test
-	public void addControlDependence() {
+	public void addControlDependenceTest() {
 		PDGNode node1 = new PDGNode(parseTree);
 		PDGNode node2 = new PDGNode(parseTree);
 		
@@ -82,5 +82,12 @@ public class PDGNodeTest {
 		assertEquals(2, node.getControlDependencies().size());
 		assertTrue(node.getControlDependencies().contains(node1));
 		assertTrue(node.getControlDependencies().contains(node2));
+	}
+	
+	@Test
+	public void nameTest() {
+		node.setName("3");
+		
+		assertEquals("3", node.getName());
 	}
 }
