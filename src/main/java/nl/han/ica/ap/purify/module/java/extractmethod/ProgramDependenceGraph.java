@@ -61,6 +61,15 @@ public class ProgramDependenceGraph {
 	}
 	
 	/**
+	 * Get the entry node of the graph.
+	 * 
+	 * @return Entry node.
+	 */
+	public PDGNode getEntryNode() {
+		return entryNode;
+	}
+	
+	/**
 	 * Create a DOT graph.
 	 * 
 	 * @return DOT graph as string.
