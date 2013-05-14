@@ -46,7 +46,7 @@ import nl.han.ica.ap.purify.language.java.JavaParser;
 import nl.han.ica.ap.purify.modles.SourceFile;
 import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumber;
-import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
+import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetectorListener;
 import nl.han.ica.ap.purify.module.java.removeparameter.Method;
 import nl.han.ica.ap.purify.module.java.removeparameter.RemoveParameterDetector;
 
@@ -94,7 +94,7 @@ public class App {
 			ParseTree tree = parser.compilationUnit();
 			
 			ParseTreeWalker waker = new ParseTreeWalker();
-			MagicNumberDetector magicNumberDetector = new MagicNumberDetector();
+			MagicNumberDetectorListener magicNumberDetector = new MagicNumberDetectorListener();
 			waker.walk(magicNumberDetector, tree);
 			waker.walk(removeParameter, tree);
 			

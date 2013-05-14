@@ -45,12 +45,12 @@ import static org.junit.Assert.*;
  * 
  * @author Arjan
  */
-public class MagicNumberDetectorTest {
-	private MagicNumberDetector detector;
+public class MagicNumberDetectorListenerTest {
+	private MagicNumberDetectorListener detector;
 	
 	@Before
 	public void setUp() {
-		detector = new MagicNumberDetector();
+		detector = new MagicNumberDetectorListener();
 	}
 	
 	@Test
