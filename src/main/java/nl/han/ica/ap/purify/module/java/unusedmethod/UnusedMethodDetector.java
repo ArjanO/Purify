@@ -32,15 +32,18 @@ package nl.han.ica.ap.purify.module.java.unusedmethod;
 import java.util.ArrayList;
 
 import nl.han.ica.ap.purify.language.java.callgraph.CallGraph;
-import nl.han.ica.ap.purify.language.java.callgraph.Edge;
 import nl.han.ica.ap.purify.language.java.callgraph.MethodNode;
 
 /**
+ * Detects when a method is not called by anything in the parsed program.
+ * 
  * @author Tim
- *
  */
 public class UnusedMethodDetector {
+	/** The pre generated callgraph */
 	CallGraph graph;
+	
+	/** An ArrayList containing MethodNodes of the uncalled methods */
 	public ArrayList<MethodNode> uncalledmethods;
 	
 	public UnusedMethodDetector(CallGraph graph) {
@@ -48,19 +51,20 @@ public class UnusedMethodDetector {
 		detectIssues();
 	}
 	
+	/**
+	 * Start detecting if there are uncalled methods.
+	 */
 	private void detectIssues() {
-		getCalledMethods(graph.getEdges());
+		graph.checkIfTruelyCalled();
 		uncalledmethods = getUnCalledMethods(graph.getAllMethods());
 	}
 	
-	private void getCalledMethods(ArrayList<Edge> edges) {
-		for(Edge e : edges) {
-			if(!e.src.called) {
-				e.target.called = false;
-			}
-		}
-	}
-	
+	/**
+	 * Returns all MethodNodes that were uncalled.
+	 * 
+	 * @param methods A list with all MethodNodes in the graph.
+	 * @return Returns an ArrayList with uncalled MethodNodes.
+	 */
 	private ArrayList<MethodNode> getUnCalledMethods(ArrayList<MethodNode> methods) {
 		ArrayList<MethodNode> uncalledmethods = new ArrayList<MethodNode>();
 		for(MethodNode m : methods) {
