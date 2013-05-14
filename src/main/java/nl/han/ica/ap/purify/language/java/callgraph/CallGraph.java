@@ -184,4 +184,17 @@ public class CallGraph {
 		}
 		return null;
 	}
+
+	/**
+	 * @param classID
+	 * @param methodID
+	 * @return
+	 */
+	public MethodNode getMethod(String classID, String methodID) {
+		ClassNode n = getNode(classID);
+		if(n != null) {
+			return n.getMethod(methodID);
+		}
+		return null;
+	}
 }
