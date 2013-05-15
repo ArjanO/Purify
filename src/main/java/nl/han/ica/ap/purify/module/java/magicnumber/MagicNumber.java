@@ -32,6 +32,7 @@ package nl.han.ica.ap.purify.module.java.magicnumber;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.han.ica.ap.purify.language.java.JavaParser.ClassBodyContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.LiteralContext;
 
 /**
@@ -41,14 +42,16 @@ import nl.han.ica.ap.purify.language.java.JavaParser.LiteralContext;
  */
 public class MagicNumber {
 	private String literal;
+	private ClassBodyContext classBodyContext;
 	private List<LiteralContext> contexts;
 	
-	public MagicNumber(String literal) {
-		if (literal == null) {
+	public MagicNumber(String literal, ClassBodyContext classBody) {
+		if (literal == null || classBody == null) {
 			throw new NullPointerException();
 		}
 		
 		this.literal = literal;
+		this.classBodyContext = classBody;
 		this.contexts = new ArrayList<LiteralContext>();
 	}
 	
@@ -62,6 +65,15 @@ public class MagicNumber {
 	}
 	
 	/**
+	 * Get method body context
+	 * 
+	 * @return Class body context.
+	 */
+	public ClassBodyContext getClassBodyContext() {
+		return this.classBodyContext;
+	}
+	
+	/**
 	 * Add a literal to the context.
 	 * 
 	 * @param context LIteralContext to add.
@@ -72,6 +84,16 @@ public class MagicNumber {
 		}
 		
 		this.contexts.add(context);
+	}
+
+	/**
+	 * Get the context at the index.
+	 * 
+	 * @param index Index of the item.
+	 * @return Context at the index.
+	 */
+	public LiteralContext getContext(int index) {
+		return this.contexts.get(index);
 	}
 	
 	/**

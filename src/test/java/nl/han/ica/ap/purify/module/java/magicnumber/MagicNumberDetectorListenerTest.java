@@ -31,11 +31,13 @@ package nl.han.ica.ap.purify.module.java.magicnumber;
 
 import java.util.List;
 
+import nl.han.ica.ap.purify.language.java.JavaParser.ClassBodyContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.LiteralIntegerContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.LiteralNullContext;
 
 import static org.easymock.EasyMock.*;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -47,10 +49,22 @@ import static org.junit.Assert.*;
  */
 public class MagicNumberDetectorListenerTest {
 	private MagicNumberDetectorListener detector;
+	private ClassBodyContext classBodyContext;
 	
 	@Before
 	public void setUp() {
+		classBodyContext = createMock(ClassBodyContext.class);
+		
+		replay(classBodyContext);
+		
 		detector = new MagicNumberDetectorListener();
+		
+		detector.enterClassBody(classBodyContext);
+	}
+	
+	@After
+	public void after() {
+		verify(classBodyContext);
 	}
 	
 	@Test

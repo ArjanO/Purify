@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import nl.han.ica.ap.purify.language.java.JavaBaseListener;
+import nl.han.ica.ap.purify.language.java.JavaParser.ClassBodyContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.LiteralBooleanContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.LiteralCharacterContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.LiteralContext;
@@ -48,10 +49,13 @@ import nl.han.ica.ap.purify.language.java.JavaParser.LiteralStringContext;
  * @author Arjan
  */
 class MagicNumberDetectorListener extends JavaBaseListener {
-	public HashMap<String, MagicNumber> literals;
+	private ClassBodyContext classBodyContext;
 	
+	public HashMap<String, MagicNumber> literals;
+
 	public MagicNumberDetectorListener() {
 		literals = new HashMap<String, MagicNumber>();
+		classBodyContext = null;
 	}
 	
 	/**
@@ -74,6 +78,18 @@ class MagicNumberDetectorListener extends JavaBaseListener {
 	    }
 		
 		return result;
+	}
+	
+	@Override
+	public void enterClassBody(ClassBodyContext ctx) {
+		classBodyContext = ctx;
+		super.enterClassBody(ctx);
+	}
+	
+	@Override
+	public void exitClassBody(ClassBodyContext ctx) {
+		classBodyContext = null;
+		super.exitClassBody(ctx);
 	}
 	
 	/**
@@ -129,7 +145,7 @@ class MagicNumberDetectorListener extends JavaBaseListener {
 			MagicNumber magicNumber;
 			
 			if (!literals.containsKey(ctx.getText())) {
-				magicNumber = new MagicNumber(ctx.getText());
+				magicNumber = new MagicNumber(ctx.getText(), classBodyContext);
 				
 				literals.put(ctx.getText(), magicNumber);
 			} else {

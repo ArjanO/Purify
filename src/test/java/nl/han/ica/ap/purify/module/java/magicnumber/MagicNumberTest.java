@@ -31,9 +31,13 @@ package nl.han.ica.ap.purify.module.java.magicnumber;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.*;
+import nl.han.ica.ap.purify.language.java.JavaParser.ClassBodyContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.LiteralContext;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -42,18 +46,38 @@ import org.junit.Test;
  * @author Arjan
  */
 public class MagicNumberTest {
+	private ClassBodyContext classBodyContext;
 	private MagicNumber magicNumber;
+	
+	@Before
+	public void before() {
+		classBodyContext = createMock(ClassBodyContext.class);
+		
+		replay(classBodyContext);
+	}
+	
+	@After
+	public void after() {
+		verify(classBodyContext);
+	}
+	
+	@Test
+	public void getContextTest() {
+		magicNumber = new MagicNumber("25", classBodyContext);
+		
+		assertEquals(magicNumber.getClassBodyContext(), classBodyContext);
+	}
 	
 	@Test
 	public void addZeroItemsTest() {
-		magicNumber = new MagicNumber("25");
+		magicNumber = new MagicNumber("25", classBodyContext);
 		
 		assertEquals(0, magicNumber.size());
 	}
 	
 	@Test
 	public void addOneItemTest() {
-		magicNumber = new MagicNumber("25");
+		magicNumber = new MagicNumber("25", classBodyContext);
 		
 		LiteralContext literalMock = createMock(LiteralContext.class);
 		
@@ -65,19 +89,24 @@ public class MagicNumberTest {
 	
 	@Test
 	public void getLiteralNameTest() {
-		magicNumber = new MagicNumber("\"test\"");
+		magicNumber = new MagicNumber("\"test\"", classBodyContext);
 		
 		assertEquals("\"test\"", magicNumber.getLiteral());
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void nullTest() {
-		magicNumber = new MagicNumber(null);
+		magicNumber = new MagicNumber(null, classBodyContext);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void nullClassBodyContextTest() {
+		magicNumber = new MagicNumber("25", null);
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void addNullTest() {
-		magicNumber = new MagicNumber("26");
+		magicNumber = new MagicNumber("26", classBodyContext);
 		magicNumber.addLiteral(null);
 	}
 }
