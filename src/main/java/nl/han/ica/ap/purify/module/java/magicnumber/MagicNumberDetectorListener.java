@@ -47,7 +47,7 @@ import nl.han.ica.ap.purify.language.java.JavaParser.LiteralStringContext;
  * 
  * @author Arjan
  */
-public class MagicNumberDetectorListener extends JavaBaseListener {
+class MagicNumberDetectorListener extends JavaBaseListener {
 	public HashMap<String, MagicNumber> literals;
 	
 	public MagicNumberDetectorListener() {
