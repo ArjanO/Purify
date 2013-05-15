@@ -49,6 +49,15 @@ public class MagicNumberIssue implements IIssue {
 	}
 	
 	/**
+	 * Get the magic number.
+	 * 
+	 * @return The magic number.
+	 */
+	public MagicNumber getMagicNumber() {
+		return this.magicNumber;
+	}
+	
+	/**
 	 * ToString method for the {@link App}. In the future reporting of issues
 	 * is needed.
 	 */
