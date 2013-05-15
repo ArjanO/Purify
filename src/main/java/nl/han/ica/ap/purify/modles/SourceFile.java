@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStreamRewriter;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
@@ -44,6 +45,7 @@ public class SourceFile {
 	private String path;
 	
 	private CommonTokenStream tokens;
+	private TokenStreamRewriter rewriter;
 	private ParseTree parseTree;
 	
 	private List<IIssue> issues;
@@ -58,6 +60,7 @@ public class SourceFile {
 	public SourceFile(String path, CommonTokenStream tokens, ParseTree tree) {
 		this.path = path;
 		this.tokens = tokens;
+		this.rewriter = new TokenStreamRewriter(tokens);
 		this.parseTree = tree;
 		
 		this.issues = new ArrayList<IIssue>();
@@ -79,6 +82,15 @@ public class SourceFile {
 	 */
 	public CommonTokenStream getTokenStream() {
 		return tokens;
+	}
+	
+	/**
+	 * Get the token stream rewriter.
+	 * 
+	 * @return Token stream rewriter.
+	 */
+	public TokenStreamRewriter getRewriter() {
+		return rewriter;
 	}
 	
 	/**
