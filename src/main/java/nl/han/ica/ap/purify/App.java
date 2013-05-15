@@ -43,10 +43,10 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import nl.han.ica.ap.purify.language.java.JavaLexer;
 import nl.han.ica.ap.purify.language.java.JavaParser;
+import nl.han.ica.ap.purify.modles.IDetector;
 import nl.han.ica.ap.purify.modles.SourceFile;
 import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
-import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumber;
-import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetectorListener;
+import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
 import nl.han.ica.ap.purify.module.java.removeparameter.Method;
 import nl.han.ica.ap.purify.module.java.removeparameter.RemoveParameterDetector;
 
@@ -66,7 +66,10 @@ public class App {
 		List<SourceFile> sourceFiles = new ArrayList<SourceFile>();
 		
 		RemoveParameterDetector removeParameter = new RemoveParameterDetector();
-		DuplicatedCodeDetector duplicatedCode = new DuplicatedCodeDetector();
+		
+		List<IDetector> detectors = new ArrayList<IDetector>();
+		detectors.add(new DuplicatedCodeDetector());
+		detectors.add(new MagicNumberDetector());
 		
 		for (int i = 0; i < args.length; i++) {
 			ANTLRInputStream input = null;
@@ -94,28 +97,22 @@ public class App {
 			ParseTree tree = parser.compilationUnit();
 			
 			ParseTreeWalker waker = new ParseTreeWalker();
-			MagicNumberDetectorListener magicNumberDetector = new MagicNumberDetectorListener();
-			waker.walk(magicNumberDetector, tree);
 			waker.walk(removeParameter, tree);
 			
 			SourceFile file = new SourceFile(args[i], tokens, tree);
 			
 			sourceFiles.add(file);
-			
-			duplicatedCode.analyze(file);
-			
-			List<MagicNumber> magicNumbers = magicNumberDetector
-					.getMagicNumbers();
-			
-			for (MagicNumber magicNumber : magicNumbers) {
-				System.out.println(String.format(
-						"Found '%s' %d times in file '%s'", 
-						magicNumber.getLiteral(), magicNumber.size(),
-						args[i]));
+		}
+		
+		for (SourceFile file : sourceFiles) {
+			for (IDetector detector : detectors) {
+				detector.analyze(file);
 			}
 		}
 		
-		duplicatedCode.detect();
+		for (IDetector detector : detectors) {
+			detector.detect();
+		}
 		
 		// Remove parameter.
 		List<Method> methods = removeParameter.getDetected();
