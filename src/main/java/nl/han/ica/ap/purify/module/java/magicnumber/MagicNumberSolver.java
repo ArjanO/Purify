@@ -29,6 +29,11 @@
  */
 package nl.han.ica.ap.purify.module.java.magicnumber;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import nl.han.ica.ap.purify.language.java.JavaParser.ClassBodyContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.LiteralContext;
 import nl.han.ica.ap.purify.modles.ISolver;
 import nl.han.ica.ap.purify.modles.SourceFile;
 
@@ -38,10 +43,70 @@ import nl.han.ica.ap.purify.modles.SourceFile;
  * @author Arjan
  */
 public class MagicNumberSolver implements ISolver {
+	private int magicNumberNr;
+	private Map<ClassBodyContext, Map<String, String>> literals;
+	
+	public MagicNumberSolver() {
+		magicNumberNr = 0;
+		literals = new HashMap<ClassBodyContext, Map<String,String>>();
+	}
+	
 	/**
 	 * Solve all the issues of the file.
 	 */
 	@Override
 	public void solve(SourceFile file) {
+		for (int i = file.getIssuesSize() - 1; i >= 0; i--) {
+			if (file.getIssue(i) instanceof MagicNumberIssue) {
+				solveMagicNumber(file, (MagicNumberIssue)file.getIssue(i));
+			}
+		}
+	}
+	
+	private void solveMagicNumber(SourceFile file, MagicNumberIssue issue) {
+		ClassBodyContext classBodyContext =
+				issue.getMagicNumber().getClassBodyContext();
+		
+		Map<String, String> classLiterals;
+		
+		if (!literals.containsKey(classBodyContext)) {
+			classLiterals = new HashMap<String, String>();
+			
+			literals.put(classBodyContext, classLiterals);
+		} else {
+			classLiterals = literals.get(classBodyContext);
+		}
+		
+		String literal = issue.getMagicNumber().getLiteral();
+		String literalName;
+		
+		if (classLiterals.containsKey(literal)) {
+			literalName = classLiterals.get(literal);
+		} else {
+			magicNumberNr++;
+			literalName = String.format("MAGIC_NUMBER_%d", magicNumberNr);
+			
+			file.getRewriter().insertAfter(classBodyContext.start, 
+					String.format("\n\tprivate static final %s %s = %s;",
+							getType(literal), literalName, literal));
+			
+			classLiterals.put(literal, literalName);
+		}
+		
+		for (int i = issue.getMagicNumber().size() - 1; i >= 0; i--) {
+			LiteralContext ctx = issue.getMagicNumber().getContext(i);
+			
+			file.getRewriter().replace(ctx.start, literalName);
+		}
+	}
+	
+	private String getType(String value) {
+		if (value.contains("\"")) {
+			return "String";
+		} else if (value.contains(".")) {
+			return "double";
+		} else {
+			return "int";
+		}
 	}
 }
