@@ -44,9 +44,11 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import nl.han.ica.ap.purify.language.java.JavaLexer;
 import nl.han.ica.ap.purify.language.java.JavaParser;
 import nl.han.ica.ap.purify.modles.IDetector;
+import nl.han.ica.ap.purify.modles.ISolver;
 import nl.han.ica.ap.purify.modles.SourceFile;
 import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
+import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberSolver;
 import nl.han.ica.ap.purify.module.java.removeparameter.Method;
 import nl.han.ica.ap.purify.module.java.removeparameter.RemoveParameterDetector;
 
@@ -70,6 +72,9 @@ public class App {
 		List<IDetector> detectors = new ArrayList<IDetector>();
 		detectors.add(new DuplicatedCodeDetector());
 		detectors.add(new MagicNumberDetector());
+		
+		List<ISolver> solvers = new ArrayList<ISolver>();
+		solvers.add(new MagicNumberSolver());
 		
 		for (int i = 0; i < args.length; i++) {
 			ANTLRInputStream input = null;
@@ -114,6 +119,12 @@ public class App {
 			detector.detect();
 		}
 		
+		for (SourceFile file : sourceFiles) {
+			for (ISolver solver : solvers) {
+				solver.solve(file);
+			}
+		}
+		
 		// Remove parameter.
 		List<Method> methods = removeParameter.getDetected();
 		
@@ -131,6 +142,11 @@ public class App {
 			for (int i = file.getIssuesSize() -1; i >= 0; i--) {
 				System.out.println(file.getIssue(i));
 			}
+		}
+		
+		for (SourceFile file : sourceFiles) {
+			System.out.println("====== " + file.getPath() + "====== ");
+			System.out.println(file.getRewriter().getText());
 		}
 	}
 }
