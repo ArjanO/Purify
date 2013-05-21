@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.VariableDeclaratorIdContext;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -56,14 +57,22 @@ public class MethodTest {
 	private List<Object> mocks;
 	private Method method;
 	
+	private MemberDeclContext methodCtx;
+	
 	@Before
 	public void before() {
+		methodCtx = createMock(MemberDeclContext.class);
+		
+		replay(methodCtx);
+		
 		mocks = new ArrayList<Object>();
-		method = new Method("test");
+		method = new Method("test", methodCtx);
 	}
 	
 	@After
 	public void after() {
+		verify(methodCtx);
+		
 		for (Object mock : mocks) {
 			verify(mock);
 		}

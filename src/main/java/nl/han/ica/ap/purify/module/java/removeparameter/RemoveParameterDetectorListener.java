@@ -80,7 +80,7 @@ public class RemoveParameterDetectorListener extends JavaBaseListener {
 			if (ctx.Identifier() != null) {
 				String name = ctx.Identifier().getText();
 			
-				currentMethod = new Method(name);
+				currentMethod = new Method(name, ctx);
 			}
 		} else if (ctx.memberDeclaration() != null &&
 				ctx.memberDeclaration().methodDeclaration() != null) {
@@ -91,7 +91,7 @@ public class RemoveParameterDetectorListener extends JavaBaseListener {
 			if (method.Identifier() != null) {
 				String name = method.Identifier().getText();
 				
-				currentMethod = new Method(name);
+				currentMethod = new Method(name, ctx);
 			}
 		}
 	}

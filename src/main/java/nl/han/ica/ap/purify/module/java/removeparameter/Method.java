@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
+
 /**
  * Store method data.
  * 
@@ -41,6 +43,7 @@ import java.util.Map.Entry;
  */
 public class Method {
 	private String name;
+	private MemberDeclContext method;
 	private HashMap<Parameter, Boolean> parameters;
 	
 	/**
@@ -48,7 +51,8 @@ public class Method {
 	 * 
 	 * @param name Name of the method.
 	 */
-	public Method(String name) {
+	public Method(String name, MemberDeclContext method) {
+		this.method = method;
 		this.name = name;
 		this.parameters = new HashMap<Parameter, Boolean>();
 	}
@@ -60,6 +64,15 @@ public class Method {
 	 */
 	public String getName() {
 		return this.name;
+	}
+	
+	/**
+	 * Get the method.
+	 * 
+	 * @return Method.
+	 */
+	public MemberDeclContext getMethod() {
+		return this.method;
 	}
 	
 	/**
