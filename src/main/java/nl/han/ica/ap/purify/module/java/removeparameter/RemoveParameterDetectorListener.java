@@ -36,8 +36,8 @@ import nl.han.ica.ap.purify.language.java.JavaBaseListener;
 import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionPrimaryContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.MethodDeclarationContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.PrimaryContext;
+import nl.han.ica.ap.purify.language.java.util.MethodUtil;
 
 /**
  * Detect unused method parameters.
@@ -68,32 +68,8 @@ public class RemoveParameterDetectorListener extends JavaBaseListener {
 	 * When something in the class is declared this method is called.
 	 */
 	@Override
-	public void enterMemberDecl(MemberDeclContext ctx) {		
-		/*
-		 * voidMethodDeclaratorRest() 
-		 * 		= void myFunc { }
-		 * 
-		 * memberDeclaration().methodDeclaration() 
-		 * 		= Object myFunc { return null; }
-		 */
-		if (ctx.voidMethodDeclaratorRest() != null) {
-			if (ctx.Identifier() != null) {
-				String name = ctx.Identifier().getText();
-			
-				currentMethod = new Method(name, ctx);
-			}
-		} else if (ctx.memberDeclaration() != null &&
-				ctx.memberDeclaration().methodDeclaration() != null) {
-			MethodDeclarationContext method;
-			
-			method = ctx.memberDeclaration().methodDeclaration();
-			
-			if (method.Identifier() != null) {
-				String name = method.Identifier().getText();
-				
-				currentMethod = new Method(name, ctx);
-			}
-		}
+	public void enterMemberDecl(MemberDeclContext ctx) {
+		currentMethod = new Method(MethodUtil.getMethodName(ctx), ctx);
 	}
 	
 	/**
