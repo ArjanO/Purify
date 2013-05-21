@@ -36,6 +36,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import nl.han.ica.ap.purify.language.java.JavaParser.BlockContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.MethodDeclarationContext;
 
 /**
  * Method tools.
@@ -44,6 +45,31 @@ import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
  */
 public class Method {
 	private Method() {
+	}
+	
+	/**
+	 * Get the name of the method.
+	 * 
+	 * @param ctx MemberDelcContext.
+	 * @return Method name
+	 */
+	public static String getMethodName(MemberDeclContext ctx) {
+		if (ctx.voidMethodDeclaratorRest() != null) {
+			if (ctx.Identifier() != null) {
+				return ctx.Identifier().getText();
+			}
+		} else if (ctx.memberDeclaration() != null &&
+				ctx.memberDeclaration().methodDeclaration() != null) {
+			MethodDeclarationContext method;
+			
+			method = ctx.memberDeclaration().methodDeclaration();
+			
+			if (method.Identifier() != null) {
+				return method.Identifier().getText();
+			}
+		}
+		
+		return "";
 	}
 	
 	/**
