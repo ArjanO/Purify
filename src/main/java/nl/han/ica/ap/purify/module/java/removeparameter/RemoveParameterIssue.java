@@ -32,7 +32,7 @@ package nl.han.ica.ap.purify.module.java.removeparameter;
 import java.util.List;
 
 import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.MethodDeclarationContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 import nl.han.ica.ap.purify.modles.IIssue;
 
 /**
@@ -41,7 +41,7 @@ import nl.han.ica.ap.purify.modles.IIssue;
  * @author Arjan
  */
 public class RemoveParameterIssue implements IIssue {
-	private MethodDeclarationContext method;
+	private MemberDeclContext method;
 	private List<FormalParameterDeclsRestContext> parameters;
 	
 	/**
@@ -51,7 +51,7 @@ public class RemoveParameterIssue implements IIssue {
 	 * @param parameters List with unused parameters.
 	 * @throws IllegalArgumentException If method or parameter is null.
 	 */
-	public RemoveParameterIssue(MethodDeclarationContext method, 
+	public RemoveParameterIssue(MemberDeclContext method, 
 			List<FormalParameterDeclsRestContext> parameters) {
 		if (method == null || parameters == null) {
 			throw new IllegalArgumentException();
@@ -66,7 +66,7 @@ public class RemoveParameterIssue implements IIssue {
 	 * 
 	 * @return Method.
 	 */
-	public MethodDeclarationContext getMethod() {
+	public MemberDeclContext getMethod() {
 		return method;
 	}
 	

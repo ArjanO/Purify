@@ -42,7 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.MethodDeclarationContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 
 /**
  * Unit test for {@link RemoveParameterIssue}
@@ -50,12 +50,12 @@ import nl.han.ica.ap.purify.language.java.JavaParser.MethodDeclarationContext;
  * @author Arjan
  */
 public class RemoveParameterIssueTest {
-	private MethodDeclarationContext method;
+	private MemberDeclContext method;
 	private List<FormalParameterDeclsRestContext> params;
 	
 	@Before
 	public void before() {
-		method = createMock(MethodDeclarationContext.class);
+		method = createMock(MemberDeclContext.class);
 		params = new ArrayList<FormalParameterDeclsRestContext>();
 		
 		replay(method);
