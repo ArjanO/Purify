@@ -56,7 +56,7 @@ import org.junit.Test;
  * 
  * @author Arjan
  */
-public class MethodTest {
+public class MethodUtilTest {
 	@Test
 	public void getMethodNameReturnTest() {
 		MemberDeclContext ctx;
@@ -85,7 +85,7 @@ public class MethodTest {
 		replay(methodDeclCtx);
 		replay(identifier);
 	
-		assertEquals("test", Method.getMethodName(ctx));
+		assertEquals("test", MethodUtil.getMethodName(ctx));
 		
 		verify(ctx);
 		verify(memberDeclCtx);
@@ -112,7 +112,7 @@ public class MethodTest {
 		replay(voidCtx);
 		replay(identifier);
 		
-		assertEquals("test", Method.getMethodName(ctx));
+		assertEquals("test", MethodUtil.getMethodName(ctx));
 		
 		verify(ctx);
 		verify(voidCtx);
@@ -134,7 +134,7 @@ public class MethodTest {
 		replay(block);
 		replay(methodBody);
 		
-		assertTrue(Method.isParseTreeMethodBody(block));
+		assertTrue(MethodUtil.isParseTreeMethodBody(block));
 		
 		verify(block);
 		verify(methodBody);
@@ -167,7 +167,7 @@ public class MethodTest {
 		replay(idMock);
 		replay(terminalNodeMock);
 		
-		TreeSet<String> result = Method.getLocalVariables(methodMock);
+		TreeSet<String> result = MethodUtil.getLocalVariables(methodMock);
 		
 		assertEquals(1, result.size());
 		assertTrue(result.contains("test"));

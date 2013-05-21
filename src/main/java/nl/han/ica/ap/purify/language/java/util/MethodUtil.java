@@ -43,8 +43,8 @@ import nl.han.ica.ap.purify.language.java.JavaParser.MethodDeclarationContext;
  * 
  * @author Arjan
  */
-public class Method {
-	private Method() {
+public class MethodUtil {
+	private MethodUtil() {
 	}
 	
 	/**
