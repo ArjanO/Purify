@@ -41,8 +41,11 @@ import java.util.TreeSet;
 
 import nl.han.ica.ap.purify.language.java.JavaParser.BlockContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclarationContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.MethodDeclarationContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.VariableDeclaratorIdContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.VoidMethodDeclaratorRestContext;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.easymock.IAnswer;
@@ -54,6 +57,68 @@ import org.junit.Test;
  * @author Arjan
  */
 public class MethodTest {
+	@Test
+	public void getMethodNameReturnTest() {
+		MemberDeclContext ctx;
+		MemberDeclarationContext memberDeclCtx;
+		MethodDeclarationContext methodDeclCtx;
+		TerminalNode identifier;
+
+		ctx = createMock(MemberDeclContext.class);
+		memberDeclCtx = createMock(MemberDeclarationContext.class);
+		methodDeclCtx = createMock(MethodDeclarationContext.class);
+		identifier = createMock(TerminalNode.class);
+		
+		expect(identifier.getText()).andReturn("test").anyTimes();
+		
+		expect(ctx.voidMethodDeclaratorRest()).andReturn(null).anyTimes();
+		expect(ctx.memberDeclaration()).andReturn(
+				memberDeclCtx).anyTimes();
+		expect(memberDeclCtx.methodDeclaration()).andReturn(
+				methodDeclCtx).anyTimes();
+		
+		expect(methodDeclCtx.Identifier()).andReturn(
+				identifier).anyTimes();
+		
+		replay(ctx);
+		replay(memberDeclCtx);
+		replay(methodDeclCtx);
+		replay(identifier);
+	
+		assertEquals("test", Method.getMethodName(ctx));
+		
+		verify(ctx);
+		verify(memberDeclCtx);
+		verify(methodDeclCtx);
+		verify(identifier);
+	}
+	
+	@Test
+	public void getMethodNameVoidTest() {
+		MemberDeclContext ctx;
+		VoidMethodDeclaratorRestContext voidCtx;
+		TerminalNode identifier;
+		
+		ctx = createMock(MemberDeclContext.class);
+		voidCtx = createMock(VoidMethodDeclaratorRestContext.class);
+		identifier = createMock(TerminalNode.class);
+		
+		expect(identifier.getText()).andReturn("test").anyTimes();
+		
+		expect(ctx.voidMethodDeclaratorRest()).andReturn(voidCtx).anyTimes();
+		expect(ctx.Identifier()).andReturn(identifier).anyTimes();
+		
+		replay(ctx);
+		replay(voidCtx);
+		replay(identifier);
+		
+		assertEquals("test", Method.getMethodName(ctx));
+		
+		verify(ctx);
+		verify(voidCtx);
+		verify(identifier);
+	}
+	
 	/**
 	 * Test with a method. Expected: ParseTree is method.
 	 */
