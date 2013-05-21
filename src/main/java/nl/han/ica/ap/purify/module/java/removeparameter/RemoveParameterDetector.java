@@ -113,14 +113,7 @@ public class RemoveParameterDetector extends JavaBaseListener {
 	@Override
 	public void enterFormalParameterDeclsRest(
 			FormalParameterDeclsRestContext ctx) {
-		if (ctx.variableDeclaratorId() != null 
-				&& ctx.variableDeclaratorId().Identifier() != null) {
-			String name = ctx.variableDeclaratorId().Identifier().getText();
-			
-			if (name != null && currentMethod != null) {
-				currentMethod.addParameter(name);
-			}
-		}
+		currentMethod.addParameter(new Parameter(ctx));
 	}
 	
 	/**

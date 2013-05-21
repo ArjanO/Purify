@@ -41,7 +41,7 @@ import java.util.Map.Entry;
  */
 public class Method {
 	private String name;
-	private HashMap<String, Boolean> parameters;
+	private HashMap<Parameter, Boolean> parameters;
 	
 	/**
 	 * Store method data.
@@ -50,7 +50,7 @@ public class Method {
 	 */
 	public Method(String name) {
 		this.name = name;
-		this.parameters = new HashMap<String, Boolean>();
+		this.parameters = new HashMap<Parameter, Boolean>();
 	}
 	
 	/**
@@ -67,9 +67,9 @@ public class Method {
 	 * 
 	 * @param name Name of the parameter.
 	 */
-	public void addParameter(String name) {
-		if (!parameters.containsKey(name)) {
-			parameters.put(name, false);
+	public void addParameter(Parameter parameter) {
+		if (!parameters.containsKey(parameter)) {
+			parameters.put(parameter, false);
 		}
 	}
 	
@@ -79,8 +79,10 @@ public class Method {
 	 * @param name Name of the variable.
 	 */
 	public void usedVariable(String name) {
-		if (parameters.containsKey(name)) {
-			parameters.put(name, true);
+		for (Parameter parameter : parameters.keySet()) {
+			if (parameter.getName().equals(name)) {
+				parameters.put(parameter, true);
+			}
 		}
 	}
 	
@@ -90,10 +92,10 @@ public class Method {
 	 * 
 	 * @return List of parameters that ar'nt used.
 	 */
-	public List<String> getUnusedParameters() {
-		List<String> result = new ArrayList<String>();
+	public List<Parameter> getUnusedParameters() {
+		List<Parameter> result = new ArrayList<Parameter>();
 		
-		for (Entry<String, Boolean> item : parameters.entrySet()) { 
+		for (Entry<Parameter, Boolean> item : parameters.entrySet()) { 
 			if (item.getValue() == false) {
 				result.add(item.getKey());
 			}

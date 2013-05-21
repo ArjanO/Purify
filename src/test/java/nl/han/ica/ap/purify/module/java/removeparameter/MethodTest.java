@@ -29,9 +29,21 @@
  */
 package nl.han.ica.ap.purify.module.java.removeparameter;
 
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.VariableDeclaratorIdContext;
+
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,11 +53,20 @@ import org.junit.Test;
  * @author Arjan
  */
 public class MethodTest {
+	private List<Object> mocks;
 	private Method method;
 	
 	@Before
-	public void setUp() {
+	public void before() {
+		mocks = new ArrayList<Object>();
 		method = new Method("test");
+	}
+	
+	@After
+	public void after() {
+		for (Object mock : mocks) {
+			verify(mock);
+		}
 	}
 	
 	@Test
@@ -55,7 +76,7 @@ public class MethodTest {
 	
 	@Test
 	public void addParameterTest() {
-		method.addParameter("number");
+		method.addParameter(createParameter("number"));
 		
 		// If a parameter is added this is default unused.
 		assertEquals(1, method.getUnusedPrametersSize());
@@ -63,8 +84,8 @@ public class MethodTest {
 	
 	@Test
 	public void addParametersTest() {
-		method.addParameter("number");
-		method.addParameter("name");
+		method.addParameter(createParameter("number"));
+		method.addParameter(createParameter("name"));
 		
 		// If a parameter is added this is default unused.
 		assertEquals(2, method.getUnusedPrametersSize());
@@ -72,7 +93,7 @@ public class MethodTest {
 	
 	@Test
 	public void usedVariable1Test() {
-		method.addParameter("number");
+		method.addParameter(createParameter("number"));
 		
 		method.usedVariable("number");
 		
@@ -82,13 +103,47 @@ public class MethodTest {
 	
 	@Test
 	public void usedVariable2Test() {
-		method.addParameter("number");
-		method.addParameter("name");
+		method.addParameter(createParameter("name"));
+		method.addParameter(createParameter("name"));
 		
 		method.usedVariable("number");
 		
 		assertEquals(1, method.getUnusedPrametersSize());
 		assertEquals(1, method.getUnusedParameters().size());
-		assertTrue(method.getUnusedParameters().contains("name"));
+		
+		boolean bName = false;
+		
+		for (Parameter param : method.getUnusedParameters()) {
+			if (param.getName().equals("name")) {
+				bName = true;
+			}
+		}
+		
+		assertTrue(bName);
+	}
+	
+	private Parameter createParameter(String name) {
+		FormalParameterDeclsRestContext ctx;
+		VariableDeclaratorIdContext decl;
+		TerminalNode identifier;
+		
+		ctx = createMock(FormalParameterDeclsRestContext.class);
+		decl = createMock(VariableDeclaratorIdContext.class);
+		identifier = createMock(TerminalNode.class);
+		
+		expect(identifier.getText()).andReturn(name).anyTimes();
+		expect(decl.Identifier()).andReturn(identifier).anyTimes();
+		expect(ctx.variableDeclaratorId()).andReturn(decl).anyTimes();
+		
+		replay(ctx);
+		replay(decl);
+		replay(identifier);
+		
+		mocks.add(ctx);
+		mocks.add(decl);
+		mocks.add(identifier);
+		
+		Parameter param = new Parameter(ctx);
+		return param;
 	}
 }

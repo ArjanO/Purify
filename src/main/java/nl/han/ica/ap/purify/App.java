@@ -49,7 +49,6 @@ import nl.han.ica.ap.purify.modles.SourceFile;
 import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberSolver;
-import nl.han.ica.ap.purify.module.java.removeparameter.Method;
 import nl.han.ica.ap.purify.module.java.removeparameter.RemoveParameterDetector;
 
 /**
@@ -122,16 +121,6 @@ public class App {
 		for (SourceFile file : sourceFiles) {
 			for (ISolver solver : solvers) {
 				solver.solve(file);
-			}
-		}
-		
-		// Remove parameter.
-		List<Method> methods = removeParameter.getDetected();
-		
-		for (Method method : methods) {
-			for (String name : method.getUnusedParameters()) {
-				System.out.println(String.format("%s in method %s is unused.",
-						name, method.getName()));
 			}
 		}
 		

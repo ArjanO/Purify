@@ -69,7 +69,8 @@ public abstract class RemoveParameterDetectorBaseTest {
 		
 		assertEquals(1, result.size());
 		assertEquals(1, result.get(0).getUnusedPrametersSize());
-		assertEquals("name", result.get(0).getUnusedParameters().get(0));
+		assertEquals("name", 
+				result.get(0).getUnusedParameters().get(0).getName());
 	}
 	
 	@Test
@@ -101,7 +102,8 @@ public abstract class RemoveParameterDetectorBaseTest {
 		
 		assertEquals(1, result.size());
 		assertEquals(1, result.get(0).getUnusedPrametersSize());
-		assertEquals("id", result.get(0).getUnusedParameters().get(0));
+		assertEquals("id", 
+				result.get(0).getUnusedParameters().get(0).getName());
 	}
 	
 	/**
