@@ -53,7 +53,7 @@ import org.junit.Test;
  * @author Arjan
  */
 public abstract class RemoveParameterDetectorBaseTest {
-	protected RemoveParameterDetector detector;
+	protected RemoveParameterDetectorListener detector;
 	
 	protected MemberDeclContext ctx;
 	

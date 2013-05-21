@@ -55,7 +55,7 @@ public class RemoveParameterDetectorReturnTest
 		
 		@Before
 		public void setUp() {
-			detector = new RemoveParameterDetector();
+			detector = new RemoveParameterDetectorListener();
 			
 			ctx = createMock(MemberDeclContext.class);
 			memberDeclCtx = createMock(MemberDeclarationContext.class);

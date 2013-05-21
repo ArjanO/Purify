@@ -44,14 +44,14 @@ import nl.han.ica.ap.purify.language.java.JavaParser.PrimaryContext;
  * 
  * @author Arjan
  */
-public class RemoveParameterDetector extends JavaBaseListener {
+public class RemoveParameterDetectorListener extends JavaBaseListener {
 	private Method currentMethod;
 	private List<Method> detected;
 	
 	/**
 	 * Detect unused method parameters.
 	 */
-	public RemoveParameterDetector() {
+	public RemoveParameterDetectorListener() {
 		detected = new ArrayList<Method>();
 	}
 	

@@ -54,7 +54,7 @@ public class RemoveParameterDetectorVoidTest
 	
 	@Before
 	public void setUp() {
-		detector = new RemoveParameterDetector();
+		detector = new RemoveParameterDetectorListener();
 		
 		ctx = createMock(MemberDeclContext.class);
 		voidCtx = createMock(VoidMethodDeclaratorRestContext.class);

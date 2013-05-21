@@ -39,7 +39,6 @@ import java.util.List;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import nl.han.ica.ap.purify.language.java.JavaLexer;
 import nl.han.ica.ap.purify.language.java.JavaParser;
@@ -49,7 +48,6 @@ import nl.han.ica.ap.purify.modles.SourceFile;
 import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberSolver;
-import nl.han.ica.ap.purify.module.java.removeparameter.RemoveParameterDetector;
 
 /**
  * Example magic numbers runner. 
@@ -65,8 +63,6 @@ public class App {
 		}
 		
 		List<SourceFile> sourceFiles = new ArrayList<SourceFile>();
-		
-		RemoveParameterDetector removeParameter = new RemoveParameterDetector();
 		
 		List<IDetector> detectors = new ArrayList<IDetector>();
 		detectors.add(new DuplicatedCodeDetector());
@@ -99,9 +95,6 @@ public class App {
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			JavaParser parser = new JavaParser(tokens);
 			ParseTree tree = parser.compilationUnit();
-			
-			ParseTreeWalker waker = new ParseTreeWalker();
-			waker.walk(removeParameter, tree);
 			
 			SourceFile file = new SourceFile(args[i], tokens, tree);
 			
