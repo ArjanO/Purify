@@ -30,6 +30,7 @@
 package nl.han.ica.ap.purify.module.java.removeparameter;
 
 import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
+import nl.han.ica.ap.purify.language.java.util.ParameterUtil;
 
 /**
  * Stores information about a parameter.
@@ -52,11 +53,7 @@ class Parameter {
 		}
 		
 		this.parameter = parameter;
-		
-		if (parameter.variableDeclaratorId() != null 
-				&& parameter.variableDeclaratorId().Identifier() != null) {
-			this.name = parameter.variableDeclaratorId().Identifier().getText();
-		}
+		this.name = ParameterUtil.getParameterName(parameter);
 	}
 	
 	/**
