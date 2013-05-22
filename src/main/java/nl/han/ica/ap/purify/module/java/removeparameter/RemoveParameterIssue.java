@@ -33,6 +33,8 @@ import java.util.List;
 
 import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
+import nl.han.ica.ap.purify.language.java.util.MethodUtil;
+import nl.han.ica.ap.purify.language.java.util.ParameterUtil;
 import nl.han.ica.ap.purify.modles.IIssue;
 
 /**
@@ -77,5 +79,18 @@ public class RemoveParameterIssue implements IIssue {
 	 */
 	public List<FormalParameterDeclsRestContext> getParameters() {
 		return parameters;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("Method: " + MethodUtil.getMethodName(method) + "\n");
+		
+		for (FormalParameterDeclsRestContext p : parameters) {
+			sb.append("\t" + ParameterUtil.getParameterName(p) + "\n");
+		}
+		
+		return sb.toString();
 	}
 }

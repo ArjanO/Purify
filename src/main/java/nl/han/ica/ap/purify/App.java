@@ -48,6 +48,8 @@ import nl.han.ica.ap.purify.modles.SourceFile;
 import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberSolver;
+import nl.han.ica.ap.purify.module.java.removeparameter.RemoveParameterDetector;
+import nl.han.ica.ap.purify.module.java.removeparameter.RemoveParameterSolver;
 
 /**
  * Example magic numbers runner. 
@@ -67,9 +69,11 @@ public class App {
 		List<IDetector> detectors = new ArrayList<IDetector>();
 		detectors.add(new DuplicatedCodeDetector());
 		detectors.add(new MagicNumberDetector());
+		detectors.add(new RemoveParameterDetector());
 		
 		List<ISolver> solvers = new ArrayList<ISolver>();
 		solvers.add(new MagicNumberSolver());
+		solvers.add(new RemoveParameterSolver());
 		
 		for (int i = 0; i < args.length; i++) {
 			ANTLRInputStream input = null;
