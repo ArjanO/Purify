@@ -39,9 +39,13 @@ import java.util.List;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import nl.han.ica.ap.purify.language.java.JavaLexer;
 import nl.han.ica.ap.purify.language.java.JavaParser;
+import nl.han.ica.ap.purify.language.java.callgraph.CallGraph;
+import nl.han.ica.ap.purify.language.java.callgraph.listeners.ClassNodeListener;
+import nl.han.ica.ap.purify.language.java.callgraph.listeners.EdgeListener;
 import nl.han.ica.ap.purify.modles.IDetector;
 import nl.han.ica.ap.purify.modles.ISolver;
 import nl.han.ica.ap.purify.modles.SourceFile;
@@ -55,6 +59,8 @@ import nl.han.ica.ap.purify.module.java.removeparameter.RemoveParameterSolver;
  * Example magic numbers runner. 
  */
 public class App {
+	private static CallGraph graph;
+	
 	private static final String COMMAND_LINE_PARAM_MISSING =
 			"Add at least one file as command line parameter.";
 	
@@ -63,6 +69,11 @@ public class App {
 			System.err.println(COMMAND_LINE_PARAM_MISSING);
 			return;
 		}
+		
+		graph = new CallGraph();
+		ClassNodeListener classNodelistener = new ClassNodeListener(graph);
+		EdgeListener edgelistener = new EdgeListener(graph);
+		ParseTreeWalker walker = new ParseTreeWalker();
 		
 		List<SourceFile> sourceFiles = new ArrayList<SourceFile>();
 		
@@ -106,6 +117,15 @@ public class App {
 		}
 		
 		for (SourceFile file : sourceFiles) {
+			walker.walk(classNodelistener, file.getParseTree());
+		}
+		
+		for (SourceFile file : sourceFiles) {
+			edgelistener.setSourceFile(file);
+			walker.walk(edgelistener, file.getParseTree());
+		}
+		
+		for (SourceFile file : sourceFiles) {
 			for (IDetector detector : detectors) {
 				detector.analyze(file);
 			}
@@ -134,5 +154,14 @@ public class App {
 			System.out.println("====== " + file.getPath() + "====== ");
 			System.out.println(file.getRewriter().getText());
 		}
+	}
+	
+	/**
+	 * Get the call graph.
+	 * 
+	 * @return Call graph.
+	 */
+	public static CallGraph getCallGraph() {
+		return graph;
 	}
 }
