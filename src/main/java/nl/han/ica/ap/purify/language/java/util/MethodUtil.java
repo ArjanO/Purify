@@ -34,6 +34,8 @@ import java.util.TreeSet;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import nl.han.ica.ap.purify.language.java.JavaParser.BlockContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.FormalParametersContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodDeclarationContext;
@@ -45,6 +47,28 @@ import nl.han.ica.ap.purify.language.java.JavaParser.MethodDeclarationContext;
  */
 public class MethodUtil {
 	private MethodUtil() {
+	}
+	
+	/**
+	 * Get the parameter index of a parameter.
+	 * 
+	 * @param param Parameter.
+	 * @return Index of the parameter.
+	 */
+	public static int getParameterIndex(ParseTree param) {
+		if (param == null) {
+			return 0;
+		}
+		
+		if (param.getParent() instanceof FormalParametersContext) {
+			return 0;
+		}
+		
+		if (param instanceof FormalParameterDeclsContext) {
+			return getParameterIndex(param.getParent()) + 1;
+		}
+		
+		return getParameterIndex(param.getParent());
 	}
 	
 	/**
