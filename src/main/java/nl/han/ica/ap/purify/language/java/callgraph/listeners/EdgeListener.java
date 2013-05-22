@@ -32,6 +32,7 @@ package nl.han.ica.ap.purify.language.java.callgraph.listeners;
 import nl.han.ica.ap.purify.language.java.JavaBaseListener;
 import nl.han.ica.ap.purify.language.java.JavaParser;
 import nl.han.ica.ap.purify.language.java.callgraph.CallGraph;
+import nl.han.ica.ap.purify.modles.SourceFile;
 
 /**
  * This listener checks for method calls and maps them to the given CallGraph.
@@ -62,8 +63,22 @@ public class EdgeListener extends JavaBaseListener {
 	/** The CallGraph that is used. */
 	private CallGraph graph;
 	
+	/**
+	 * Current source file.
+	 */
+	private SourceFile file;
+	
 	public EdgeListener(CallGraph graph) {
 		this.graph = graph;
+	}
+	
+	/**
+	 * Set the source file.
+	 * 
+	 * @param file Source file.
+	 */
+	public void setSourceFile(SourceFile file) {
+		this.file = file;
 	}
 	
 	/** 
@@ -192,7 +207,10 @@ public class EdgeListener extends JavaBaseListener {
 			}
 			currentCall = ss[ss.length-1].replaceAll("\\(.*\\)", "") + currentCall;
 		}
-		graph.addEdge(classID, methodID, currentCallClass, currentCall);
+		
+		graph.addEdge(classID, methodID, currentCallClass, currentCall, 
+				file, ctx);
+		
 		prevCall = currentCall;
 		prevCallClass = currentCallClass;
 	}
@@ -247,7 +265,8 @@ public class EdgeListener extends JavaBaseListener {
 				source = methodID;
 			}
 			
-			graph.addEdge(classID, source, currentCallClass, currentCall);
+			graph.addEdge(classID, source, currentCallClass, currentCall, 
+					file, null);
 		}
 	}
 	

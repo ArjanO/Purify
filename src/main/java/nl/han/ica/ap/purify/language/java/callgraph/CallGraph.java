@@ -32,6 +32,9 @@ package nl.han.ica.ap.purify.language.java.callgraph;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionMethodExpressionListContext;
+import nl.han.ica.ap.purify.modles.SourceFile;
+
 /**
  * This class contains the data structure of our call graph.
  * It contains an ArrayList with ClassNodes which in turn contains an ArrayList with MethodNodes.
@@ -119,8 +122,12 @@ public class CallGraph {
 	 * @param srcMethod The name of the caller method.
 	 * @param trgClass The name of the class the called method is in.
 	 * @param trgMethod The name of the called method.
+	 * @param file The source file of the caller method).
+	 * @param statement The statement to the target method in the caller method.
 	 */
-	public void addEdge(String srcClass, String srcMethod, String trgClass, String trgMethod) {
+	public void addEdge(String srcClass, String srcMethod, String trgClass, 
+			String trgMethod, SourceFile file, 
+			ExpressionMethodExpressionListContext statement) {
 		ClassNode src = getNode(srcClass);
 		ClassNode trg = getNode(trgClass);
 		if(src == null) {
@@ -130,7 +137,8 @@ public class CallGraph {
 			return;
 			//throw new RuntimeException("Could not find ClassNode: " + trgClass);
 		}
-		edges.add(new Edge(src.getMethod(srcMethod),trg.getMethod(trgMethod)));
+		edges.add(new Edge(src.getMethod(srcMethod),trg.getMethod(trgMethod), 
+				file, statement));
 	}
 	
 	public ArrayList<Edge> getEdges() {
