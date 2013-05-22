@@ -186,7 +186,7 @@ public class EdgeListener extends JavaBaseListener {
 			currentCall = ss[0].replaceAll("\\(.*\\)", "") + currentCall;
 		} else {
 			currentCallClass = getVariableType(ss[ss.length-2]);
-			if(currentCallClass == null) {
+			if(currentCallClass == null && prevCall != null) {
 				currentCallClass = getCurrentCallClassType(prevCallClass, prevCall);
 				currentCall = currentCall.replace(prevCall, "(");
 			}
