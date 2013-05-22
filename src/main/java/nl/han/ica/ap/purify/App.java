@@ -43,19 +43,24 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import nl.han.ica.ap.purify.language.java.JavaLexer;
 import nl.han.ica.ap.purify.language.java.JavaParser;
+import nl.han.ica.ap.purify.language.java.callgraph.CallGraph;
+import nl.han.ica.ap.purify.language.java.callgraph.listeners.ClassNodeListener;
+import nl.han.ica.ap.purify.language.java.callgraph.listeners.EdgeListener;
 import nl.han.ica.ap.purify.modles.IDetector;
 import nl.han.ica.ap.purify.modles.ISolver;
 import nl.han.ica.ap.purify.modles.SourceFile;
 import nl.han.ica.ap.purify.module.java.duplicatecode.DuplicatedCodeDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberSolver;
-import nl.han.ica.ap.purify.module.java.removeparameter.Method;
 import nl.han.ica.ap.purify.module.java.removeparameter.RemoveParameterDetector;
+import nl.han.ica.ap.purify.module.java.removeparameter.RemoveParameterSolver;
 
 /**
  * Example magic numbers runner. 
  */
 public class App {
+	private static CallGraph graph;
+	
 	private static final String COMMAND_LINE_PARAM_MISSING =
 			"Add at least one file as command line parameter.";
 	
@@ -65,16 +70,21 @@ public class App {
 			return;
 		}
 		
-		List<SourceFile> sourceFiles = new ArrayList<SourceFile>();
+		graph = new CallGraph();
+		ClassNodeListener classNodelistener = new ClassNodeListener(graph);
+		EdgeListener edgelistener = new EdgeListener(graph);
+		ParseTreeWalker walker = new ParseTreeWalker();
 		
-		RemoveParameterDetector removeParameter = new RemoveParameterDetector();
+		List<SourceFile> sourceFiles = new ArrayList<SourceFile>();
 		
 		List<IDetector> detectors = new ArrayList<IDetector>();
 		detectors.add(new DuplicatedCodeDetector());
 		detectors.add(new MagicNumberDetector());
+		detectors.add(new RemoveParameterDetector());
 		
 		List<ISolver> solvers = new ArrayList<ISolver>();
 		solvers.add(new MagicNumberSolver());
+		solvers.add(new RemoveParameterSolver());
 		
 		for (int i = 0; i < args.length; i++) {
 			ANTLRInputStream input = null;
@@ -101,12 +111,18 @@ public class App {
 			JavaParser parser = new JavaParser(tokens);
 			ParseTree tree = parser.compilationUnit();
 			
-			ParseTreeWalker waker = new ParseTreeWalker();
-			waker.walk(removeParameter, tree);
-			
 			SourceFile file = new SourceFile(args[i], tokens, tree);
 			
 			sourceFiles.add(file);
+		}
+		
+		for (SourceFile file : sourceFiles) {
+			walker.walk(classNodelistener, file.getParseTree());
+		}
+		
+		for (SourceFile file : sourceFiles) {
+			edgelistener.setSourceFile(file);
+			walker.walk(edgelistener, file.getParseTree());
 		}
 		
 		for (SourceFile file : sourceFiles) {
@@ -125,16 +141,6 @@ public class App {
 			}
 		}
 		
-		// Remove parameter.
-		List<Method> methods = removeParameter.getDetected();
-		
-		for (Method method : methods) {
-			for (String name : method.getUnusedParameters()) {
-				System.out.println(String.format("%s in method %s is unused.",
-						name, method.getName()));
-			}
-		}
-		
 		for (SourceFile file : sourceFiles) {
 			System.out.println("--------- FILE: " + file.getPath() + 
 					" ---------");
@@ -148,5 +154,14 @@ public class App {
 			System.out.println("====== " + file.getPath() + "====== ");
 			System.out.println(file.getRewriter().getText());
 		}
+	}
+	
+	/**
+	 * Get the call graph.
+	 * 
+	 * @return Call graph.
+	 */
+	public static CallGraph getCallGraph() {
+		return graph;
 	}
 }

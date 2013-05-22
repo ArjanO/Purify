@@ -33,47 +33,69 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-
-import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.VoidMethodDeclaratorRestContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.VariableDeclaratorIdContext;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Unit test for {@link RemoveParameterDetector}
- * This unit test only test void methods.
+ * Unit test for {@link Parameter}
  * 
  * @author Arjan
  */
-public class RemoveParameterDetectorVoidTest 
-	extends RemoveParameterDetectorBaseTest {
-	private VoidMethodDeclaratorRestContext voidCtx;
+public class ParameterTest {
+	private FormalParameterDeclsRestContext ctx;
+	private VariableDeclaratorIdContext decl;
 	private TerminalNode identifier;
 	
 	@Before
-	public void setUp() {
-		detector = new RemoveParameterDetectorListener();
-		
-		ctx = createMock(MemberDeclContext.class);
-		voidCtx = createMock(VoidMethodDeclaratorRestContext.class);
+	public void before() {		
+		ctx = createMock(FormalParameterDeclsRestContext.class);
+		decl = createMock(VariableDeclaratorIdContext.class);
 		identifier = createMock(TerminalNode.class);
 		
 		expect(identifier.getText()).andReturn("test").anyTimes();
-		
-		expect(ctx.voidMethodDeclaratorRest()).andReturn(voidCtx).anyTimes();
-		expect(ctx.Identifier()).andReturn(identifier).anyTimes();
+		expect(decl.Identifier()).andReturn(identifier).anyTimes();
+		expect(ctx.variableDeclaratorId()).andReturn(decl).anyTimes();
 		
 		replay(ctx);
-		replay(voidCtx);
+		replay(decl);
 		replay(identifier);
 	}
 	
 	@After
-	public void shutdown() {
+	public void after() {
 		verify(ctx);
-		verify(voidCtx);
+		verify(decl);
 		verify(identifier);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void nullParameterTest() {
+		new Parameter(null);
+	}
+	
+	@Test
+	public void parameterNameTest() {
+		Parameter parameter = new Parameter(ctx);
+		
+		assertEquals("test", parameter.getName());
+		assertEquals(ctx, parameter.getpPrameter());
+	}
+	
+	@Test
+	public void equalsTest() {
+		Parameter parameter1 = new Parameter(ctx);
+		Parameter parameter2 = new Parameter(ctx);
+
+		assertEquals("test", parameter1.getName());
+		assertEquals("test", parameter2.getName());
+		
+		assertTrue(parameter1.equals(parameter2));
 	}
 }

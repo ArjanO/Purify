@@ -27,51 +27,30 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
-package nl.han.ica.ap.purify.module.java.removeparameter;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
+package nl.han.ica.ap.purify.language.java.util;
 
 import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
-import nl.han.ica.ap.purify.modles.IDetector;
-import nl.han.ica.ap.purify.modles.IIssue;
-import nl.han.ica.ap.purify.modles.SourceFile;
 
 /**
- * Detects unused parameters. 
+ * Parameter tools.
  * 
  * @author Arjan
  */
-public class RemoveParameterDetector implements IDetector {
-	@Override
-	public void analyze(SourceFile file) {
-		RemoveParameterDetectorListener listener = 
-				new RemoveParameterDetectorListener();
-		
-		ParseTreeWalker waker = new ParseTreeWalker();
-		waker.walk(listener, file.getParseTree());
-		
-		for (Method detected : listener.getDetected()) {
-			if (detected.getUnusedPrametersSize() > 0) {
-				file.addIssue(addIssue(detected));
-			}
-		}
-	}
-
-	@Override
-	public void detect() {
+public class ParameterUtil {
+	private ParameterUtil() {
 	}
 	
-	private IIssue addIssue(Method method) {
-		List<FormalParameterDeclsRestContext> params = 
-				new ArrayList<FormalParameterDeclsRestContext>();
-		
-		for (Parameter p : method.getUnusedParameters()) {
-			params.add(p.getpPrameter());
+	/**
+	 * Get parameter name.
+	 * 
+	 * @param ctx Parameter context.
+	 * @return Name of the parameter.
+	 */
+	public static String getParameterName(FormalParameterDeclsRestContext ctx) {
+		if (ctx.variableDeclaratorId() != null 
+				&& ctx.variableDeclaratorId().Identifier() != null) {
+			return ctx.variableDeclaratorId().Identifier().getText();
 		}
-		
-		return new RemoveParameterIssue(method.getMethod(), params);
+		return "";
 	}
 }

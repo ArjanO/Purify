@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
+
 /**
  * Store method data.
  * 
@@ -41,16 +43,18 @@ import java.util.Map.Entry;
  */
 public class Method {
 	private String name;
-	private HashMap<String, Boolean> parameters;
+	private MemberDeclContext method;
+	private HashMap<Parameter, Boolean> parameters;
 	
 	/**
 	 * Store method data.
 	 * 
 	 * @param name Name of the method.
 	 */
-	public Method(String name) {
+	public Method(String name, MemberDeclContext method) {
+		this.method = method;
 		this.name = name;
-		this.parameters = new HashMap<String, Boolean>();
+		this.parameters = new HashMap<Parameter, Boolean>();
 	}
 	
 	/**
@@ -63,13 +67,22 @@ public class Method {
 	}
 	
 	/**
+	 * Get the method.
+	 * 
+	 * @return Method.
+	 */
+	public MemberDeclContext getMethod() {
+		return this.method;
+	}
+	
+	/**
 	 * Add a parameter.
 	 * 
 	 * @param name Name of the parameter.
 	 */
-	public void addParameter(String name) {
-		if (!parameters.containsKey(name)) {
-			parameters.put(name, false);
+	public void addParameter(Parameter parameter) {
+		if (!parameters.containsKey(parameter)) {
+			parameters.put(parameter, false);
 		}
 	}
 	
@@ -79,8 +92,10 @@ public class Method {
 	 * @param name Name of the variable.
 	 */
 	public void usedVariable(String name) {
-		if (parameters.containsKey(name)) {
-			parameters.put(name, true);
+		for (Parameter parameter : parameters.keySet()) {
+			if (parameter.getName().equals(name)) {
+				parameters.put(parameter, true);
+			}
 		}
 	}
 	
@@ -90,10 +105,10 @@ public class Method {
 	 * 
 	 * @return List of parameters that ar'nt used.
 	 */
-	public List<String> getUnusedParameters() {
-		List<String> result = new ArrayList<String>();
+	public List<Parameter> getUnusedParameters() {
+		List<Parameter> result = new ArrayList<Parameter>();
 		
-		for (Entry<String, Boolean> item : parameters.entrySet()) { 
+		for (Entry<Parameter, Boolean> item : parameters.entrySet()) { 
 			if (item.getValue() == false) {
 				result.add(item.getKey());
 			}

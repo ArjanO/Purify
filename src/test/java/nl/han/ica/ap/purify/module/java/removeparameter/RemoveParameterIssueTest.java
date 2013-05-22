@@ -30,50 +30,72 @@
 package nl.han.ica.ap.purify.module.java.removeparameter;
 
 import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
 
-import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.VoidMethodDeclaratorRestContext;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
+
+import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 
 /**
- * Unit test for {@link RemoveParameterDetector}
- * This unit test only test void methods.
+ * Unit test for {@link RemoveParameterIssue}
  * 
  * @author Arjan
  */
-public class RemoveParameterDetectorVoidTest 
-	extends RemoveParameterDetectorBaseTest {
-	private VoidMethodDeclaratorRestContext voidCtx;
-	private TerminalNode identifier;
+public class RemoveParameterIssueTest {
+	private MemberDeclContext method;
+	private List<FormalParameterDeclsRestContext> params;
 	
 	@Before
-	public void setUp() {
-		detector = new RemoveParameterDetectorListener();
+	public void before() {
+		method = createMock(MemberDeclContext.class);
+		params = new ArrayList<FormalParameterDeclsRestContext>();
 		
-		ctx = createMock(MemberDeclContext.class);
-		voidCtx = createMock(VoidMethodDeclaratorRestContext.class);
-		identifier = createMock(TerminalNode.class);
-		
-		expect(identifier.getText()).andReturn("test").anyTimes();
-		
-		expect(ctx.voidMethodDeclaratorRest()).andReturn(voidCtx).anyTimes();
-		expect(ctx.Identifier()).andReturn(identifier).anyTimes();
-		
-		replay(ctx);
-		replay(voidCtx);
-		replay(identifier);
+		replay(method);
 	}
 	
 	@After
-	public void shutdown() {
-		verify(ctx);
-		verify(voidCtx);
-		verify(identifier);
+	public void after() {
+		verify(method);
+		
+		for (FormalParameterDeclsRestContext param : params) {
+			verify(param);
+		}
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void null1Test() {
+		new RemoveParameterIssue(null, null);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void null2Test() {
+		new RemoveParameterIssue(method, null);
+	}
+	
+	@Test
+	public void getMethodTest() {
+		createParameter();
+		
+		RemoveParameterIssue issue = new RemoveParameterIssue(method, params);
+		
+		assertEquals(method, issue.getMethod());
+		assertEquals(1, issue.getParameters().size());
+	}
+	
+	private void createParameter() {
+		FormalParameterDeclsRestContext param =
+				createMock(FormalParameterDeclsRestContext.class);
+		
+		replay(param);
+		
+		params.add(param);
 	}
 }

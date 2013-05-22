@@ -29,49 +29,68 @@
  */
 package nl.han.ica.ap.purify.module.java.removeparameter;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
-
 import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
-import nl.han.ica.ap.purify.modles.IDetector;
+import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
+import nl.han.ica.ap.purify.language.java.util.MethodUtil;
+import nl.han.ica.ap.purify.language.java.util.ParameterUtil;
 import nl.han.ica.ap.purify.modles.IIssue;
-import nl.han.ica.ap.purify.modles.SourceFile;
 
 /**
- * Detects unused parameters. 
+ * Detected unused parameter.
  * 
  * @author Arjan
  */
-public class RemoveParameterDetector implements IDetector {
-	@Override
-	public void analyze(SourceFile file) {
-		RemoveParameterDetectorListener listener = 
-				new RemoveParameterDetectorListener();
-		
-		ParseTreeWalker waker = new ParseTreeWalker();
-		waker.walk(listener, file.getParseTree());
-		
-		for (Method detected : listener.getDetected()) {
-			if (detected.getUnusedPrametersSize() > 0) {
-				file.addIssue(addIssue(detected));
-			}
+public class RemoveParameterIssue implements IIssue {
+	private MemberDeclContext method;
+	private List<FormalParameterDeclsRestContext> parameters;
+	
+	/**
+	 * The parameter in method is not used.
+	 * 
+	 * @param method Method
+	 * @param parameters List with unused parameters.
+	 * @throws IllegalArgumentException If method or parameter is null.
+	 */
+	public RemoveParameterIssue(MemberDeclContext method, 
+			List<FormalParameterDeclsRestContext> parameters) {
+		if (method == null || parameters == null) {
+			throw new IllegalArgumentException();
 		}
-	}
-
-	@Override
-	public void detect() {
+		
+		this.method = method;
+		this.parameters = parameters;
 	}
 	
-	private IIssue addIssue(Method method) {
-		List<FormalParameterDeclsRestContext> params = 
-				new ArrayList<FormalParameterDeclsRestContext>();
+	/**
+	 * Get the method with the unused parameter.
+	 * 
+	 * @return Method.
+	 */
+	public MemberDeclContext getMethod() {
+		return method;
+	}
+	
+	/**
+	 * Get the unused parameters.
+	 * 
+	 * @return Unused parameters.
+	 */
+	public List<FormalParameterDeclsRestContext> getParameters() {
+		return parameters;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
 		
-		for (Parameter p : method.getUnusedParameters()) {
-			params.add(p.getpPrameter());
+		sb.append("Method: " + MethodUtil.getMethodName(method) + "\n");
+		
+		for (FormalParameterDeclsRestContext p : parameters) {
+			sb.append("\t" + ParameterUtil.getParameterName(p) + "\n");
 		}
 		
-		return new RemoveParameterIssue(method.getMethod(), params);
+		return sb.toString();
 	}
 }

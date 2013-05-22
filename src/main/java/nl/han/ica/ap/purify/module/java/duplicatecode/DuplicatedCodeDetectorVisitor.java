@@ -36,7 +36,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import nl.han.ica.ap.purify.language.java.JavaBaseVisitor;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
-import nl.han.ica.ap.purify.language.java.util.Method;
+import nl.han.ica.ap.purify.language.java.util.MethodUtil;
 import nl.han.ica.ap.purify.modles.SourceFile;
 
 /**
@@ -98,7 +98,7 @@ class DuplicatedCodeDetectorVisitor extends JavaBaseVisitor<Void> {
 	 */
 	@Override
 	public Void visitMemberDecl(MemberDeclContext ctx) {
-		TreeSet<String> localVariables = Method.getLocalVariables(ctx);
+		TreeSet<String> localVariables = MethodUtil.getLocalVariables(ctx);
 		
 		hashVisitor = new HashVisitor(localVariables);
 		

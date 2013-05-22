@@ -87,7 +87,7 @@ public class CallGraphTest {
 		methods.put("testmethod", modifiers);
 		graph.addNode("testclass", methods);
 		graph.addNode("testclass2", methods);
-		graph.addEdge("testclass", "testmethod", "testclass2", "testmethod");
+		graph.addEdge("testclass", "testmethod", "testclass2", "testmethod", null, null);
 		assertTrue(graph.getEdges().size() == 1);
 	}
 	

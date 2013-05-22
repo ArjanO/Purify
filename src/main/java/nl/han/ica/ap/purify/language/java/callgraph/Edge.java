@@ -29,22 +29,54 @@
  */
 package nl.han.ica.ap.purify.language.java.callgraph;
 
+import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionMethodExpressionListContext;
+import nl.han.ica.ap.purify.modles.SourceFile;
+
 /**
  * Links one MethodNode to another in the CallGraph.
  * 
  * @author Tim
  */
 public class Edge {
-	public MethodNode src,target;
+	private SourceFile file;
+	private ExpressionMethodExpressionListContext statement;
+	
+	public MethodNode src;
+	public MethodNode target;
 	
 	/**
 	 * Creates a new Edge.
+	 * 
 	 * @param src The method that performs the call.
 	 * @param target The method that is called.
+	 * @param file Source file that contains the calling method.
+	 * @param statement Statement that calls the method.
 	 */
-	public Edge(MethodNode src, MethodNode target) {
+	public Edge(MethodNode src, MethodNode target, 
+			SourceFile file, ExpressionMethodExpressionListContext statement) {
 		this.src = src;
 		this.target = target;
 		this.target.called = true;
+		
+		this.file = file;
+		this.statement = statement;
+	}
+	
+	/**
+	 * Get the source file of the statement.
+	 * 
+	 * @return Source file.
+	 */
+	public SourceFile getSourceFile() {
+		return file;
+	}
+	
+	/**
+	 * Get the statement that calls the method.
+	 * 
+	 * @return Statement that calls the method.
+	 */
+	public ExpressionMethodExpressionListContext getStatement() {
+		return statement;
 	}
 }

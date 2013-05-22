@@ -29,56 +29,45 @@
  */
 package nl.han.ica.ap.purify.language.java.util;
 
-import java.util.TreeSet;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
+import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.VariableDeclaratorIdContext;
 
-import org.antlr.v4.runtime.tree.ParseTree;
-
-import nl.han.ica.ap.purify.language.java.JavaParser.BlockContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.junit.Test;
 
 /**
- * Method tools.
+ * Unit test for {@link ParameterUtil}
  * 
  * @author Arjan
  */
-public class Method {
-	private Method() {
-	}
-	
-	/**
-	 * Get the local variables in the method. This are also the parameters.
-	 * 
-	 * @param ctx Method
-	 * @return TreeSet with method variables.
-	 */
-	public static TreeSet<String> getLocalVariables(MemberDeclContext ctx) {
-		LocalVariableVisitor visitor = new LocalVariableVisitor();
-		visitor.visit(ctx);
+public class ParameterUtilTest {
+	@Test
+	public void getParameterNameTest() {
+		FormalParameterDeclsRestContext ctx;
+		VariableDeclaratorIdContext decl;
+		TerminalNode identifier;
 		
-		return visitor.getLocalVariables();
-	}
-	
-	/**
-	 * Check if the parse tree is a method body.
-	 * 
-	 * @param tree Parse tree
-	 * @return true if the parse tree is a method body.
-	 */
-	public static boolean isParseTreeMethodBody(ParseTree tree) {
-		if (tree == null) {
-			throw new NullPointerException();
-		}
-		
-		if (tree instanceof BlockContext) {
-			BlockContext block = (BlockContext)tree;
+		ctx = createMock(FormalParameterDeclsRestContext.class);
+		decl = createMock(VariableDeclaratorIdContext.class);
+		identifier = createMock(TerminalNode.class);
 			
-			if (block.parent != null && 
-					block.parent instanceof MethodBodyContext) {
-				return true;
-			}
-		}
+		expect(identifier.getText()).andReturn("test").anyTimes();
+		expect(decl.Identifier()).andReturn(identifier).anyTimes();
+		expect(ctx.variableDeclaratorId()).andReturn(decl).anyTimes();
 		
-		return false;
+		replay(ctx);
+		replay(decl);
+		replay(identifier);
+		
+		assertEquals("test", ParameterUtil.getParameterName(ctx));
+		
+		verify(ctx);
+		verify(decl);
+		verify(identifier);
 	}
 }

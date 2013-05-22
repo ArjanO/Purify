@@ -29,51 +29,68 @@
  */
 package nl.han.ica.ap.purify.module.java.removeparameter;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-
-import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
-import nl.han.ica.ap.purify.language.java.JavaParser.VoidMethodDeclaratorRestContext;
-
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.junit.After;
-import org.junit.Before;
+import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
+import nl.han.ica.ap.purify.language.java.util.ParameterUtil;
 
 /**
- * Unit test for {@link RemoveParameterDetector}
- * This unit test only test void methods.
+ * Stores information about a parameter.
  * 
  * @author Arjan
  */
-public class RemoveParameterDetectorVoidTest 
-	extends RemoveParameterDetectorBaseTest {
-	private VoidMethodDeclaratorRestContext voidCtx;
-	private TerminalNode identifier;
-	
-	@Before
-	public void setUp() {
-		detector = new RemoveParameterDetectorListener();
+class Parameter {
+	private String name;
+	private FormalParameterDeclsRestContext parameter;
+
+	/**
+	 * Create a new parameter store.
+	 * 
+	 * @param parameter Parameter to store.
+	 * @throws IllegalArgumentException If parameter is null.
+	 */
+	public Parameter(FormalParameterDeclsRestContext parameter) {
+		if (parameter == null) {
+			throw new IllegalArgumentException();
+		}
 		
-		ctx = createMock(MemberDeclContext.class);
-		voidCtx = createMock(VoidMethodDeclaratorRestContext.class);
-		identifier = createMock(TerminalNode.class);
-		
-		expect(identifier.getText()).andReturn("test").anyTimes();
-		
-		expect(ctx.voidMethodDeclaratorRest()).andReturn(voidCtx).anyTimes();
-		expect(ctx.Identifier()).andReturn(identifier).anyTimes();
-		
-		replay(ctx);
-		replay(voidCtx);
-		replay(identifier);
+		this.parameter = parameter;
+		this.name = ParameterUtil.getParameterName(parameter);
 	}
 	
-	@After
-	public void shutdown() {
-		verify(ctx);
-		verify(voidCtx);
-		verify(identifier);
+	/**
+	 * Get the name of the parameter.
+	 * 
+	 * @return Name of the parameter.
+	 */
+	public String getName() {
+		return name;
+	}
+	
+	/**
+	 * Get the parameter context.
+	 * 
+	 * @return Parameter context.
+	 */
+	public FormalParameterDeclsRestContext getpPrameter() {
+		return parameter;
+	}
+	
+	/**
+	 * Compare name of parameters.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Parameter)) {
+			return super.equals(obj);
+		}
+		
+		return name.equals(((Parameter)obj).getName());
+	}
+	
+	/**
+	 * Get the hash code of the name of the parameter.
+	 */
+	@Override
+	public int hashCode() {
+		return name.hashCode();
 	}
 }
