@@ -29,10 +29,22 @@
  */
 package nl.han.ica.ap.purify.module.java.removeparameter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
+import nl.han.ica.ap.purify.App;
+import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionListContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionMethodExpressionListContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.FormalParameterDeclsRestContext;
+import nl.han.ica.ap.purify.language.java.callgraph.Edge;
+import nl.han.ica.ap.purify.language.java.callgraph.MethodNode;
+import nl.han.ica.ap.purify.language.java.util.CallGraphUtil;
+import nl.han.ica.ap.purify.language.java.util.MethodUtil;
 import nl.han.ica.ap.purify.modles.ISolver;
 import nl.han.ica.ap.purify.modles.SourceFile;
 
@@ -52,21 +64,92 @@ public class RemoveParameterSolver implements ISolver {
 	}
 	
 	private void solveIssue(SourceFile file, RemoveParameterIssue issue) {
+		List<Integer> remove = new ArrayList<Integer>();
+		
 		for (FormalParameterDeclsRestContext param : issue.getParameters()) {
 			FormalParameterDeclsContext parent = 
 					(FormalParameterDeclsContext)param.parent;
 			
 			if (parent.parent instanceof FormalParameterDeclsRestContext) {
-				FormalParameterDeclsRestContext parentPartent =
-					(FormalParameterDeclsRestContext)parent.parent;
-				
-				removeSeparator(file, parentPartent);
+				removeSeparator(file, 
+						(FormalParameterDeclsRestContext)parent.parent);
 			} else {
 				removeSeparator(file, param);
 			}
 			
 			file.getRewriter().delete(parent.start);
 			file.getRewriter().delete(param.start);
+			
+			remove.add(MethodUtil.getParameterIndex(param));
+		}
+		
+		MethodNode methodNode = CallGraphUtil.getMethodNode(issue.getMethod());
+		if (methodNode != null) {
+			for (Edge e : App.getCallGraph().getEdges()) {
+				if (e.target == methodNode) {
+					updateMethodCall(e.getSourceFile(), e.getStatement(), 
+							remove);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Remove arguments form the call to the method.
+	 * 
+	 * @param file Source file form the calling statement.
+	 * @param statement Statement that cals.
+	 * @param remove Index of the parameter that is removed.
+	 */
+	private void updateMethodCall(
+			SourceFile file,
+			ExpressionMethodExpressionListContext statement,
+			List<Integer> remove) {
+		if (statement.expressionList() == null) {
+			return;
+		}
+		
+		ExpressionListContext context = statement.expressionList();
+		
+		int iCount = context.getChildCount();
+		int iParamId = 0;
+		for (int i = 0; i < iCount; i++) {
+			if (context.getChild(i) instanceof ExpressionContext) {
+				if (remove.contains(iParamId)) {
+					ExpressionContext argument = 
+							(ExpressionContext)context.getChild(i);
+				
+					file.getRewriter().delete(argument.start);
+					
+					removeCallSeparator(file, statement.expressionList(), i);
+				}
+				
+				iParamId++;
+			}
+		}
+	}
+	
+	/**
+	 * Remove the separator (,) between arguments. 
+	 *  
+	 * @param file Source file to edit.
+	 * @param context ExpressionList context.
+	 * @param index Parameter index of the argument ("a", "b") "a" = 0, "b" = 1
+	 */
+	private void removeCallSeparator(SourceFile file, 
+			ExpressionListContext context, int index) {
+		ParseTree item = null;
+		
+		// Remove separator after argument.
+		if (index == 0 && context.getChildCount() >= index + 1) {
+			item = context.getChild(index + 1);
+		} else if (context.getChildCount() >= index - 1) {
+			item = context.getChild(index - 1);
+		}
+		
+		if (item instanceof TerminalNodeImpl && 
+				item.getText().equals(",")) {
+			file.getRewriter().delete(((TerminalNodeImpl)item).getPayload());
 		}
 	}
 	
