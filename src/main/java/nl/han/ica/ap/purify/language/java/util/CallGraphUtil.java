@@ -29,7 +29,13 @@
  */
 package nl.han.ica.ap.purify.language.java.util;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import nl.han.ica.ap.purify.App;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
+import nl.han.ica.ap.purify.language.java.JavaParser.NormalClassDeclarationContext;
+import nl.han.ica.ap.purify.language.java.callgraph.ClassNode;
+import nl.han.ica.ap.purify.language.java.callgraph.MethodNode;
 
 /**
  * Tools for the call graph.
@@ -51,5 +57,49 @@ public class CallGraphUtil {
 		visitor.visit(ctx);
 		
 		return visitor.getMethodId();
+	}
+	
+	/**
+	 * Get the method node by the method.
+	 * 
+	 * @param context Method parse tree.
+	 * @return MethodNode
+	 * @throws If context is null. 
+	 */
+	public static MethodNode getMethodNode(MemberDeclContext context) {
+		if (context == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		String className = getClassName(context);
+		String methodName = CallGraphUtil.getCallGraphMethodId(context);
+		
+		if (className != null && methodName != null) {
+			ClassNode classNode = App.getCallGraph().getNode(className);
+			
+			if (classNode != null) {
+				return classNode.getMethod(methodName);
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Temporary method to get the class.
+	 * 
+	 * @param tree ParseTree node
+	 * @return Class name if found.
+	 */
+	private static String getClassName(ParseTree tree) {
+		if (tree instanceof NormalClassDeclarationContext) {
+			return ((NormalClassDeclarationContext)tree).Identifier().getText();
+		}
+		
+		if (tree.getParent() == null) {
+			return null;
+		}
+		
+		return getClassName(tree.getParent());
 	}
 }
