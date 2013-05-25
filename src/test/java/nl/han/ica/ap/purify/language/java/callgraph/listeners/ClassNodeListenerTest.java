@@ -95,7 +95,7 @@ public class ClassNodeListenerTest {
 		n = graph.getNode("Demo3");
 		assertFalse(n == null);
 		nrofmethods = n.getAllMethods().size();
-		assertEquals(1,nrofmethods);
+		assertEquals(2,nrofmethods);
 		
 		n = graph.getNode("IDemo1");
 		assertFalse(n != null);

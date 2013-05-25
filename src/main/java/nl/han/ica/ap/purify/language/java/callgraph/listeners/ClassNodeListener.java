@@ -35,6 +35,7 @@ import java.util.Stack;
 
 import nl.han.ica.ap.purify.language.java.JavaBaseListener;
 import nl.han.ica.ap.purify.language.java.JavaParser;
+import nl.han.ica.ap.purify.language.java.JavaParser.NormalClassDeclarationContext;
 import nl.han.ica.ap.purify.language.java.callgraph.CallGraph;
 
 /**
@@ -45,6 +46,11 @@ import nl.han.ica.ap.purify.language.java.callgraph.CallGraph;
 public class ClassNodeListener extends JavaBaseListener {
 	/** Booleans to check if listener is in a method or a type. */
 	private boolean methodfound, typefound;
+	
+	/**
+	 * Is the constructor of the class found.
+	 */
+	private boolean constructorFound;
 	
 	/** Name of the current class. */
 	private String classID;
@@ -114,10 +120,26 @@ public class ClassNodeListener extends JavaBaseListener {
 	 * If type != null this class extends another class.
 	 */
 	@Override
-	public void enterNormalClassDeclaration(JavaParser.NormalClassDeclarationContext ctx) {		
+	public void enterNormalClassDeclaration(JavaParser.NormalClassDeclarationContext ctx) {	
+		constructorFound = false;
 		classID = ctx.Identifier().getText();
 		if(ctx.type() != null) {
 			//TODO: Add 'extends' functionality here.
+		}
+	}
+	
+	/**
+	 * Called when exiting the class declaration.
+	 */
+	@Override
+	public void exitNormalClassDeclaration(NormalClassDeclarationContext ctx) {
+		if (!constructorFound) {
+			// Constructor is not found. Set the default constructor.
+			//TODO: Add 'extends' functionality here.
+			ArrayList<String> modifiers = new ArrayList<String>();
+			modifiers.add("public"); // The default constructor is public.
+			
+			methods.put(String.format("%s( )", classID), modifiers);
 		}
 	}
 	
@@ -126,6 +148,14 @@ public class ClassNodeListener extends JavaBaseListener {
 	 */
 	@Override
 	public void enterClassBodyDeclaration(JavaParser.ClassBodyDeclarationContext ctx) {
+		/* This classBodyDeclaration is a constructor if 
+		 * constructorDeclaratorRect is not null.
+		 */
+		if (ctx.memberDecl() != null && 
+				ctx.memberDecl().constructorDeclaratorRest() != null) {
+			constructorFound = true; // This class has a constructor.
+		}
+		
 		if(ctx.memberDecl().memberDeclaration() != null) {
 			if(ctx.memberDecl().memberDeclaration().fieldDeclaration() == null) {
 				methodfound = true;
