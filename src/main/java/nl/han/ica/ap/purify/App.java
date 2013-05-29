@@ -117,6 +117,7 @@ public class App {
 		}
 		
 		for (SourceFile file : sourceFiles) {
+			classNodelistener.setCurrentSourceFile(file);
 			walker.walk(classNodelistener, file.getParseTree());
 		}
 		

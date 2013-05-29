@@ -38,6 +38,7 @@ import nl.han.ica.ap.purify.language.java.JavaParser;
 import nl.han.ica.ap.purify.language.java.JavaParser.NormalClassDeclarationContext;
 import nl.han.ica.ap.purify.language.java.callgraph.CallGraph;
 import nl.han.ica.ap.purify.language.java.callgraph.MethodInfo;
+import nl.han.ica.ap.purify.modles.SourceFile;
 
 /**
  * This listener gathers all methods and variables of a class and adds them to a new ClassNode in the CallGraph.
@@ -77,11 +78,25 @@ public class ClassNodeListener extends JavaBaseListener {
 	/** HashMap to store all methods of this class. */
 	private HashMap<String, MethodInfo> methods;
 	
+	/**
+	 * Current source file.
+	 */
+	private SourceFile currentSourceFile;
+	
 	/** The CallGraph currently in use. */
 	public CallGraph graph;
 	
 	public ClassNodeListener(CallGraph graph) {
 		this.graph = graph;
+	}
+	
+	/**
+	 * Set the source file that holds the current parse tree.
+	 * 
+	 * @param file Source file.
+	 */
+	public void setCurrentSourceFile(SourceFile file) {
+		currentSourceFile = file;
 	}
 	
 	/** 
@@ -138,6 +153,8 @@ public class ClassNodeListener extends JavaBaseListener {
 			// Constructor is not found. Set the default constructor.
 			//TODO: Add 'extends' functionality here.
 			MethodInfo info = new MethodInfo();
+			
+			info.sourceFile = currentSourceFile;
 			
 			info.methodContext = null; // No context available.
 			
@@ -314,6 +331,7 @@ public class ClassNodeListener extends JavaBaseListener {
 	 */
 	private void mapMethod(JavaParser.MemberDeclContext ctx) {
 		MethodInfo info = new MethodInfo();
+		info.sourceFile = currentSourceFile;
 		info.methodContext = ctx;
 		info.modifiers = new ArrayList<String>();
 		while(modifierstack.size() != 0) {

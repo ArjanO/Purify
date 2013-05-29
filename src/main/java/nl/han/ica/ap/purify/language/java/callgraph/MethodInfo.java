@@ -32,6 +32,7 @@ package nl.han.ica.ap.purify.language.java.callgraph;
 import java.util.List;
 
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
+import nl.han.ica.ap.purify.modles.SourceFile;
 
 /**
  * Stores information about the method.
@@ -41,5 +42,6 @@ import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 public class MethodInfo {
 	public List<String> modifiers;
 	
+	public SourceFile sourceFile;
 	public MemberDeclContext methodContext;
 }
