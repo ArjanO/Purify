@@ -32,6 +32,9 @@ package nl.han.ica.ap.purify.language.java.callgraph;
 import java.util.HashMap;
 import java.util.List;
 
+import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
+import nl.han.ica.ap.purify.modles.SourceFile;
+
 /**
  * Node containing all information of a method.
  * 
@@ -53,6 +56,10 @@ public class MethodNode {
 	/** localvariables is a HashMap of all variables in this methods scope. */
 	private HashMap<String,String> localvariables;
 	
+	private MemberDeclContext methodContext;
+	
+	private SourceFile file;
+	
 	/** called is a boolean to check if this method is called in the program. */
 	public boolean called = false;
 	
@@ -67,10 +74,29 @@ public class MethodNode {
 		this.classID = classID;
 		this.methodID = methodID;
 		this.modifiers = info.modifiers;
+		this.methodContext = info.methodContext;
 		localvariables = new HashMap<String, String>();
 		if(methodID.equalsIgnoreCase("main( String[] )") || methodID.equalsIgnoreCase("this")) {
 			called = true;
 		}
+	}
+	
+	/**
+	 * Get the method context.
+	 * 
+	 * @return MemberDeclContext of this method.
+	 */
+	public MemberDeclContext getMemberContxt() {
+		return this.methodContext;
+	}
+	
+	/**
+	 * Get the methods source file.
+	 * 
+	 * @return Source file that holds the method.
+	 */
+	public SourceFile getSourceFile() {
+		return this.file;
 	}
 	
 	/**
