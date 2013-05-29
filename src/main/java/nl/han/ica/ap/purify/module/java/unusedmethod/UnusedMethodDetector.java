@@ -65,7 +65,7 @@ public class UnusedMethodDetector implements IDetector {
 	@Override
 	public void detect() {
 		if (graph == null) {
-			App.getCallGraph();
+			graph = App.getCallGraph();
 		}
 		
 		graph.checkIfTruelyCalled();
