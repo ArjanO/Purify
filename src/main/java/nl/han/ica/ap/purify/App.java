@@ -54,6 +54,8 @@ import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberDetector;
 import nl.han.ica.ap.purify.module.java.magicnumber.MagicNumberSolver;
 import nl.han.ica.ap.purify.module.java.removeparameter.RemoveParameterDetector;
 import nl.han.ica.ap.purify.module.java.removeparameter.RemoveParameterSolver;
+import nl.han.ica.ap.purify.module.java.unusedmethod.UnusedMethodDetector;
+import nl.han.ica.ap.purify.module.java.unusedmethod.UnusedMethodSolver;
 
 /**
  * Example magic numbers runner. 
@@ -81,10 +83,12 @@ public class App {
 		detectors.add(new DuplicatedCodeDetector());
 		detectors.add(new MagicNumberDetector());
 		detectors.add(new RemoveParameterDetector());
+		detectors.add(new UnusedMethodDetector());
 		
 		List<ISolver> solvers = new ArrayList<ISolver>();
 		solvers.add(new MagicNumberSolver());
 		solvers.add(new RemoveParameterSolver());
+		solvers.add(new UnusedMethodSolver());
 		
 		for (int i = 0; i < args.length; i++) {
 			ANTLRInputStream input = null;
