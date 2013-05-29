@@ -83,11 +83,14 @@ public class UnusedMethodDetectorTest {
 		tree = ParserTools.getParseTree(FILE3);
 		walker.walk(edgelistener, tree);
 		
-		umd = new UnusedMethodDetector(graph);
+		umd = new UnusedMethodDetector();
+		umd.setGraph(graph);
 	}
 	
 	@Test
 	public void unCalledMethodsTest() {
+		umd.detect();
+		
 		ArrayList<MethodNode> expectedmethods = new ArrayList<MethodNode>();
 		expectedmethods.add(graph.getMethod("Demo1","uncalledmethod1( )"));
 		expectedmethods.add(graph.getMethod("Demo1","uncalledmethod2( )"));
