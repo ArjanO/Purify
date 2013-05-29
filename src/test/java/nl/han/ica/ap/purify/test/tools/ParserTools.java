@@ -38,6 +38,7 @@ import nl.han.ica.ap.purify.language.java.JavaParser;
 import nl.han.ica.ap.purify.language.java.JavaParser.MemberDeclContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodBodyContext;
 import nl.han.ica.ap.purify.language.java.JavaParser.MethodDeclarationContext;
+import nl.han.ica.ap.purify.modles.SourceFile;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -58,7 +59,7 @@ public class ParserTools {
 	 * @param filename File to parse.
 	 * @return Parse tree
 	 */
-	public static ParseTree getParseTree(String filename) {
+	public static SourceFile getParseTreeSourceFile(String filename) {
 		ANTLRInputStream input = null;
 		InputStream is = null;
 
@@ -73,7 +74,21 @@ public class ParserTools {
 		JavaLexer lexer = new JavaLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		JavaParser parser = new JavaParser(tokens);
-		return parser.compilationUnit();
+		
+		SourceFile file = new SourceFile(
+				filename, tokens, parser.compilationUnit());
+		
+		return file;
+	}
+	
+	/**
+	 * Parse a file and get the parse tree.
+	 * 
+	 * @param filename File to parse.
+	 * @return Parse tree
+	 */
+	public static ParseTree getParseTree(String filename) {
+		return getParseTreeSourceFile(filename).getParseTree();
 	}
 
 	/**
