@@ -68,7 +68,6 @@ public class UnusedMethodDetector implements IDetector {
 			graph = App.getCallGraph();
 		}
 		
-		graph.checkIfTruelyCalled();
 		getUnCalledMethods(graph.getAllMethods());
 	}
 	

@@ -56,7 +56,7 @@ public class Edge {
 			SourceFile file, ExpressionMethodExpressionListContext statement) {
 		this.src = src;
 		this.target = target;
-		this.target.called = true;
+		//this.target.called = true;
 		
 		this.file = file;
 		this.statement = statement;

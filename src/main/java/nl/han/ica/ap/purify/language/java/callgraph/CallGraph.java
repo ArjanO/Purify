@@ -31,6 +31,7 @@ package nl.han.ica.ap.purify.language.java.callgraph;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import nl.han.ica.ap.purify.language.java.JavaParser.ExpressionMethodExpressionListContext;
 import nl.han.ica.ap.purify.modles.SourceFile;
@@ -132,13 +133,31 @@ public class CallGraph {
 		ClassNode trg = getNode(trgClass);
 		if(src == null) {
 			return;
-			//throw new RuntimeException("Could not find ClassNode: " + srcClass);
 		} else if (trg == null) {
 			return;
-			//throw new RuntimeException("Could not find ClassNode: " + trgClass);
 		}
-		edges.add(new Edge(src.getMethod(srcMethod),trg.getMethod(trgMethod), 
-				file, statement));
+		
+		Edge e = new Edge(src.getMethod(srcMethod),trg.getMethod(trgMethod), 
+				file, statement);
+		
+		if (e.src.called) {
+			updateCalled(e.target, new ArrayList<MethodNode>());
+		}
+		
+		edges.add(e);
+	}
+	
+	private void updateCalled(MethodNode source, List<MethodNode> seen) {
+		if (!seen.contains(source)) {
+			seen.add(source);
+			source.called = true;
+			
+			for (int i = edges.size() - 1; i >= 0; i--) {
+				if (edges.get(i).src == source) {
+					updateCalled(edges.get(i).target, seen);
+				}
+			}
+		}
 	}
 	
 	public ArrayList<Edge> getEdges() {
@@ -204,16 +223,5 @@ public class CallGraph {
 			return n.getMethod(methodID);
 		}
 		return null;
-	}
-	
-	/**
-	 * Looks through all edges to see if their target was really called or not.
-	 */
-	public void checkIfTruelyCalled() {
-		for(Edge e : edges) {
-			if(!e.src.called) {
-				e.target.called = false;
-			}
-		}
 	}
 }
