@@ -29,8 +29,8 @@
  */
 package nl.han.ica.ap.purify.language.java.callgraph;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Node containing all information of a method.
@@ -42,7 +42,7 @@ public class MethodNode {
 	private static final int RETURNTYPE = 0;
 	
 	/** modifiers is an ArrayList containing all modifiers of the method. */
-	private ArrayList<String> modifiers;
+	private List<String> modifiers;
 	
 	/** classID is the name of the class this method belongs to. */
 	private String classID;
@@ -61,12 +61,12 @@ public class MethodNode {
 	 * 
 	 * @param classID The name of class this method is in.
 	 * @param methodID The name of the method.
-	 * @param modifiers The modifiers of the method.
+	 * @param info Information about the modifiers and method context.
 	 */
-	public MethodNode(String classID, String methodID, ArrayList<String> modifiers) {
+	public MethodNode(String classID, String methodID, MethodInfo info) {
 		this.classID = classID;
 		this.methodID = methodID;
-		this.modifiers = modifiers;
+		this.modifiers = info.modifiers;
 		localvariables = new HashMap<String, String>();
 		if(methodID.equalsIgnoreCase("main( String[] )") || methodID.equalsIgnoreCase("this")) {
 			called = true;

@@ -34,6 +34,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -42,18 +43,20 @@ import org.junit.Test;
  * @author Tim
  */
 public class MethodNodeTest {
-	MethodNode m;
+	private MethodNode m;
 	
 	/**
 	 * Initialize MethodNode m with classID "testclass", methodID "testmethod"
 	 * and modifiers private static void.
 	 */
-	public MethodNodeTest() {
-		ArrayList<String> modifiers = new ArrayList<String>();
-		modifiers.add("void");
-		modifiers.add("static");
-		modifiers.add("private");
-		m = new MethodNode("testclass","testmethod", modifiers);
+	@Before
+	public void before() {
+		MethodInfo info = new MethodInfo();
+		info.modifiers = new ArrayList<String>();
+		info.modifiers.add("void");
+		info.modifiers.add("static");
+		info.modifiers.add("private");
+		m = new MethodNode("testclass","testmethod", info);
 	}
 	
 	/**

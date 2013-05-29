@@ -63,7 +63,7 @@ public class CallGraph {
 	 * @param classID The name of the class
 	 * @param methods HashMap with all methods this class has.
 	 */
-	public void addNode(String classID, HashMap<String, ArrayList<String>> methods) {
+	public void addNode(String classID, HashMap<String, MethodInfo> methods) {
 		ClassNode n = new ClassNode(classID);
 		for(String methodID : methods.keySet()) {
 			n.addMethodNode(methodID, methods.get(methodID));

@@ -43,7 +43,7 @@ import org.junit.Test;
  */
 public class ClassNodeTest {
 
-	ClassNode n;
+	private ClassNode n;
 	
 	/**
 	 * Initializes ClassNode n with classID "testclass".
@@ -65,11 +65,12 @@ public class ClassNodeTest {
 	 */
 	@Test
 	public void addMethodNodeTest() {
-		ArrayList<String> modifiers = new ArrayList<String>();
+		MethodInfo info = new MethodInfo();
+		info.modifiers = new ArrayList<String>();
 		
-		modifiers.add("String");
-		modifiers.add("public");
-		n.addMethodNode("testmethod", modifiers);
+		info.modifiers.add("String");
+		info.modifiers.add("public");
+		n.addMethodNode("testmethod", info);
 		assertEquals(1, n.getAllMethods().size());
 	}
 
@@ -78,11 +79,12 @@ public class ClassNodeTest {
 	 */
 	@Test
 	public void getMethodTest() {
-		ArrayList<String> modifiers = new ArrayList<String>();
+		MethodInfo info = new MethodInfo();
+		info.modifiers = new ArrayList<String>();
 		
-		modifiers.add("String");
-		modifiers.add("public");
-		n.addMethodNode("testmethod", modifiers);
+		info.modifiers.add("String");
+		info.modifiers.add("public");
+		n.addMethodNode("testmethod", info);
 		assertTrue(n.getMethod("testmethod") != null);
 		assertTrue(n.getMethod("nomethod") == null);
 	}
@@ -92,11 +94,12 @@ public class ClassNodeTest {
 	 */
 	@Test
 	public void mapVariablesTest() {
-		ArrayList<String> modifiers = new ArrayList<String>();
+		MethodInfo info = new MethodInfo();
+		info.modifiers = new ArrayList<String>();
 		HashMap<String,HashMap<String,String>> variables = new HashMap<String,HashMap<String,String>>();
-		modifiers.add("String");
-		modifiers.add("public");
-		n.addMethodNode("testmethod", modifiers);
+		info.modifiers.add("String");
+		info.modifiers.add("public");
+		n.addMethodNode("testmethod", info);
 		HashMap<String, String> variable = new HashMap<String, String>();
 		variable.put("i", "int");
 		variables.put("testmethod", variable);
@@ -105,7 +108,7 @@ public class ClassNodeTest {
 		assertEquals(null,n.getVariableType("this", "s"));
 		assertEquals(null,n.getGlobalVariables());
 		
-		n.addMethodNode("this", new ArrayList<String>());
+		n.addMethodNode("this", new MethodInfo());
 		variable.put("s", "String");
 		variables.put("this", variable);
 		n.mapVariables(variables);

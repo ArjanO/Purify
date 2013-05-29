@@ -34,6 +34,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -42,11 +43,16 @@ import org.junit.Test;
  * @author Tim
  */
 public class CallGraphTest {
-	CallGraph graph;
-	
+	private CallGraph graph;
+	private HashMap<String, MethodInfo> methods;
 	
 	public CallGraphTest() {
 		graph = new CallGraph();
+	}
+	
+	@Before
+	public void before() {
+		methods = new HashMap<String, MethodInfo>();
 	}
 	
 	/**
@@ -54,11 +60,11 @@ public class CallGraphTest {
 	 */
 	@Test
 	public void addNodeTest() {
-		HashMap<String,ArrayList<String>> methods = new HashMap<String, ArrayList<String>>();
-		ArrayList<String> modifiers = new ArrayList<String>();
-		modifiers.add("void");
-		modifiers.add("private");
-		methods.put("testmethod", modifiers);
+		MethodInfo info = new MethodInfo();
+		info.modifiers = new ArrayList<String>();
+		info.modifiers.add("void");
+		info.modifiers.add("private");
+		methods.put("testmethod", info);
 		graph.addNode("testclass", methods);
 		assertTrue(graph.getNode("testclass") != null);
 		assertTrue(graph.getNode("testclass").getAllMethods().size() == 1);
@@ -69,7 +75,6 @@ public class CallGraphTest {
 	 */
 	@Test
 	public void getNodeTest() {
-		HashMap<String,ArrayList<String>> methods = new HashMap<String, ArrayList<String>>();
 		graph.addNode("testclass", methods);
 		assertTrue(graph.getNode("testclass") != null);
 		assertTrue(graph.getNode("t") == null);
@@ -80,11 +85,11 @@ public class CallGraphTest {
 	 */
 	@Test
 	public void addEdgeSuccesTest() {
-		HashMap<String,ArrayList<String>> methods = new HashMap<String, ArrayList<String>>();
-		ArrayList<String> modifiers = new ArrayList<String>();
-		modifiers.add("void");
-		modifiers.add("private");
-		methods.put("testmethod", modifiers);
+		MethodInfo info = new MethodInfo();
+		info.modifiers = new ArrayList<String>();
+		info.modifiers.add("void");
+		info.modifiers.add("private");
+		methods.put("testmethod", info);
 		graph.addNode("testclass", methods);
 		graph.addNode("testclass2", methods);
 		graph.addEdge("testclass", "testmethod", "testclass2", "testmethod", null, null);
@@ -96,11 +101,11 @@ public class CallGraphTest {
 	 */
 	@Test
 	public void getMethodsWithModifierTest() {
-		HashMap<String,ArrayList<String>> methods = new HashMap<String, ArrayList<String>>();
-		ArrayList<String> modifiers = new ArrayList<String>();
-		modifiers.add("void");
-		modifiers.add("private");
-		methods.put("testmethod", modifiers);
+		MethodInfo info = new MethodInfo();
+		info.modifiers = new ArrayList<String>();
+		info.modifiers.add("void");
+		info.modifiers.add("private");
+		methods.put("testmethod", info);
 		graph.addNode("testclass", methods);
 		graph.addNode("testclass2", methods);
 		assertTrue(graph.getAllMethodsWithModifier("private").size() == 2);
@@ -112,11 +117,11 @@ public class CallGraphTest {
 	 */
 	@Test
 	public void getAllMethodsTest() {
-		HashMap<String,ArrayList<String>> methods = new HashMap<String, ArrayList<String>>();
-		ArrayList<String> modifiers = new ArrayList<String>();
-		modifiers.add("void");
-		modifiers.add("private");
-		methods.put("testmethod", modifiers);
+		MethodInfo info = new MethodInfo();
+		info.modifiers = new ArrayList<String>();
+		info.modifiers.add("void");
+		info.modifiers.add("private");
+		methods.put("testmethod", info);
 		graph.addNode("testclass", methods);
 		graph.addNode("testclass2", methods);
 		assertTrue(graph.getAllMethods().size() == 2);

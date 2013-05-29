@@ -86,10 +86,10 @@ public class ClassNode {
 	 * Adds a new MethodNode to this class.
 	 * 
 	 * @param methodID The name of the method.
-	 * @param modifiers The list with modifiers of the method.
+	 * @param info Information about modifiers and the context.
 	 */
-	public void addMethodNode(String methodID, ArrayList<String> modifiers) {
-		methods.add(new MethodNode(classID, methodID, modifiers));
+	public void addMethodNode(String methodID, MethodInfo info) {
+		methods.add(new MethodNode(classID, methodID, info));
 	}
 	
 	/**

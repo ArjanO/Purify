@@ -37,6 +37,7 @@ import nl.han.ica.ap.purify.language.java.JavaBaseListener;
 import nl.han.ica.ap.purify.language.java.JavaParser;
 import nl.han.ica.ap.purify.language.java.JavaParser.NormalClassDeclarationContext;
 import nl.han.ica.ap.purify.language.java.callgraph.CallGraph;
+import nl.han.ica.ap.purify.language.java.callgraph.MethodInfo;
 
 /**
  * This listener gathers all methods and variables of a class and adds them to a new ClassNode in the CallGraph.
@@ -74,7 +75,7 @@ public class ClassNodeListener extends JavaBaseListener {
 	private HashMap<String,HashMap<String,String>> variables;
 	
 	/** HashMap to store all methods of this class. */
-	private HashMap<String,ArrayList<String>> methods;
+	private HashMap<String, MethodInfo> methods;
 	
 	/** The CallGraph currently in use. */
 	public CallGraph graph;
@@ -94,7 +95,7 @@ public class ClassNodeListener extends JavaBaseListener {
 		variableID = new ArrayList<String>();
 		variabletypestack = new Stack<String>();
 		variables = new HashMap<String,HashMap<String,String>>();
-		methods = new HashMap<String,ArrayList<String>>();
+		methods = new HashMap<String, MethodInfo>();
 		methodfound = false;
 		typefound = false;
 		classID = null;
@@ -136,10 +137,14 @@ public class ClassNodeListener extends JavaBaseListener {
 		if (!constructorFound) {
 			// Constructor is not found. Set the default constructor.
 			//TODO: Add 'extends' functionality here.
-			ArrayList<String> modifiers = new ArrayList<String>();
-			modifiers.add("public"); // The default constructor is public.
+			MethodInfo info = new MethodInfo();
 			
-			methods.put(String.format("%s( )", classID), modifiers);
+			info.methodContext = null; // No context available.
+			
+			info.modifiers = new ArrayList<String>();
+			info.modifiers.add("public"); // The default constructor is public.
+			
+			methods.put(String.format("%s( )", classID), info);
 		}
 	}
 	
@@ -207,7 +212,7 @@ public class ClassNodeListener extends JavaBaseListener {
 	@Override
 	public void exitMemberDecl(JavaParser.MemberDeclContext ctx) {
 		if(methodfound) {
-			mapMethod();
+			mapMethod(ctx);
 			methodfound = false;
 		}
 	}
@@ -221,7 +226,7 @@ public class ClassNodeListener extends JavaBaseListener {
 	public void exitClassBodyDeclaration(JavaParser.ClassBodyDeclarationContext ctx) {
 		if(methodID == null) {
 			methodID = "this";
-			mapMethod();
+			mapMethod(null);
 		}
 		mapVariable();
 	}
@@ -307,12 +312,14 @@ public class ClassNodeListener extends JavaBaseListener {
 	/**
 	 * Maps the current method and its modifiers.
 	 */
-	private void mapMethod() {
-		ArrayList<String> modifiers = new ArrayList<String>();
+	private void mapMethod(JavaParser.MemberDeclContext ctx) {
+		MethodInfo info = new MethodInfo();
+		info.methodContext = ctx;
+		info.modifiers = new ArrayList<String>();
 		while(modifierstack.size() != 0) {
-			modifiers.add(modifierstack.pop());
+			info.modifiers.add(modifierstack.pop());
 		}
-		methods.put(methodID, modifiers);
+		methods.put(methodID, info);
 	}
 	
 	/**
