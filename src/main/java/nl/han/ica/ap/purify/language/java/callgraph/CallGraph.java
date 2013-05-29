@@ -194,9 +194,9 @@ public class CallGraph {
 	}
 
 	/**
-	 * @param classID
-	 * @param methodID
-	 * @return
+	 * @param classID The name of the class the method is in.
+	 * @param methodID The name of the method to find.
+	 * @return Returns a MethodNode if one was found else returns null.
 	 */
 	public MethodNode getMethod(String classID, String methodID) {
 		ClassNode n = getNode(classID);
@@ -204,5 +204,16 @@ public class CallGraph {
 			return n.getMethod(methodID);
 		}
 		return null;
+	}
+	
+	/**
+	 * Looks through all edges to see if their target was really called or not.
+	 */
+	public void checkIfTruelyCalled() {
+		for(Edge e : edges) {
+			if(!e.src.called) {
+				e.target.called = false;
+			}
+		}
 	}
 }
