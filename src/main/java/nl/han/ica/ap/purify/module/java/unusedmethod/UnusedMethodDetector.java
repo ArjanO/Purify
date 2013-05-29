@@ -44,8 +44,6 @@ import nl.han.ica.ap.purify.modles.SourceFile;
  */
 public class UnusedMethodDetector implements IDetector {	
 	/** An ArrayList containing MethodNodes of the uncalled methods */
-	public ArrayList<MethodNode> uncalledmethods;
-
 	private CallGraph graph;
 	
 	/**
@@ -71,23 +69,25 @@ public class UnusedMethodDetector implements IDetector {
 		}
 		
 		graph.checkIfTruelyCalled();
-		uncalledmethods = getUnCalledMethods(graph.getAllMethods());
+		getUnCalledMethods(graph.getAllMethods());
 	}
 	
 	/**
 	 * Returns all MethodNodes that were uncalled.
 	 * 
 	 * @param methods A list with all MethodNodes in the graph.
-	 * @return Returns an ArrayList with uncalled MethodNodes.
 	 */
-	private ArrayList<MethodNode> getUnCalledMethods(ArrayList<MethodNode> methods) {
-		ArrayList<MethodNode> uncalledmethods = new ArrayList<MethodNode>();
+	private void getUnCalledMethods(ArrayList<MethodNode> methods) {
 		for(MethodNode m : methods) {
-			if(!m.called) {				
-				uncalledmethods.add(m);
+			// If getMemberContxt() returns null the is no method 
+			// (virtual method).
+			if(!m.called && m.getMemberContxt() != null) {	
+				
+				UnusedMethodIssue issue = new UnusedMethodIssue(
+						m.getMemberContxt(), m.getSourceFile());
+				
+				m.getSourceFile().addIssue(issue);
 			}
 		}
-		
-		return uncalledmethods;
 	}
 }

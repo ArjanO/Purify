@@ -37,10 +37,11 @@ import nl.han.ica.ap.purify.language.java.callgraph.CallGraph;
 import nl.han.ica.ap.purify.language.java.callgraph.MethodNode;
 import nl.han.ica.ap.purify.language.java.callgraph.listeners.ClassNodeListener;
 import nl.han.ica.ap.purify.language.java.callgraph.listeners.EdgeListener;
+import nl.han.ica.ap.purify.modles.SourceFile;
 import nl.han.ica.ap.purify.test.tools.ParserTools;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -56,32 +57,40 @@ public class UnusedMethodDetectorTest {
 	private ClassNodeListener classNodelistener;
 	private EdgeListener edgelistener;
 	private ParseTreeWalker walker;
-	private ParseTree tree;
 	private UnusedMethodDetector umd;
 	
-	public UnusedMethodDetectorTest() {
+	private SourceFile file1;
+	private SourceFile file2;
+	private SourceFile file3;
+	
+	@Before
+	public void before() {
 		graph = new CallGraph();
 		classNodelistener = new ClassNodeListener(graph);
 		edgelistener = new EdgeListener(graph);
 		walker = new ParseTreeWalker();
 		
-		tree = ParserTools.getParseTree(FILE1);
-		walker.walk(classNodelistener, tree);
+		file1 = ParserTools.getParseTreeSourceFile(FILE1);
+		file2 = ParserTools.getParseTreeSourceFile(FILE2);
+		file3 = ParserTools.getParseTreeSourceFile(FILE3);
 		
-		tree = ParserTools.getParseTree(FILE2);
-		walker.walk(classNodelistener, tree);
+		classNodelistener.setCurrentSourceFile(file1);
+		walker.walk(classNodelistener, file1.getParseTree());
 		
-		tree = ParserTools.getParseTree(FILE3);
-		walker.walk(classNodelistener, tree);
+		classNodelistener.setCurrentSourceFile(file2);
+		walker.walk(classNodelistener, file2.getParseTree());
 		
-		tree = ParserTools.getParseTree(FILE1);
-		walker.walk(edgelistener, tree);
+		classNodelistener.setCurrentSourceFile(file3);
+		walker.walk(classNodelistener, file3.getParseTree());
 		
-		tree = ParserTools.getParseTree(FILE2);
-		walker.walk(edgelistener, tree);
+		edgelistener.setSourceFile(file1);
+		walker.walk(edgelistener, file1.getParseTree());
 		
-		tree = ParserTools.getParseTree(FILE3);
-		walker.walk(edgelistener, tree);
+		edgelistener.setSourceFile(file2);
+		walker.walk(edgelistener, file2.getParseTree());
+		
+		edgelistener.setSourceFile(file3);
+		walker.walk(edgelistener, file3.getParseTree());
 		
 		umd = new UnusedMethodDetector();
 		umd.setGraph(graph);
@@ -98,10 +107,10 @@ public class UnusedMethodDetectorTest {
 		expectedmethods.add(graph.getMethod("Demo2","uncalledmethod1( )"));
 		expectedmethods.add(graph.getMethod("Demo3","uncalledmethod( )"));
 		
-		assertEquals(expectedmethods.size(),umd.uncalledmethods.size());
-		for(MethodNode m : expectedmethods) {
-			assertTrue(umd.uncalledmethods.contains(m));
-		}
+		int iIssueSize = file1.getIssuesSize();
+		iIssueSize += file2.getIssuesSize();
+		iIssueSize += file3.getIssuesSize();
+		
+		assertEquals(expectedmethods.size(), iIssueSize);
 	}
-
 }

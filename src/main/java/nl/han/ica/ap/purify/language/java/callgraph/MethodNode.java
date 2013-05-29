@@ -75,6 +75,7 @@ public class MethodNode {
 		this.methodID = methodID;
 		this.modifiers = info.modifiers;
 		this.methodContext = info.methodContext;
+		this.file = info.sourceFile;
 		localvariables = new HashMap<String, String>();
 		if(methodID.equalsIgnoreCase("main( String[] )") || methodID.equalsIgnoreCase("this")) {
 			called = true;
